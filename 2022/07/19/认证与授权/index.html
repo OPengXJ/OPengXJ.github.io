@@ -1,0 +1,759 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/3dd.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="PEngxJ">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="用户认证与授权是一个系统最基本的功能，下面我们一起了解下常见的解决方案的特性与他们相互间的差别，最后是JWT在Go上的使用案例。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="⚒认证与授权--cookie|session|token|JWT">
+<meta property="og:url" content="https://opengxj.github.io/2022/07/19/%E8%AE%A4%E8%AF%81%E4%B8%8E%E6%8E%88%E6%9D%83/index.html">
+<meta property="og:site_name" content="PEngxJ的小破站">
+<meta property="og:description" content="用户认证与授权是一个系统最基本的功能，下面我们一起了解下常见的解决方案的特性与他们相互间的差别，最后是JWT在Go上的使用案例。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s1.ax1x.com/2022/07/19/j7VYHP.png">
+<meta property="article:published_time" content="2022-07-19T09:21:33.000Z">
+<meta property="article:modified_time" content="2022-07-27T03:22:20.421Z">
+<meta property="article:author" content="PEngxJ">
+<meta property="article:tag" content="docker">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s1.ax1x.com/2022/07/19/j7VYHP.png">
+  
+  
+  
+  <title>⚒认证与授权--cookie|session|token|JWT - PEngxJ的小破站</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"opengxj.github.io","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>PEngxJ的小破站</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://s1.ax1x.com/2022/07/19/j7VYHP.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="⚒认证与授权--cookie|session|token|JWT"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-07-19 17:21" pubdate>
+          2022年7月19日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          48 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">⚒认证与授权--cookie|session|token|JWT</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>用户认证与授权是一个系统最基本的功能，下面我们一起了解下常见的解决方案的特性与他们相互间的差别，最后是JWT在Go上的使用案例。</p>
+<span id="more"></span>
+
+<h1 id="😀认证与授权："><a href="#😀认证与授权：" class="headerlink" title="😀认证与授权："></a>😀认证与授权：</h1><blockquote>
+<p>常见的解决方案有cookie、session、token</p>
+<p>在知乎上看到有人用了一个很秒的例子来描述这三个东西👍：在学校或公司，入学入职的那一天，会录入你的身份、账户信息，然后给你发个卡，今后在园区内，你的门禁、打卡、消费都只需要这张卡。</p>
+</blockquote>
+<h2 id="😁Cookie："><a href="#😁Cookie：" class="headerlink" title="😁Cookie："></a>😁Cookie：</h2><h3 id="特点："><a href="#特点：" class="headerlink" title="特点："></a>特点：</h3><ul>
+<li>保存在客户端</li>
+<li>不可跨域，每个Cookie会被绑定在单一域名下，无法在别的域名下使用</li>
+</ul>
+<h3 id="属性（1-⑥）："><a href="#属性（1-⑥）：" class="headerlink" title="属性（1+⑥）："></a>属性（1+⑥）：</h3><ul>
+<li><p><strong>键值对</strong>：在Cookie中设置自定义的值，eg：<code>id=&quot;123456&quot;</code></p>
+</li>
+<li><p><strong>Cookie的域：</strong>在响应首部的Set-Cookie添加domain属性，来控制哪些站点能看到这个Cookie。eg：<code>Set-Cookie: name=&quot;Peng&quot;;domain=&quot;m.zhuanzhuan.58.com&quot;</code>，如果用户访问的是m.zhuanzhuan.58.com，或者m.zhuanzhuan.58.com&#x2F;user 则都可以，而如果是<a target="_blank" rel="noopener" href="http://www.aaa.com(非zhuanzhuan.58.com)就不会看到这个cookie./">www.aaa.com(非zhuanzhuan.58.com)就不会看到这个Cookie。</a></p>
+</li>
+<li><p><strong>Cookie的路径Path：</strong>通过添加Path属性可以在特定的路径（这个属性设置的Url和带有这个前缀的Url路径都是有效的）下获得Cookie。</p>
+</li>
+<li><p><strong>Secure：</strong>设置了属性Secure，<code>Set-Cookie: name=&quot;Peng&quot;;domain=&quot;m.zhuanzhuan.58.com&quot;;Secure</code>，则这个Cookie只有在https协议加密的情况下才会发送给客户端</p>
+</li>
+<li><p>**HTTP only:**设置该属性后，则无法通过JS脚本来获得Cookie。</p>
+</li>
+<li><p><strong>Expires：</strong>设置Cookie的过期时间，GMT格式，到达该时间后Cookie会自动失效。</p>
+</li>
+<li><p><strong>max-age：</strong>在HTTP1.1中定义的，优先级高于Expires，表示Cookie的有效期，单位为秒，当值为正数时表示再过去n秒后该Cookie失效，当值为负数时，表示该Cookie为临时Cookie，在浏览器退出后该Cookie则失效，如果值为0则表示取消该Cookie。默认为-1。</p>
+</li>
+</ul>
+<h3 id="过程："><a href="#过程：" class="headerlink" title="过程："></a>过程：</h3><p><img src="https://mmbiz.qpic.cn/mmbiz_png/RXvHpViaz3Eol34Ohsn3ibXzVibBrSYHMczem1p6fiah73MPbASqSThJhoWAjia6rDcNbTCoQniaByxUIpEZniboAvaOw/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1" srcset="/img/loading.gif" lazyload></p>
+<ol>
+<li>用户输入用户名，密码（或其它认证方式）到服务器。</li>
+<li>服务器认证成功后，就会利用Set-cookie的头部字段，将Cookie返回给客户端。</li>
+<li>客户端下一次发起请求时，请求首部则会带上这个Cookie</li>
+<li>服务器通过客户端发来的Cookie，便能知道发出该请求的用户，并决定是否通过</li>
+</ol>
+<h2 id="Session-😜"><a href="#Session-😜" class="headerlink" title="Session:😜"></a>Session:😜</h2><blockquote>
+<p>对应于Session就是，其实你的卡上只存了一个id（可能是你的学号），刷的时候物业系统就会去查你的信息、账户，再决定“这个门你能不能进”“这个鸡腿去哪个账户扣钱”</p>
+</blockquote>
+<h3 id="特点：-1"><a href="#特点：-1" class="headerlink" title="特点："></a>特点：</h3><ul>
+<li>有重要信息（用户信息，Session状态等）的Session保存在服务器中，而会生成一个SessionId给客户端保存。</li>
+<li>一般基于Cookie实现。</li>
+</ul>
+<h3 id="过程：-1"><a href="#过程：-1" class="headerlink" title="过程："></a>过程：</h3><p><img src="https://pic3.zhimg.com/80/v2-18bd4826103a35c3ef4d99742ad1bd12_1440w.jpg" srcset="/img/loading.gif" lazyload></p>
+<ol>
+<li>用户输入用户名，密码（或其它认证方式）到服务器。</li>
+<li>服务器认证成功后，在服务器端生成一个Session，保存在文件或者内存或缓存中，然后返回给客户端一个SessionId，SessionId会被客户端保存在Cookie上。</li>
+<li>客户端下一次发起请求时，会自动带上Cookie，Cookie中会携带SessionId。</li>
+<li>服务器接受到Cookie后，检查SessionId的有效性后，决定是否通过。</li>
+</ol>
+<h2 id="😋Token："><a href="#😋Token：" class="headerlink" title="😋Token："></a>😋Token：</h2><blockquote>
+<p>对应于Token就是，在比较早之前，在没有校园卡技术以前，我们都靠学生证。门卫小哥直接对照我和学生证上的脸，确认学生证有效期、年纪等信息，就可以放行了。</p>
+</blockquote>
+<h3 id="特点：-2"><a href="#特点：-2" class="headerlink" title="特点："></a>特点：</h3><ul>
+<li>服务器不用再存储信息，减少服务器的压力。</li>
+<li>Token保存在客户端，服务器只需检验Token的有效性</li>
+</ul>
+<h3 id="过程：-2"><a href="#过程：-2" class="headerlink" title="过程："></a>过程：</h3><p><img src="https://pic2.zhimg.com/80/v2-45c53c27a611d78c489a25f3496c7625_1440w.jpg" srcset="/img/loading.gif" lazyload></p>
+<ol>
+<li>用户输入用户名，密码（或其它认证方式）到服务器。</li>
+<li>服务器认证成功后，在服务器端生成一个Token，这里展示的是通过Cookie传回token,token里面包括了基本的用户信息。</li>
+<li>客户端保存Token后，下次请求时会带上Token</li>
+<li>服务器检验Token的有效性后，决定是否通过。</li>
+</ol>
+<p><strong>考虑到编码，防篡改等问题我们直接讲Token的一个实践JWT（Json Web Token）</strong></p>
+<h2 id="JWT"><a href="#JWT" class="headerlink" title="JWT:"></a>JWT:</h2><p><img src="C:\Users\57849\AppData\Roaming\Typora\typora-user-images\image-20220722172608892.png" srcset="/img/loading.gif" lazyload alt="image-20220722172608892"></p>
+<center>一个完整的JWT的结构</center>
+
+<h3 id="特点：-3"><a href="#特点：-3" class="headerlink" title="特点："></a>特点：</h3><ul>
+<li>继承上面Token的优势，进一步地改善了编码，防篡改的问题。</li>
+</ul>
+<h3 id="三大组成："><a href="#三大组成：" class="headerlink" title="三大组成："></a>三大组成：</h3><p><strong>Header：</strong></p>
+<p>Header主要保存了这个JWT的元数据，主要就是两个部分:<code>alg</code>和<code>typ</code>，<code>alg</code>属性表示签名的算法(algorithm),默认是HMAC SHA256 简写为HS256，<code>typ</code>表示Token的类型，JWT则为JWT。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs json"><span class="hljs-punctuation">&#123;</span><br>	<span class="hljs-attr">&quot;alg&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;HS256&quot;</span><span class="hljs-punctuation">,</span><br>	<span class="hljs-attr">&quot;typ&quot;</span><span class="hljs-punctuation">:</span><span class="hljs-string">&quot;JWT&quot;</span><br><span class="hljs-punctuation">&#125;</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>Payload：</strong></p>
+<p>Payload则是存放数据的地方，JWT规定了7个官方字段，供选用。</p>
+<ul>
+<li>iss (issuer)：签发人</li>
+<li>exp (expiration time)：过期时间</li>
+<li>sub (subject)：主题</li>
+<li>aud (audience)：受众</li>
+<li>nbf (Not Before)：生效时间</li>
+<li>iat (Issued At)：签发时间</li>
+<li>jti (JWT ID)：编号</li>
+</ul>
+<p>我们也可以自己加入一些私有字段。</p>
+<p><strong>这里要注意的是：</strong>虽说我们后面有签名的环节，但那只是为了防止篡改，上面两个部分我们采用的base64UrlEncode编码方法是可以通过防编码出来的，所以重要数据不能放在Payload中。</p>
+<p><strong>Signature:</strong></p>
+<p>在上面Token的部分你可能就有察觉到，我们这次是将用户的信息放在Token里面保存到Cookie中的，这里就存在我们的Token信息被读取，被人用来伪装的可能性，所以就加了签名这一步骤，服务器自己保存了一把密钥，这样就算别人窃取了信息，也无法进行签名，进行伪装。</p>
+<p><strong>首先，需要指定一个密钥（secret）。这个密钥只有服务器才知道，不能泄露给用户</strong>。然后，使用 Header 里面指定的签名算法（默认是 HMAC SHA256），按照下面的公式产生签名。</p>
+<figure class="highlight scss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs scss"><span class="hljs-built_in">HMACSHA256</span>(<br>  base64UrlEncode(header) + &quot;.&quot; +<br>  <span class="hljs-built_in">base64UrlEncode</span>(payload),<br>  secret)<br></code></pre></td></tr></table></figure>
+
+<p>算出签名以后，把 Header、Payload、Signature 三个部分拼成一个字符串，每个部分之间用”点”（<code>.</code>）分隔，就可以返回给用户。</p>
+<h3 id="过程：-3"><a href="#过程：-3" class="headerlink" title="过程："></a>过程：</h3><ol>
+<li>用户输入用户名，密码（或其它认证方式）到服务器。</li>
+<li>服务器认证成功后，生成一个JWT，返回给客户端，客户端将会保存JWT。</li>
+<li>客户端下一次发起请求时会带上JWT</li>
+<li>服务器用自己的私钥解析客户端发送过来的JWT，决定是否通过</li>
+</ol>
+<h2 id="JWT在Go中的使用案例："><a href="#JWT在Go中的使用案例：" class="headerlink" title="JWT在Go中的使用案例："></a>JWT在Go中的使用案例：</h2><p>首先go get 一下✨</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">go</span> get github.com/dgrijalva/jwt-<span class="hljs-keyword">go</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="获取JWT："><a href="#获取JWT：" class="headerlink" title="获取JWT："></a>获取JWT：</h3><p>根据前面的讲解，我们已经了解到JWT的数据结构，它就是由两个编码过的json文件加一个签名组成。那我们要做的就是拼装这三个部分。</p>
+<p><strong>Header：</strong></p>
+<p>这个部分包含两个字段，这两个字段都不用我们填，会由你选择的签名算法自动填写好。</p>
+<p><strong>Payload：</strong>（获得Token对象）</p>
+<p>首先我们看下<code>jwt.StandardClaims</code></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs Go"><span class="hljs-keyword">type</span> StandardClaims <span class="hljs-keyword">struct</span> &#123;<br>	Audience  <span class="hljs-type">string</span> <span class="hljs-string">`json:&quot;aud,omitempty&quot;`</span><br>	ExpiresAt <span class="hljs-type">int64</span>  <span class="hljs-string">`json:&quot;exp,omitempty&quot;`</span><br>	Id        <span class="hljs-type">string</span> <span class="hljs-string">`json:&quot;jti,omitempty&quot;`</span><br>	IssuedAt  <span class="hljs-type">int64</span>  <span class="hljs-string">`json:&quot;iat,omitempty&quot;`</span><br>	Issuer    <span class="hljs-type">string</span> <span class="hljs-string">`json:&quot;iss,omitempty&quot;`</span><br>	NotBefore <span class="hljs-type">int64</span>  <span class="hljs-string">`json:&quot;nbf,omitempty&quot;`</span><br>	Subject   <span class="hljs-type">string</span> <span class="hljs-string">`json:&quot;sub,omitempty&quot;`</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到这就是我们上面所说的官方提供的几个可选的字段，在Go中我们使用常用的方法–结构体组合来实现添加我们想要的字段，例如：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">type</span> Claims <span class="hljs-keyword">struct</span> &#123;<br>	UserId <span class="hljs-type">int64</span><br>	jwt.StandardClaims<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>然后我们把这些字段填充完整，就可以得到Token了。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs css">claims := &amp;Claims&#123;<br>    UserId: user.UserInfoId,<br>    StandardClaims: jwt.StandardClaims&#123;<br>        ExpiresAt: expirationTime.<span class="hljs-built_in">Unix</span>(),<br>        IssuedAt:  time.<span class="hljs-built_in">Now</span>().<span class="hljs-built_in">Unix</span>(),<br>        Issuer:    <span class="hljs-string">&quot;douyin_pro_131&quot;</span>,<br>        Subject:   <span class="hljs-string">&quot;L_B__&quot;</span>,<br>    &#125;&#125;<br>token := jwt.<span class="hljs-built_in">NewWithClaims</span>(jwt.SigningMethodHS256, claims)<br><br></code></pre></td></tr></table></figure>
+
+<p><strong>Signature:</strong></p>
+<p>上面获得Token对象后，调用<code>jwt.SignedString()</code>，并传入自己服务器保存的密钥（一个 <code>byte[]</code>），就会自动完成Signature部分的编写和对上面三个部分分别进行base64url编码，再整合成一个最终的字符串返回。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs go">jwtKey:=[]<span class="hljs-type">byte</span>(<span class="hljs-string">&quot;我的密钥&quot;</span>)<br>tokenString,err:=token.SignedString(jwtKey)<br></code></pre></td></tr></table></figure>
+
+<h3 id="验证JWT："><a href="#验证JWT：" class="headerlink" title="验证JWT："></a>验证JWT：</h3><p>以常用的Web框架Gin为例，我们会把这个部分放到中间件那里使用。</p>
+<p>解析Token：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">ParseToken</span><span class="hljs-params">(tokenString <span class="hljs-type">string</span>)</span></span> (*MyClaims, <span class="hljs-type">error</span>) &#123;<br>    <span class="hljs-comment">// 验证token是否是我们自己签发的</span><br>	token, err := jwt.ParseWithClaims(tokenString, &amp;MyClaims&#123;&#125;, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(token *jwt.Token)</span></span> (i <span class="hljs-keyword">interface</span>&#123;&#125;, err <span class="hljs-type">error</span>) &#123;<br>		<span class="hljs-keyword">return</span> jwtKey, <span class="hljs-literal">nil</span><br>	&#125;)<br>	<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>		<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>, err<br>	&#125;<br>	<span class="hljs-keyword">if</span> claims, ok := token.Claims.(*MyClaims); ok &amp;&amp; token.Valid &#123; <span class="hljs-comment">// 校验token</span><br>		<span class="hljs-keyword">return</span> claims, <span class="hljs-literal">nil</span><br>	&#125;<br>	<span class="hljs-keyword">return</span> <span class="hljs-literal">nil</span>, errors.New(<span class="hljs-string">&quot;invalid token&quot;</span>)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>用于中间件中：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">JWTAuthMiddleware</span><span class="hljs-params">()</span></span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>	<span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(c *gin.Context)</span></span> &#123;<br>		<span class="hljs-comment">// 客户端携带Token有三种方式 1.放在请求头 2.放在请求体 3.放在URI</span><br>		<span class="hljs-comment">// 这里假设Token放在Header的Authorization中，并使用Bearer开头</span><br>		<span class="hljs-comment">// 这里的具体实现方式要依据你的实际业务情况决定</span><br>		authHeader := c.Query(<span class="hljs-string">&quot;token&quot;</span>)<br>		fmt.Println(authHeader)<br>		<span class="hljs-keyword">if</span> authHeader == <span class="hljs-string">&quot;&quot;</span> &#123;<br>			authHeader = c.PostForm(<span class="hljs-string">&quot;token&quot;</span>)<br>			fmt.Println(authHeader)<br>		&#125;<br><br>		<span class="hljs-keyword">if</span> authHeader == <span class="hljs-string">&quot; &quot;</span> &#123;<br>			c.JSON(http.StatusOK, service.UserResponse&#123;<br>				Response: service.Response&#123;StatusCode: <span class="hljs-number">1</span>&#125;,<br>			&#125;)<br>			c.Abort()<br>			<span class="hljs-keyword">return</span><br>		&#125;<br><br>		mc, err := app.ParseToken(authHeader)  <span class="hljs-comment">//就是调用上面的ParseToken</span><br>		<span class="hljs-keyword">if</span> err != <span class="hljs-literal">nil</span> &#123;<br>			c.JSON(http.StatusOK, service.UserResponse&#123;<br>				Response: service.Response&#123;StatusCode: <span class="hljs-number">1</span>&#125;,<br>			&#125;)<br>			c.Abort()<br>			<span class="hljs-keyword">return</span><br>		&#125;<br>		fmt.Println(mc.UserId)<br>		<span class="hljs-comment">// 将当前请求的username信息保存到请求的上下文c上</span><br>		c.Set(<span class="hljs-string">&quot;user_id&quot;</span>, mc.UserId)<br>		c.Next() <span class="hljs-comment">// 后续的处理函数可以用过c.Get(&quot;user_id&quot;)来获取当前请求的用户信息</span><br><br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="JWT的一些问题："><a href="#JWT的一些问题：" class="headerlink" title="JWT的一些问题："></a>JWT的一些问题：</h3><ol>
+<li><p>JWT 的最大缺点是，由于服务器不保存 session 状态，因此无法在使用过程中废止某个 token，或者更改 token 的权限。也就是说，一旦 JWT 签发了，在到期之前就会始终有效，除非服务器部署额外的逻辑。</p>
+</li>
+<li><p>JWT 本身包含了认证信息，一旦泄露，任何人都可以获得该令牌的所有权限。为了减少盗用，JWT 的有效期应该设置得比较短。对于一些比较重要的权限，使用时应该再次对用户进行认证。</p>
+</li>
+<li><p>为了减少盗用，JWT 不应该使用 HTTP 协议明码传输，要使用 HTTPS 协议传输。</p>
+</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%89%93%E6%80%AA%E5%8D%87%E7%BA%A7/" class="category-chain-item">打怪升级</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%89%93%E6%80%AA%E5%8D%87%E7%BA%A7/%E6%90%9E%E5%AE%9Adocker/" class="category-chain-item">搞定docker</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/docker/">#docker</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>⚒认证与授权--cookie|session|token|JWT</div>
+      <div>https://opengxj.github.io/2022/07/19/认证与授权/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>PEngxJ</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年7月19日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/07/19/Docker%E7%AE%80%E4%BB%8B%E5%8F%8A%E5%BF%AB%E9%80%9F%E4%BD%BF%E7%94%A8/" title="搞定Docker--快速入门">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">搞定Docker--快速入门</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/06/28/The-First-Blog/" title="The First Blog">
+                        <span class="hidden-mobile">The First Blog</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

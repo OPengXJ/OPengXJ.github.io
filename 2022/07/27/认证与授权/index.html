@@ -23,13 +23,13 @@
 <meta property="og:site_name" content="PEngxJ的小破站">
 <meta property="og:description" content="用户认证与授权是一个系统最基本的功能，下面我们一起了解下常见的解决方案的特性与他们相互间的差别，最后是JWT在Go上的使用案例。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://pic.rmb.bdstatic.com/bjh/bafc977910a1293a4538ec82d25f6b20.png">
+<meta property="og:image" content="https://pic.rmb.bdstatic.com/bjh/215e445ecc2268e5adb843fdbb7d9061.jpeg">
 <meta property="article:published_time" content="2022-07-27T03:20:33.000Z">
-<meta property="article:modified_time" content="2022-07-27T03:34:04.477Z">
+<meta property="article:modified_time" content="2022-07-27T03:43:39.406Z">
 <meta property="article:author" content="PEngxJ">
-<meta property="article:tag" content="docker">
+<meta property="article:tag" content="认证与授权">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://pic.rmb.bdstatic.com/bjh/bafc977910a1293a4538ec82d25f6b20.png">
+<meta name="twitter:image" content="https://pic.rmb.bdstatic.com/bjh/215e445ecc2268e5adb843fdbb7d9061.jpeg">
   
   
   
@@ -192,7 +192,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('https://pic.rmb.bdstatic.com/bjh/bafc977910a1293a4538ec82d25f6b20.png') no-repeat center center; background-size: cover;">
+     style="background: url('https://pic.rmb.bdstatic.com/bjh/215e445ecc2268e5adb843fdbb7d9061.jpeg') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -302,7 +302,7 @@
 <li><p><strong>max-age：</strong>在HTTP1.1中定义的，优先级高于Expires，表示Cookie的有效期，单位为秒，当值为正数时表示再过去n秒后该Cookie失效，当值为负数时，表示该Cookie为临时Cookie，在浏览器退出后该Cookie则失效，如果值为0则表示取消该Cookie。默认为-1。</p>
 </li>
 </ul>
-<h3 id="过程："><a href="#过程：" class="headerlink" title="过程："></a>过程：</h3><p><img src="https://mmbiz.qpic.cn/mmbiz_png/RXvHpViaz3Eol34Ohsn3ibXzVibBrSYHMczem1p6fiah73MPbASqSThJhoWAjia6rDcNbTCoQniaByxUIpEZniboAvaOw/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1" srcset="/img/loading.gif" lazyload></p>
+<h3 id="过程："><a href="#过程：" class="headerlink" title="过程："></a>过程：</h3><p><img src="https://pic.rmb.bdstatic.com/bjh/9005b6a0f0e19e96d433046bbf434448.png" srcset="/img/loading.gif" lazyload></p>
 <ol>
 <li>用户输入用户名，密码（或其它认证方式）到服务器。</li>
 <li>服务器认证成功后，就会利用Set-cookie的头部字段，将Cookie返回给客户端。</li>
@@ -338,7 +338,7 @@
 <li>服务器检验Token的有效性后，决定是否通过。</li>
 </ol>
 <p><strong>考虑到编码，防篡改等问题我们直接讲Token的一个实践JWT（Json Web Token）</strong></p>
-<h2 id="JWT"><a href="#JWT" class="headerlink" title="JWT:"></a>JWT:</h2><p><img src="C:\Users\57849\AppData\Roaming\Typora\typora-user-images\image-20220722172608892.png" srcset="/img/loading.gif" lazyload alt="image-20220722172608892"></p>
+<h2 id="JWT"><a href="#JWT" class="headerlink" title="JWT:"></a>JWT:</h2><p><img src="https://pic.rmb.bdstatic.com/bjh/f5b29a28f7c421c77022122c1d291c6c.png" srcset="/img/loading.gif" lazyload alt="image-20220722172608892"></p>
 <center>一个完整的JWT的结构</center>
 
 <h3 id="特点：-3"><a href="#特点：-3" class="headerlink" title="特点："></a>特点：</h3><ul>
@@ -430,12 +430,12 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E6%89%93%E6%80%AA%E5%8D%87%E7%BA%A7/" class="category-chain-item">打怪升级</a>
+  <a href="/categories/Go/" class="category-chain-item">Go</a>
   
   
     <span>></span>
     
-  <a href="/categories/%E6%89%93%E6%80%AA%E5%8D%87%E7%BA%A7/%E6%90%9E%E5%AE%9Adocker/" class="category-chain-item">搞定docker</a>
+  <a href="/categories/Go/%E5%B8%B8%E7%94%A8%E4%B8%AD%E9%97%B4%E4%BB%B6/" class="category-chain-item">常用中间件</a>
   
   
 
@@ -452,7 +452,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/docker/">#docker</a>
+        <a href="/tags/%E8%AE%A4%E8%AF%81%E4%B8%8E%E6%8E%88%E6%9D%83/">#认证与授权</a>
       
     </div>
   

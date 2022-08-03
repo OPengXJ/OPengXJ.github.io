@@ -1,0 +1,859 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/3dd.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="PEngxJ">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="😃搞定Docker–进阶使用在快速入门学习完后，我们开始来学习些真实工作场景下，需要了解学习的技术。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="😃搞定Docker--进阶使用">
+<meta property="og:url" content="https://opengxj.github.io/2022/07/30/%E6%90%9E%E5%AE%9ADocker--%E8%BF%9B%E9%98%B6%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:site_name" content="PEngxJ的小破站">
+<meta property="og:description" content="😃搞定Docker–进阶使用在快速入门学习完后，我们开始来学习些真实工作场景下，需要了解学习的技术。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic.rmb.bdstatic.com/bjh/462f9c6792493d103beb06dfb4f4dc46.jpeg">
+<meta property="article:published_time" content="2022-07-30T08:35:33.000Z">
+<meta property="article:modified_time" content="2022-08-03T06:31:58.224Z">
+<meta property="article:author" content="PEngxJ">
+<meta property="article:tag" content="docker">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://pic.rmb.bdstatic.com/bjh/462f9c6792493d103beb06dfb4f4dc46.jpeg">
+  
+  
+  
+  <title>😃搞定Docker--进阶使用 - PEngxJ的小破站</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"opengxj.github.io","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>PEngxJ的小破站</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://pic.rmb.bdstatic.com/bjh/462f9c6792493d103beb06dfb4f4dc46.jpeg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="😃搞定Docker--进阶使用"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-07-30 16:35" pubdate>
+          2022年7月30日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          56 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">😃搞定Docker--进阶使用</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="😃搞定Docker–进阶使用"><a href="#😃搞定Docker–进阶使用" class="headerlink" title="😃搞定Docker–进阶使用"></a>😃搞定Docker–进阶使用</h1><p>在快速入门学习完后，我们开始来学习些真实工作场景下，需要了解学习的技术。</p>
+<span id="more"></span>
+
+<p>在快速入门那一节我们使用的镜像都是从公共的docker仓库拉取的，而对于一些真实使用的场景，我们常常需要将整个项目的环境都配置到一个镜像中，给使用者一个开箱即用的体验。这里就需要镜像构建的技术。通常有以下两种方式：</p>
+<ul>
+<li><code>docker commit</code>：从已有容器创建一个新的镜像。</li>
+<li><code>docker build</code>：配合 Dockerfile 文件创建镜像。</li>
+</ul>
+<h2 id="Commit命令创建镜像："><a href="#Commit命令创建镜像：" class="headerlink" title="Commit命令创建镜像："></a>Commit命令创建镜像：</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker commit [OPTIONS] 容器名 [创建后的镜像名[:TAG]]<br></code></pre></td></tr></table></figure>
+
+<p> <strong>参数说明：</strong></p>
+<ul>
+<li><strong>-a</strong>：镜像作者</li>
+<li><strong>-m</strong>：提交时的说明</li>
+<li><strong>-p</strong>：在容器commit时，将容器暂停</li>
+<li>TAG虽然是可选，但强烈建议还是加上比较好</li>
+</ul>
+<h3 id="一个栗子💭"><a href="#一个栗子💭" class="headerlink" title="一个栗子💭"></a>一个栗子💭</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">1.先拉取一个镜像<br>docker pull centos:7<br>2.创建一个容器<br>docker run -di --name centos centos:7<br>3.进入容器<br>docker <span class="hljs-built_in">exec</span> -it centos bash<br>4.配置Go环境，和mysql到里面（docker <span class="hljs-built_in">cp</span> 拷贝、解压）<br>5.创建镜像<br>docker commit -a <span class="hljs-string">&quot;PEngxJ&quot;</span> -m <span class="hljs-string">&quot;Go and mysql&quot;</span> centos mycentos:7<br>6.根据自己的镜像创建容器<br>docker run -di --name mycentos mycentos:7 <br><br></code></pre></td></tr></table></figure>
+
+<h2 id="Dockerfile方式："><a href="#Dockerfile方式：" class="headerlink" title="Dockerfile方式："></a>Dockerfile方式：</h2><blockquote>
+<p>总体来说就是把上面一个个的步骤写到一个Dockerfile文件中，然后运行这个文件，它就会自动帮我们完成所有步骤，然后创建相应的容器。</p>
+</blockquote>
+<p>在使用该方式前，我们得先学一学Dockerfile的常用命令</p>
+<h3 id="FROM："><a href="#FROM：" class="headerlink" title="FROM："></a>FROM：</h3><p><strong>指定该镜像是基于哪个镜像构建的</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">eg:<br>FROM centos:7<br></code></pre></td></tr></table></figure>
+
+<h3 id="RUN"><a href="#RUN" class="headerlink" title="RUN:"></a>RUN:</h3><p><strong>执行后面跟着的命令行命令</strong>,有以下两种格式：</p>
+<p>shell格式：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">RUN</span><span class="language-bash"> &lt;命令行命令&gt;</span><br><span class="hljs-comment">#&lt;命令行命令&gt;和在终端上的命令一样</span><br>eg:<br><span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">echo</span> <span class="hljs-string">&#x27;RUN&#x27;</span> &gt; /usr/local/run.text</span><br></code></pre></td></tr></table></figure>
+
+<p>exec格式：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">RUN</span><span class="language-bash"> [<span class="hljs-string">&quot;可执行文件&quot;</span>,<span class="hljs-string">&quot;参数1&quot;</span>,<span class="hljs-string">&quot;参数2&quot;</span>]</span><br>eg：<br><span class="hljs-keyword">RUN</span><span class="language-bash"> [<span class="hljs-string">&quot;./main.go&quot;</span>,<span class="hljs-string">&quot;hello&quot;</span>,<span class="hljs-string">&quot;world&quot;</span>]</span><br><span class="hljs-comment">#相当于 RUN ./main.go hello world</span><br></code></pre></td></tr></table></figure>
+
+<p>**注意:**Dockerfile的指令每执行一次都会在docker上新建一层（之前镜像分层的概念），所以过多无意义的层必会导致生成的镜像的膨胀。所以常采用以下方式：</p>
+<p>不用：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">FROM</span> centos<br><span class="hljs-keyword">RUN</span><span class="language-bash"> yum -y install wget</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> wget -O redis.tar.gz <span class="hljs-string">&quot;http://download.redis.io/releases/redis-5.0.3.tar.gz&quot;</span></span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> tar -xvf redis.tar.gz</span><br></code></pre></td></tr></table></figure>
+
+<p>而用：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">FROM</span> centos<br><span class="hljs-keyword">RUN</span><span class="language-bash"> yum -y install wget \</span><br><span class="language-bash">    &amp;&amp; wget -O redis.tar.gz <span class="hljs-string">&quot;http://download.redis.io/releases/redis-5.0.3.tar.gz&quot;</span> \</span><br><span class="language-bash">    &amp;&amp; tar -xvf redis.tar.gz</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="COPY"><a href="#COPY" class="headerlink" title="COPY:"></a>COPY:</h3><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">COPY</span><span class="language-bash"> [--<span class="hljs-built_in">chown</span>=&lt;user&gt;:&lt;group&gt;] &lt;源路径1&gt;...  &lt;目标路径&gt;</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> [--<span class="hljs-built_in">chown</span>=&lt;user&gt;:&lt;group&gt;] [<span class="hljs-string">&quot;&lt;源路径1&gt;&quot;</span>,...  <span class="hljs-string">&quot;&lt;目标路径&gt;&quot;</span>]</span><br></code></pre></td></tr></table></figure>
+
+<p>[–chown&#x3D;&lt;user&gt;:&lt;group&gt;]：可选参数，用户改变复制到容器内文件的拥有者和属组</p>
+<p>**&lt;源路径&gt;**：源文件或者源目录，这里可以是通配符表达式，其通配符规则要满足 Go 的 filepath.Match 规则。例如：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">COPY</span><span class="language-bash"> hom* /mydir/</span><br><span class="hljs-keyword">COPY</span><span class="language-bash"> hom?.txt /mydir/</span><br></code></pre></td></tr></table></figure>
+
+<p>**&lt;目标路径&gt;**：容器内的指定路径，该路径不用事先建好，路径不存在的话，会自动创建。</p>
+<h3 id="ADD"><a href="#ADD" class="headerlink" title="ADD:"></a>ADD:</h3><p>ADD 指令和 COPY 的使用格类似（同样需求下，官方推荐使用 COPY）。功能也类似，不同之处如下：</p>
+<p>区别：ADD命令，如果复制的内容是压缩包的话，则它会自动解压，当然这样也带来一个不好的地方就是它不能用来复制压缩包</p>
+<h3 id="CMD"><a href="#CMD" class="headerlink" title="CMD:"></a>CMD:</h3><p>和RUN一样用与执行命令，不过他们各自的执行时间不同。RUN在<code>docker build</code>的时候执行，而CMD是在<code>docker run</code>时执行的。</p>
+<p>介于这点它常用于为启动的容器指定默认的启动程序，如果想让容器一直运行着那就必须得让这个程序在<strong>前台运行</strong>，不然根据docker的规则当命令运行结束后docker就退出了。</p>
+<p><strong>注意：</strong></p>
+<ol>
+<li>CMD 指令指定的程序可被 docker run 命令行参数中指定要运行的程序所覆盖。</li>
+</ol>
+<p>eg：<code>docker run --name nginx -P nginx echo &#39;hello&#39;</code>如果是这样的话，那就会使Dockerfile中CMD的失效。</p>
+<ol start="2">
+<li>如果 Dockerfile 中如果存在多个 CMD 指令，仅最后一个生效。</li>
+</ol>
+<p>格式：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">CMD</span><span class="language-bash"> &lt;shell 命令&gt; </span><br><span class="hljs-keyword">CMD</span><span class="language-bash"> [<span class="hljs-string">&quot;&lt;可执行文件或命令&gt;&quot;</span>,<span class="hljs-string">&quot;&lt;param1&gt;&quot;</span>,<span class="hljs-string">&quot;&lt;param2&gt;&quot;</span>,...] </span><br><span class="hljs-keyword">CMD</span><span class="language-bash"> [<span class="hljs-string">&quot;&lt;param1&gt;&quot;</span>,<span class="hljs-string">&quot;&lt;param2&gt;&quot;</span>,...]  <span class="hljs-comment"># 该写法是为 ENTRYPOINT 指令指定的程序提供默认参数</span></span><br></code></pre></td></tr></table></figure>
+
+<p>推荐使用第二种格式，执行过程比较明确。第一种格式实际上在运行的过程中也会自动转换成第二种格式运行，并且默认可执行文件是 sh。</p>
+<h3 id="ENTRYPOINT"><a href="#ENTRYPOINT" class="headerlink" title="ENTRYPOINT:"></a>ENTRYPOINT:</h3><p>和上面CMD类型，在<code>docker run</code>时执行命令，但不同的是它不会被<code>docker run</code>跟着的参数中的命令所覆盖，而是把这些“命令”做为参数给ENTRYPOINT设置的命令使用。</p>
+<p>当然, 如果运行 docker run 时使用了 –entrypoint 选项，将覆盖 ENTRYPOINT 指令指定的程序。</p>
+<p><strong>优点</strong>：在执行 docker run 的时候可以指定 ENTRYPOINT 运行所需的参数。（ENTRYPOINT设置定参后，后面我们可以在docker run时自己指定变参，可以看后面例子）</p>
+<p><strong>注意</strong>：如果 Dockerfile 中如果存在多个 ENTRYPOINT 指令，仅最后一个生效。</p>
+<p>格式：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="hljs-string">&quot;&lt;executeable&gt;&quot;</span>,<span class="hljs-string">&quot;&lt;param1&gt;&quot;</span>,<span class="hljs-string">&quot;&lt;param2&gt;&quot;</span>,...]</span><br></code></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<p>假设已通过 Dockerfile 构建了 nginx:test 镜像：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">FROM</span> nginx<br><br><span class="hljs-keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="hljs-string">&quot;nginx&quot;</span>, <span class="hljs-string">&quot;-c&quot;</span>] <span class="hljs-comment"># 定参</span></span><br><span class="hljs-keyword">CMD</span><span class="language-bash"> [<span class="hljs-string">&quot;/etc/nginx/nginx.conf&quot;</span>] <span class="hljs-comment"># 变参 </span></span><br></code></pre></td></tr></table></figure>
+
+<p>1、不传参运行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">docker run  nginx:<span class="hljs-built_in">test</span></span><br></code></pre></td></tr></table></figure>
+
+<p>容器内会默认运行以下命令，启动主进程。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">nginx -c /etc/nginx/nginx.conf<br></code></pre></td></tr></table></figure>
+
+<p>2、传参运行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">docker run nginx:<span class="hljs-built_in">test</span> <span class="hljs-string">&quot;/etc/nginx/new.conf&quot;</span></span><br></code></pre></td></tr></table></figure>
+
+<p>容器内执行以下命令，启动主进程(&#x2F;etc&#x2F;nginx&#x2F;new.conf:假设容器内已有此文件)</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">nginx -c /etc/nginx/new.conf<br></code></pre></td></tr></table></figure>
+
+<h3 id="ENV"><a href="#ENV" class="headerlink" title="ENV:"></a>ENV:</h3><p>设置环境变量</p>
+<p>格式：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">ENV</span> &lt;key&gt; &lt;value&gt;<br><span class="hljs-keyword">ENV</span> &lt;key1&gt;=&lt;value1&gt; &lt;key2&gt;=&lt;value2&gt;...<br></code></pre></td></tr></table></figure>
+
+<h3 id="LABLE"><a href="#LABLE" class="headerlink" title="LABLE:"></a>LABLE:</h3><p>LABEL 指令用来给镜像添加一些元数据（metadata），以键值对的形式，语法格式如下：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">LABEL</span><span class="language-bash"> &lt;key&gt;=&lt;value&gt; &lt;key&gt;=&lt;value&gt; &lt;key&gt;=&lt;value&gt; ...</span><br></code></pre></td></tr></table></figure>
+
+<p>eg:</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">LABEL</span><span class="language-bash"> image.authors=<span class="hljs-string">&quot;runoob&quot;</span></span><br></code></pre></td></tr></table></figure>
+
+<h3 id="EXPOSE"><a href="#EXPOSE" class="headerlink" title="EXPOSE:"></a>EXPOSE:</h3><p>仅仅是声明端口并不会打开</p>
+<p>作用：</p>
+<ul>
+<li>帮助镜像使用者理解这个镜像服务的守护端口，以方便配置映射。（在docker run时 -p）</li>
+<li>在运行时使用随机端口映射时，也就是 docker run -P 时，会自动随机映射 EXPOSE 的端口。</li>
+</ul>
+<p>格式：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">EXPOSE</span> &lt;端口<span class="hljs-number">1</span>&gt; [&lt;端口<span class="hljs-number">2</span>&gt;...]<br></code></pre></td></tr></table></figure>
+
+<h3 id="WORKDIR"><a href="#WORKDIR" class="headerlink" title="WORKDIR:"></a>WORKDIR:</h3><p>指定工作目录。用 WORKDIR 指定的工作目录，会在构建镜像的每一层中都存在。如果不存在，docker会自动创建。</p>
+<p>作用：</p>
+<p>WORKDIR指令为Dockerfile中在其下面的任何RUN、CMD、ENTRYPOINT、COPY和ADD指令设置工作目录。</p>
+<p><strong>怎么理解工作目录：</strong></p>
+<p>在上面的RUN我们说过，每次的RUN都会在docker上新建一层，所以就会导致后面的命令不知道前面的命令的情况。举个例子：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">cd</span> /app</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;hello&quot;</span> &gt; world.txt</span><br></code></pre></td></tr></table></figure>
+
+<p>这里我们构键完后会发现在目录&#x2F;app下找不到world.txt，而会在一个其它的地方找到这个东西，这就是上面所说的，因为下一个<code>RUN	</code>根本不会在<code>/app</code>目录下。</p>
+<p>这里我们就要用到<strong>WORKDIR</strong>了：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /app</span><br><br><span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">echo</span> <span class="hljs-string">&quot;hello&quot;</span> &gt; world.txt</span><br></code></pre></td></tr></table></figure>
+
+<p>如果你的 <code>WORKDIR</code> 指令使用的相对路径，那么所切换的路径与之前的 <code>WORKDIR</code> 有关：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /a</span><br><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> b</span><br><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> c</span><br><br><span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">pwd</span></span><br></code></pre></td></tr></table></figure>
+
+<h3 id="VOLUME"><a href="#VOLUME" class="headerlink" title="VOLUME:"></a>VOLUME:</h3><p>定义&#x3D;&#x3D;匿名&#x3D;&#x3D;数据卷</p>
+<p>格式：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">VOLUME</span><span class="language-bash"> [<span class="hljs-string">&quot;&lt;容器路径1&gt;&quot;</span>, <span class="hljs-string">&quot;&lt;容器路径2&gt;&quot;</span>...]</span><br><span class="hljs-keyword">VOLUME</span><span class="language-bash"> &lt;容器路径&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>不过我们一般通过在<code>docker run</code>时添加<code>-v</code>参数来指定挂载目录</p>
+<h3 id="docker-build"><a href="#docker-build" class="headerlink" title="docker build:"></a>docker build:</h3><p>常用的参数：</p>
+<ul>
+<li><code>-t</code>：镜像的名字及标签，通常 name:tag 或者 name 格式；可以在一次构建中为一个镜像设置多个标签。</li>
+<li><code>-f</code>：指定要使用的Dockerfile路径；</li>
+</ul>
+<h3 id="一个栗子🤖："><a href="#一个栗子🤖：" class="headerlink" title="一个栗子🤖："></a>一个栗子🤖：</h3><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">FROM</span> centos:<span class="hljs-number">7</span><br><span class="hljs-keyword">ADD</span><span class="language-bash"> go1.18.4.linux-amd64.tar.gz /usr/local/go</span><br>	&amp;&amp; Goweb /usr/home/<br><span class="hljs-keyword">ENV</span> PATH=$PATH:/usr/local/go/bin <br><span class="hljs-keyword">LABEL</span><span class="language-bash"> author=<span class="hljs-string">&quot;PEngxJ&quot;</span></span><br><span class="hljs-keyword">WORKDIR</span><span class="language-bash"> /usr/home/</span><br><span class="hljs-keyword">CMD</span><span class="language-bash"> go run /usr/home/Goweb/main.go</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="镜像迁移："><a href="#镜像迁移：" class="headerlink" title="镜像迁移："></a>镜像迁移：</h2><h3 id="备份与恢复的方式："><a href="#备份与恢复的方式：" class="headerlink" title="备份与恢复的方式："></a>备份与恢复的方式：</h3><p><strong>备份：</strong></p>
+<p>语法：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css">docker save <span class="hljs-selector-attr">[OPTIONS]</span> IMAGE <span class="hljs-selector-attr">[IMAGE...]</span><br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>-o :输出到的文件</li>
+</ul>
+<p>例子：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker save -o myubuntu.tar ubuntu:v3<br></code></pre></td></tr></table></figure>
+
+<p><strong>恢复：</strong></p>
+<p>语法:</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">docker <span class="hljs-keyword">load</span> [<span class="hljs-keyword">OPTIONS</span>]<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>-i : 指定导入的文件，代替 STDIN。</li>
+<li>-q : 精简输出信息。</li>
+</ul>
+<p>例子：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker load -i myubuntu.tar<br></code></pre></td></tr></table></figure>
+
+<h3 id="上传至私人与共有的方式："><a href="#上传至私人与共有的方式：" class="headerlink" title="上传至私人与共有的方式："></a>上传至私人与共有的方式：</h3><p>得先注册一个在dockerhub上的号。然后使用<code>docker login</code>登录，<code>docker logout</code>退出。</p>
+<h4 id="公共仓库："><a href="#公共仓库：" class="headerlink" title="公共仓库："></a>公共仓库：</h4><p><strong>上传：</strong></p>
+<ol>
+<li><p>docker tag : 标记本地镜像。</p>
+<p>语法：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker tag IMAGE[:TAG] [REGISTRYHOST/][USERNAME/]NAME[:TAG]<br></code></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">docker</span> tag hello-world:latest peng7066/test-hello-world:<span class="hljs-number">1</span>.<span class="hljs-number">0</span>.<span class="hljs-number">0</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>docker push：上传镜像。</p>
+<p>语法:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">docker push NAME[:TAG]<br></code></pre></td></tr></table></figure>
+
+<p>例子：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">docker</span> push peng7066/test-hello-world:<span class="hljs-number">1</span>.<span class="hljs-number">0</span>.<span class="hljs-number">0</span><br></code></pre></td></tr></table></figure></li>
+</ol>
+<p><strong>拉取：</strong></p>
+<ol>
+<li>docker pull：拉取镜像</li>
+</ol>
+<h4 id="私有仓库："><a href="#私有仓库：" class="headerlink" title="私有仓库："></a>私有仓库：</h4><p><strong>配置私有仓库认证：</strong></p>
+<ol>
+<li><p>生成自签名证书：</p>
+<ol>
+<li><p>创建证书目录：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">mkdir -p /usr/local/registry/certs<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>生成自签名证书命令。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">openssl req -newkey rsa:2048 -nodes -sha256 -keyout /usr/local/registry/domain.key -x509 -days 365 -out /usr/local/registry/certs/domain.crt<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><code>openssl req</code>：创建证书签名请求等功能；</li>
+<li><code>-newkey</code>：创建CSR证书签名文件和RSA私钥文件；</li>
+<li><code>rsa:2048</code>：指定创建的RSA私钥长度为2048；</li>
+<li><code>-nodes</code>：对私钥不进行加密；</li>
+<li><code>-sha256</code>：使用SHA256算法</li>
+<li><code>-keyout</code>：创建的私钥文件名称及位置</li>
+<li><code>-x509</code>：自签发证书格式</li>
+<li><code>-days</code>：证书有效期</li>
+<li><code>-out</code>：指定CSR输出文件名称及位置</li>
+</ul>
+<p>通过openssl 先生成自签名证书，运行命令后需要填写一些证书信息，里面最关键的部分是：<code>Common Name (eg,your name or your server&#39;s hostname) []:81.70.10.115</code>，这里注意填写的要是自己服务器的地址。</p>
+</li>
+</ol>
+</li>
+<li><p>生成鉴权密码文件：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">创建存储鉴权密码文件的目录</span><br>mkdir -p /usr/local/registry/auth<br><span class="hljs-meta prompt_"># </span><span class="language-bash">如果没有htpasswd 功能需要安装 htpasswd</span><br>yum install -y httpd<br><span class="hljs-meta prompt_">#</span><span class="language-bash">创建用户和密码</span><br>htpasswd -Bbn root 1234 &gt; /usr/local/registry/auth/htpasswd<br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>htpasswd 是 apache http 的基本认证文件，使用htpasswd 命令可以生成用户及密码文件</p>
+</blockquote>
+</li>
+<li><p>拉取镜像后修改配置文件</p>
+<p>修改配置文件<code>daemon.json</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">vim /etc/docker/daemon.json<br></code></pre></td></tr></table></figure>
+
+<p>添加以下字段，指明我们的私有镜像仓库的地址</p>
+<figure class="highlight prolog"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs prolog"><span class="hljs-string">&quot;insecure-registries&quot;</span>: [<span class="hljs-string">&quot;81.70.10.115:5000&quot;</span>]<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>创建私有仓库容器</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker run -di --name registry -p 5000:5000 \<br>	-v /mydata/docker_registry:/var/lib/registry \<br>	-v /usr/local/registry/certs:/certs \<br>	-v /usr/local/registry/auth:/auth \<br>	-e &quot;REGISTRY_AUTH=htpasswd&quot; \<br>	-e &quot;REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm&quot; \<br>	-e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \<br>	-e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \<br>	-e REGISTRY_HTTP_TLE_KEY=/certs/domain.key \<br>	registry<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>登录</p>
+<p>这时要指定仓库的地址</p>
+<p><code>docker login 81.70.10.115:5000</code></p>
+<p>然后就可以正常地<code>docker push</code>了</p>
+<p>退出时也要指定仓库的地址</p>
+<p><code>docker logout 81.70.10.115:5000</code></p>
+</li>
+</ol>
+<h2 id="使用自定义网络："><a href="#使用自定义网络：" class="headerlink" title="使用自定义网络："></a>使用自定义网络：</h2><blockquote>
+<p>默认的docker网络模式有三种：bridge，host，none</p>
+<p>自定义的网络就是bridge的改进版，我们可以通过容器的名称直接来通讯，而不是每次启动都会改变的ip地址</p>
+</blockquote>
+<h3 id="创建网络："><a href="#创建网络：" class="headerlink" title="创建网络："></a>创建网络：</h3><p>语法：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker network create [OPTIONS] 网络名称<br></code></pre></td></tr></table></figure>
+
+<p>重要参数：</p>
+<ul>
+<li><code>-d</code>：定义网络的驱动程序，默认为bridge</li>
+</ul>
+<h3 id="使用自定义网络：-1"><a href="#使用自定义网络：-1" class="headerlink" title="使用自定义网络："></a>使用自定义网络：</h3><p>语法：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker run --net 网络名称 镜像名称<br></code></pre></td></tr></table></figure>
+
+<h3 id="其它"><a href="#其它" class="headerlink" title="其它:"></a>其它:</h3><p><strong>断开：</strong></p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs arduino">docker network disconnect <br></code></pre></td></tr></table></figure>
+
+<blockquote>
+<p>还有个集群的部分，未完待续。。。</p>
+</blockquote>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%89%93%E6%80%AA%E5%8D%87%E7%BA%A7/" class="category-chain-item">打怪升级</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%89%93%E6%80%AA%E5%8D%87%E7%BA%A7/%E6%90%9E%E5%AE%9Adocker/" class="category-chain-item">搞定docker</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/docker/">#docker</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>😃搞定Docker--进阶使用</div>
+      <div>https://opengxj.github.io/2022/07/30/搞定Docker--进阶使用/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>PEngxJ</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年7月30日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/07/28/redis%E5%85%A5%E9%97%A8--%E7%AE%80%E5%8D%95%E5%91%BD%E4%BB%A4/" title="🎮redis入门--简单命令">
+                        <span class="hidden-mobile">🎮redis入门--简单命令</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

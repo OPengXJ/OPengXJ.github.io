@@ -1,0 +1,724 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/3dd.png">
+  <link rel="icon" href="/img/3dd.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="PEngxJ">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Go中没有可以直接判断一个元素是否在slice中的函数，所以用于判断的方法有遍历，还有改进点的构建Map，用Sort包，那到底是Map好还是Sort包好呢，我们做个单元测试就知道了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="🤗️怎样写单元测试与如何判断slice中的一个元素">
+<meta property="og:url" content="https://opengxj.github.io/2022/08/13/%E4%BB%A3%E7%A0%81%E6%B5%8B%E8%AF%95/index.html">
+<meta property="og:site_name" content="PEngxJ的小破站">
+<meta property="og:description" content="Go中没有可以直接判断一个元素是否在slice中的函数，所以用于判断的方法有遍历，还有改进点的构建Map，用Sort包，那到底是Map好还是Sort包好呢，我们做个单元测试就知道了。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/e6c9d24egy1h5550y5ugjj20cj06qq2x.jpg">
+<meta property="article:published_time" content="2022-08-13T00:20:33.000Z">
+<meta property="article:modified_time" content="2022-08-13T06:54:13.411Z">
+<meta property="article:author" content="PEngxJ">
+<meta property="article:tag" content="单元测试与性能测试">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/e6c9d24egy1h5550y5ugjj20cj06qq2x.jpg">
+  
+  
+  
+  <title>🤗️怎样写单元测试与如何判断slice中的一个元素 - PEngxJ的小破站</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"opengxj.github.io","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>PEngxJ的小破站</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://tva1.sinaimg.cn/large/e6c9d24egy1h5550y5ugjj20cj06qq2x.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="🤗️怎样写单元测试与如何判断slice中的一个元素"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-08-13 08:20" pubdate>
+          2022年8月13日 早上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          44 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">🤗️怎样写单元测试与如何判断slice中的一个元素</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>Go中没有可以直接判断一个元素是否在slice中的函数，所以用于判断的方法有遍历，还有改进点的构建Map，用Sort包，那到底是Map好还是Sort包好呢，我们做个单元测试就知道了。</p>
+<span id="more"></span>
+
+<h1 id="🤗️怎样写单元测试与如何判断slice中的一个元素"><a href="#🤗️怎样写单元测试与如何判断slice中的一个元素" class="headerlink" title="🤗️怎样写单元测试与如何判断slice中的一个元素"></a>🤗️怎样写单元测试与如何判断slice中的一个元素</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h5555r4z1xj21900u0n76.jpg" srcset="/img/loading.gif" lazyload></p>
+<h2 id="单元测试与性能测试"><a href="#单元测试与性能测试" class="headerlink" title="单元测试与性能测试"></a>单元测试与性能测试</h2><blockquote>
+<p>这里我们主要用了Go的testing包。</p>
+</blockquote>
+<p><strong>白盒测试：</strong>测试代码和要测试的代码放在同一包中，测试代码可以读取到该包中的不可导出变量，所以我们在编写需要访问到不可导出变量、函数、常量的测试代码时就要用这种方法，同时这也是较为推荐的方法。</p>
+<p><strong>黑盒测试：</strong>可以不放在同一个包中，但只能测试可导出的标示符。</p>
+<blockquote>
+<p>测试文件的规范要求：测试文件命名规范、函数名规范、变量名规范</p>
+</blockquote>
+<p>测试文件名规范：Go的测试文件名必须以_test.go结尾，因为Go就是利用这个去判断哪些是测试文件，哪些是正式文件的，我们在执行<code>go test</code>命令时，这些文件会给执行，而在构建程序时则会忽略这些文件。</p>
+<p>函数名规范：测试函数必须使用Test&#x2F;Benchmark&#x2F;Example开头，例如TestXxx、BenchmarkXxx、ExampleXxx，Xxx通常是要测试的函数名。</p>
+<p>变量名规范：Go没有对变量名有硬性的要求，但为了清晰的表达函数的实际输出和预期输出，可以将这两类输出命名为expected&#x2F;actual或者got&#x2F;want。</p>
+<h3 id="🤔单元测试："><a href="#🤔单元测试：" class="headerlink" title="🤔单元测试："></a>🤔单元测试：</h3><p>单元测试的测试用例函数以Test开头，函数参数必须是<code>*tesing.T</code>，可以用该类型来记录错误或测试状态。</p>
+<blockquote>
+<p>至此我们可以得出一个总结，要写一个单元测试必要的规范，1.文件名以_test.go结尾，2.函数名以Test开头，3.函数参数为<code>testing.T</code></p>
+</blockquote>
+<p>我们可以调用 <code>testing.T</code> 的 <code>Error</code> 、<code>Errorf</code> 、<code>FailNow</code> 、<code>Fatal</code> 、<code>FatalIf</code> 方法，来说明测试不通过；调用 <code>Log</code> 、<code>Logf</code> 方法来记录测试信息。函数列表和相关描述如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>t.Log, t.Logf</td>
+<td>正常信息</td>
+</tr>
+<tr>
+<td>t.Error, t.Errorf</td>
+<td>测试失败信息</td>
+</tr>
+<tr>
+<td>t.Fatal, t.Fatalf</td>
+<td>致命错误，测试程序退出的信息</td>
+</tr>
+<tr>
+<td>t.Fail</td>
+<td>当前测试标记为失败</td>
+</tr>
+<tr>
+<td>t.Failed</td>
+<td>查看失败标记</td>
+</tr>
+<tr>
+<td>t.FailNow</td>
+<td>标记失败，并终止当前测试函数的执行。需要注意的是，我们只能在运行测试函数的Goroutine中调用t.FailNow方法，而不能在我们测试代码创建出的Goroutine中调用它</td>
+</tr>
+</tbody></table>
+<p><strong>一个栗子🌰：</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">//math.go</span><br><br><span class="hljs-keyword">package</span> Test<br><br><span class="hljs-keyword">import</span> <span class="hljs-string">&quot;math&quot;</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Abs</span><span class="hljs-params">(a <span class="hljs-type">int</span>)</span></span> <span class="hljs-type">int</span> &#123;<br>	b := <span class="hljs-type">float64</span>(a)<br>	<span class="hljs-keyword">return</span> <span class="hljs-type">int</span>(math.Abs(b))<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> Test<br><br><span class="hljs-keyword">import</span> <span class="hljs-string">&quot;testing&quot;</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">TestAbs</span><span class="hljs-params">(t *testing.T)</span></span> &#123;<br>	got := Abs(<span class="hljs-number">-1</span>)<br>	<span class="hljs-keyword">if</span> got != <span class="hljs-number">1</span> &#123;<br>		t.Error(<span class="hljs-string">&quot;fault&quot;</span>)<br>	&#125; <span class="hljs-keyword">else</span> &#123;<br>		t.Log(<span class="hljs-string">&quot;right&quot;</span>)<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">#</span><span class="language-bash">终端执行命令</span><br><br>go test &quot;math.go&quot; &quot;math_test.go&quot;<br><span class="hljs-meta prompt_">#</span><span class="language-bash">如果想执行文件夹中的所有测试用例那就直接go <span class="hljs-built_in">test</span>即可</span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">也可以用go <span class="hljs-built_in">test</span>的参数来完成执行指定的函数</span><br></code></pre></td></tr></table></figure>
+
+<p>go test支持一下三个参数：</p>
+<ul>
+<li><p>-v，显示所有测试函数的运行细节：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">pengxj@PEngxJdeMacBook-Pro test % go test -v &quot;math.go&quot; &quot;math_test.go&quot; <br>=== RUN   TestAbs<br>    math_test.go:10: right<br>--- PASS: TestAbs (0.00s)<br>PASS<br>ok      command-line-arguments  0.612s<br></code></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>-run &lt; regexp&gt;，指定要执行的测试函数：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">pengxj@PEngxJdeMacBook-Pro test % go test -run &quot;TestAbs&quot;             <br>PASS<br>ok      test    0.608s<br></code></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>-count N，指定执行测试函数的次数：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs shell">pengxj@PEngxJdeMacBook-Pro test % go test -v -run &quot;TestAbs&quot; -count=2<br>=== RUN   TestAbs<br>    math_test.go:10: right<br>--- PASS: TestAbs (0.00s)<br>=== RUN   TestAbs<br>    math_test.go:10: right<br>--- PASS: TestAbs (0.00s)<br>PASS<br>ok      test    0.087s<br></code></pre></td></tr></table></figure></li>
+</ul>
+<p><strong>多个测试用例：</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">TestAbs_2</span><span class="hljs-params">(t *testing.T)</span></span> &#123;<br>	tests:=[]<span class="hljs-keyword">struct</span>&#123;<br>		x <span class="hljs-type">int</span><br>		want <span class="hljs-type">int</span><br>	&#125;&#123;<br>		&#123;<span class="hljs-number">-1</span>,<span class="hljs-number">1</span>&#125;,<br>		&#123;<span class="hljs-number">-2</span>,<span class="hljs-number">2</span>&#125;,<br>		&#123;<span class="hljs-number">-3</span>,<span class="hljs-number">3</span>&#125;,<br>	&#125;<br>	<span class="hljs-keyword">for</span> _,v:=<span class="hljs-keyword">range</span> tests&#123;<br>		got:=Abs(v.x)<br>		<span class="hljs-keyword">if</span> got!=v.want&#123;<br>			t.Error(<span class="hljs-string">&quot;fault&quot;</span>)<br>		&#125;<span class="hljs-keyword">else</span>&#123;<br>			t.Log(<span class="hljs-string">&quot;right&quot;</span>)<br>		&#125;<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>上面的代码中，我们定义了一个结构体，并且给定了入参和希望得到的值，最后用循环测试每个用例</p>
+<h3 id="自动生成单元测试🐮："><a href="#自动生成单元测试🐮：" class="headerlink" title="自动生成单元测试🐮："></a>自动生成单元测试🐮：</h3><p>通过上面的样例我们可以得出个大概的结论：我们编写的单元测试就是，自己设定参数和预期结果值，接着调用函数来看能不能达到预期，逻辑并不复杂，复杂的反而是上面提到的那几个规范。</p>
+<p>所以大牛已经做出工具来了，优秀的生成测试代码的工具：<code>gotests</code>。下面我们讲下他的使用方法：</p>
+<p><strong>第一步：下载gotests包：</strong></p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs vim"><span class="hljs-keyword">go</span> <span class="hljs-built_in">get</span> -<span class="hljs-keyword">u</span> github.<span class="hljs-keyword">com</span>/cweill/gotests/...<br></code></pre></td></tr></table></figure>
+
+<p><strong>第二步：执行gotests命令：</strong></p>
+<p>gotests命令执行格式为：<code>gotests [options] [PATH] [FILE] ...</code>。gotests可以为<code>PATH</code>下的所有Go源码文件中的函数生成测试代码，也可以只为某个<code>FILE</code>中的函数生成测试代码。</p>
+<p>常用参数：<code>-all:</code>	为当前目录下的所有函数生成测试代码。<code>-w：</code>将生成的测试代码生成到指定文件中，而不是命令行窗口。<code>-only:</code>指定要单独生成单元测试的函数。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">gotests -only &quot;Abs&quot; -w .<br><span class="hljs-meta prompt_">#</span><span class="language-bash"><span class="hljs-comment"># -only用于指定选定的要生成单元测试的函数</span></span><br><span class="hljs-meta prompt_">#</span><span class="language-bash"><span class="hljs-comment"># “.” 表示生成在该目录下</span></span><br><span class="hljs-meta prompt_">#</span><span class="language-bash"><span class="hljs-comment"># 如果我们没有创建相应的 _test.go文件那他就会自动生成，如果有就会往里继续添加，当然前提是我们没在那个文件中已经写了Test文件，不然就不会生成了。</span></span><br></code></pre></td></tr></table></figure>
+
+<p><strong>第三步，添加测试用例：</strong></p>
+<p>生成完测试用例，你只需要添加需要测试的输入和预期的输出就可以了。</p>
+<p>上面的命令执行后会出现下面的代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-keyword">package</span> Test<br><br><span class="hljs-keyword">import</span> <span class="hljs-string">&quot;testing&quot;</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">TestAbs</span><span class="hljs-params">(t *testing.T)</span></span> &#123;<br>	<span class="hljs-keyword">type</span> args <span class="hljs-keyword">struct</span> &#123;<br>		a <span class="hljs-type">int</span><br>	&#125;<br>	tests := []<span class="hljs-keyword">struct</span> &#123;<br>		name <span class="hljs-type">string</span><br>		args args<br>		want <span class="hljs-type">int</span><br>	&#125;&#123;<br>		<span class="hljs-comment">// <span class="hljs-doctag">TODO:</span> Add test cases.</span><br>	&#125;<br>	<span class="hljs-keyword">for</span> _, tt := <span class="hljs-keyword">range</span> tests &#123;<br>		t.Run(tt.name, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(t *testing.T)</span></span> &#123;<br>			<span class="hljs-keyword">if</span> got := Abs(tt.args.a); got != tt.want &#123;<br>				t.Errorf(<span class="hljs-string">&quot;Abs() = %v, want %v&quot;</span>, got, tt.want)<br>			&#125;<br>		&#125;)<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>我们要完成的就是上面的TODO部分，也就是添加参数和预期结果。<code>name</code> 表示这组样例的备注，<code>args</code>表示函数的入参， <code>want</code>表示想要得到的结果。例如下面这样。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">TestAbs</span><span class="hljs-params">(t *testing.T)</span></span> &#123;<br>	<span class="hljs-keyword">type</span> args <span class="hljs-keyword">struct</span> &#123;<br>		a <span class="hljs-type">int</span><br>	&#125;<br>	tests := []<span class="hljs-keyword">struct</span> &#123;<br>		name <span class="hljs-type">string</span><br>		args args<br>		want <span class="hljs-type">int</span><br>	&#125;&#123;<br>		&#123;<br>			name: <span class="hljs-string">&quot;test one&quot;</span>,<br>			args: args&#123;<br>				a: <span class="hljs-number">1</span>,<br>			&#125;,<br>			want: <span class="hljs-number">1</span>,<br>		&#125;,<br>	&#125;<br>	<span class="hljs-keyword">for</span> _, tt := <span class="hljs-keyword">range</span> tests &#123;<br>		t.Run(tt.name, <span class="hljs-function"><span class="hljs-keyword">func</span><span class="hljs-params">(t *testing.T)</span></span> &#123;<br>			<span class="hljs-keyword">if</span> got := Abs(tt.args.a); got != tt.want &#123;<br>				t.Errorf(<span class="hljs-string">&quot;Abs() = %v, want %v&quot;</span>, got, tt.want)<br>			&#125;<br>		&#125;)<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="性能测试："><a href="#性能测试：" class="headerlink" title="性能测试："></a>性能测试：</h2><p>性能测试的函数Benchmark开头，函数参数必须是<code>*tesing.B</code>,函数内我们使用<code>b.N</code>来作为循环次数，N会在运行时动态调整，下面将是我们用Map和Sort包来判断元素的方法，和我们为其编写的性能测试函数。总结一句话，性能测试和上面的单元测试差不多，都是在_test.go文件中，只是函数名以Benchmark开头和用了<code>*testing.B</code>参数。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">// 两种判断Slice中元素是否存在的方法：</span><br><br><span class="hljs-keyword">package</span> Test<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;sort&quot;</span><br>)<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">makemap</span><span class="hljs-params">(arr []<span class="hljs-type">int</span>)</span></span> <span class="hljs-keyword">map</span>[<span class="hljs-type">int</span>]<span class="hljs-keyword">struct</span>&#123;&#125; &#123;<br>	tempMap := <span class="hljs-built_in">make</span>(<span class="hljs-keyword">map</span>[<span class="hljs-type">int</span>]<span class="hljs-keyword">struct</span>&#123;&#125;)<br>	<span class="hljs-keyword">for</span> _, v := <span class="hljs-keyword">range</span> arr &#123;<br>		tempMap[v] = <span class="hljs-keyword">struct</span>&#123;&#125;&#123;&#125;<br>	&#125;<br>	<span class="hljs-keyword">return</span> tempMap<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Findbymap</span><span class="hljs-params">(tempMap <span class="hljs-keyword">map</span>[<span class="hljs-type">int</span>]<span class="hljs-keyword">struct</span>&#123;&#125;, n <span class="hljs-type">int</span>)</span></span> &#123;<br>	<span class="hljs-keyword">if</span> _, ok := tempMap[n]; ok &#123;<br>	&#125; <span class="hljs-keyword">else</span> &#123;<br>	&#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">Findbysort</span><span class="hljs-params">(arr []<span class="hljs-type">int</span>, n <span class="hljs-type">int</span>)</span></span> &#123;<br>	sort.Ints(arr)<br>	<span class="hljs-keyword">if</span> pos := sort.SearchInts(arr, n); pos != <span class="hljs-built_in">len</span>(arr) &#123;<br>	&#125; <span class="hljs-keyword">else</span> &#123;<br>	&#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-comment">//性能测试代码</span><br><br><span class="hljs-keyword">package</span> Test<br><br><span class="hljs-keyword">import</span> (<br>	<span class="hljs-string">&quot;testing&quot;</span><br>)<br><br><span class="hljs-keyword">var</span> arr = []<span class="hljs-type">int</span>&#123;<span class="hljs-number">1</span>, <span class="hljs-number">9</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">8</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>, <span class="hljs-number">6</span>, <span class="hljs-number">8</span>, <span class="hljs-number">11</span>, <span class="hljs-number">22</span>, <span class="hljs-number">33</span>, <span class="hljs-number">44</span>, <span class="hljs-number">55</span>, <span class="hljs-number">66</span>, <span class="hljs-number">77</span>, <span class="hljs-number">88</span>, <span class="hljs-number">23</span>, <span class="hljs-number">34</span>, <span class="hljs-number">45</span>, <span class="hljs-number">56</span>, <span class="hljs-number">67</span>, <span class="hljs-number">78</span>, <span class="hljs-number">89</span>&#125;<br><span class="hljs-keyword">var</span> n = <span class="hljs-number">3</span><br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">BenchmarkBymap</span><span class="hljs-params">(b *testing.B)</span></span> &#123;<br>	tempMap := makemap(arr)<br>	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; b.N; i++ &#123;<br>		Findbymap(tempMap, n)<br>	&#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-title">BenchmarkBysort</span><span class="hljs-params">(b *testing.B)</span></span> &#123;<br>	<span class="hljs-keyword">for</span> i := <span class="hljs-number">0</span>; i &lt; b.N; i++ &#123;<br>		Findbysort(arr, n)<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>执行命令</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">#</span><span class="language-bash">文件指定支持正则表达式</span><br><span class="hljs-meta prompt_">#</span><span class="language-bash">指定目录下的所有Benchmark函数如下：</span><br>go test -bench=&quot;.*&quot;<br><span class="hljs-meta prompt_">#</span><span class="language-bash">当然也可以指定特定函数</span><br>go test -bench=&quot;BenchmarkBymap&quot;<br><br></code></pre></td></tr></table></figure>
+
+<p>测试结果如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell">pengxj@PEngxJdeMacBook-Pro test % go test -bench=&quot;.*&quot;<br>goos: darwin<br>goarch: arm64<br>pkg: test<br>BenchmarkBymap-8        243986680                4.892 ns/op<br>BenchmarkBysort-8       11873071                99.28 ns/op<br>PASS<br>ok      test    3.068s<br></code></pre></td></tr></table></figure>
+
+<p>结果得知，在要多次查询的情况下，构建一个map的效率是非常高的。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Go/" class="category-chain-item">Go</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/Go/%E4%BB%A3%E7%A0%81%E6%B5%8B%E8%AF%95/" class="category-chain-item">代码测试</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E4%B8%8E%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95/">#单元测试与性能测试</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>🤗️怎样写单元测试与如何判断slice中的一个元素</div>
+      <div>https://opengxj.github.io/2022/08/13/代码测试/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>PEngxJ</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年8月13日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/08/09/%E5%B8%B8%E8%A7%81%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E4%B8%8E%E5%AE%9E%E7%8E%B0/" title="⛽常见排序算法与实现📣">
+                        <span class="hidden-mobile">⛽常见排序算法与实现📣</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Mamba</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>KOBE</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

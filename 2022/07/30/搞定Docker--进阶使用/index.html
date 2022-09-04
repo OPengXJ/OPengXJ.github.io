@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://pic.rmb.bdstatic.com/bjh/462f9c6792493d103beb06dfb4f4dc46.jpeg">
 <meta property="article:published_time" content="2022-07-30T08:35:33.000Z">
-<meta property="article:modified_time" content="2022-08-03T06:31:58.000Z">
+<meta property="article:modified_time" content="2022-09-04T09:44:31.933Z">
 <meta property="article:author" content="PEngxJ">
 <meta property="article:tag" content="docker">
 <meta name="twitter:card" content="summary_large_image">
@@ -221,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          6.7k 字
+          7k 字
         
       </span>
     
@@ -232,7 +232,7 @@
         
         
         
-          56 分钟
+          59 分钟
         
       </span>
     
@@ -502,6 +502,27 @@
 <p>默认的docker网络模式有三种：bridge，host，none</p>
 <p>自定义的网络就是bridge的改进版，我们可以通过容器的名称直接来通讯，而不是每次启动都会改变的ip地址</p>
 </blockquote>
+<table>
+<thead>
+<tr>
+<th>网络模式</th>
+<th>简介</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Bridge</td>
+<td>在这个模式中，docker daemon(守护进程)创建了一个以太网桥<code>docker0</code>，新建的容器会自动桥接到这个接口，<strong>具体流程是：</strong>守护进程会创建一对对等虚拟设备接口，将其中一端设为容器的<code>eth0</code>接口，一端保存在宿主机的命名空间中。容器创建时默认使用该模式。它分配ip的规则是根据容器的启动顺序递增分配的，就会出现上面说的情况，ip地址会变动。</td>
+</tr>
+<tr>
+<td>Host</td>
+<td>容器将不会虚拟出自己的网卡，配置自己的ip等。<strong>而是直接使用宿主机的ip和端口</strong></td>
+</tr>
+<tr>
+<td>none</td>
+<td>容器有独立的Network namespace,但并没有进行任何网络设置</td>
+</tr>
+</tbody></table>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h5unw810twj20ol0dtdh8.jpg" srcset="/img/loading.gif" lazyload alt="bridge"></p>
 <h3 id="创建网络："><a href="#创建网络：" class="headerlink" title="创建网络："></a>创建网络：</h3><p>语法：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker network create [OPTIONS] 网络名称<br></code></pre></td></tr></table></figure>
 

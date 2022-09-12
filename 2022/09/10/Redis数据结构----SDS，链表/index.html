@@ -1,0 +1,685 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/3dd.png">
+  <link rel="icon" href="/img/3dd.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="PEngxJ">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="redis为什么能这么高效是有原因，这次我们来学习下保存字符串的SDS和链表在Redis中是如何实现的以及他们的特性。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="🥇Redis数据结构----SDS，链表">
+<meta property="og:url" content="https://opengxj.github.io/2022/09/10/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84----SDS%EF%BC%8C%E9%93%BE%E8%A1%A8/index.html">
+<meta property="og:site_name" content="PEngxJ的小破站">
+<meta property="og:description" content="redis为什么能这么高效是有原因，这次我们来学习下保存字符串的SDS和链表在Redis中是如何实现的以及他们的特性。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/e6c9d24egy1h619qbiq88j20xc0hgaag.jpg">
+<meta property="article:published_time" content="2022-09-10T01:43:33.000Z">
+<meta property="article:modified_time" content="2022-09-12T09:03:18.603Z">
+<meta property="article:author" content="PEngxJ">
+<meta property="article:tag" content="redis">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/e6c9d24egy1h619qbiq88j20xc0hgaag.jpg">
+  
+  
+  
+  <title>🥇Redis数据结构----SDS，链表 - PEngxJ的小破站</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"opengxj.github.io","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>PEngxJ的小破站</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://tva1.sinaimg.cn/large/e6c9d24egy1h619qbiq88j20xc0hgaag.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="🥇Redis数据结构----SDS，链表"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-09-10 09:43" pubdate>
+          2022年9月10日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          27 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">🥇Redis数据结构----SDS，链表</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>redis为什么能这么高效是有原因，这次我们来学习下保存字符串的SDS和链表在Redis中是如何实现的以及他们的特性。</p>
+<span id="more"></span>
+
+<h1 id="🥇Redis数据结构—-SDS，链表"><a href="#🥇Redis数据结构—-SDS，链表" class="headerlink" title="🥇Redis数据结构—-SDS，链表"></a>🥇Redis数据结构—-SDS，链表</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h63xebehwej20vq0hs753.jpg" srcset="/img/loading.gif" lazyload></p>
+<h2 id="SDS"><a href="#SDS" class="headerlink" title="SDS"></a>SDS</h2><blockquote>
+<p>众所周知，C语音中的字符串底层实现为一个char类型数组，也就是一个字符数组，所以C字符串在Redis中仅在只需要一个字符串字面量的情况下使用，也就是用于一些不用修改的情景下，比如打印日志。</p>
+<p>出于安全、效率与功能性等的要求Redis自己实现了一个存储字符串的结构–SDS</p>
+<p>并且SDS在Redis中还被用于做缓冲区：AOF模块的AOF缓冲区，以及客户端状态中的输入缓存区</p>
+</blockquote>
+<h3 id="结构："><a href="#结构：" class="headerlink" title="结构："></a>结构：</h3><p>SDS的结构如下：(sds.h&#x2F;sdshdr)</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">sdshdr</span>&#123;<br>  <span class="hljs-type">int</span> len;<br>  <span class="hljs-type">int</span> free;<br>  <span class="hljs-type">char</span> buf[];<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>**len:**当前SDS保存的字符串长度</li>
+<li><strong>free：</strong>当前SDS中未分配的字节长度</li>
+<li><strong>buf：</strong> <strong>字节</strong>数组，用于保存字符串</li>
+</ul>
+<p>同时要注意到一点，虽然Redis自己实现了SDS，但保存的字符串中依然延续了以空字符（&#x2F;0）结尾的传统，SDS在分配空间时会预留一字节长度保存空字符，同时在字符串的末尾加上空字符，这些都由SDS自动完成。这样得到的一个最大好处就是可以复用C语言中对字符串的函数。</p>
+<h3 id="与C字符串的区别："><a href="#与C字符串的区别：" class="headerlink" title="与C字符串的区别："></a>与C字符串的区别：</h3><h4 id="常数复杂度获取字符串长度："><a href="#常数复杂度获取字符串长度：" class="headerlink" title="常数复杂度获取字符串长度："></a>常数复杂度获取字符串长度：</h4><p>对于C字符串，获取字符串长度则是一个时间复杂度为O(n)的操作，因为它是通过一个个遍历得来的</p>
+<p>在SDS的结构中我们可以看到<strong>len</strong>这一属性，它保存了当前SDS保存的字符串的长度，所以我们要获取字符串长度时则只需访问这一属性就可以了。</p>
+<h4 id="杜绝缓冲区溢出："><a href="#杜绝缓冲区溢出：" class="headerlink" title="杜绝缓冲区溢出："></a>杜绝缓冲区溢出：</h4><p>我们通过一个例子来介绍缓冲区溢出：</p>
+<p>例如我们有两个紧邻的字符串，也就是说他们在内存空间上的紧邻着的，我们调用了函数<code>char *strcat(char *dest,const char *src)</code>(该函数会把src的内容拼接到dest上)，而这个函数是假定用户在执行这个函数时已经为dest分配了足够多的内存了，可以容纳src字符串中的所有内容，而一旦这个假设不成立，则会发生缓冲区溢出。</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h61bskon31j215n04dglz.jpg" srcset="/img/loading.gif" lazyload alt="相邻的两个c字符串"></p>
+<p>例如这个上面这个例子，则是‘MongoDB’的内容会被修改。</p>
+<p>而在SDS中，当SDS API需要进行对SDS的修改时，会先判断当前的SDS的空间是否满足此次修改，不满足的话，像上面的例子，SDS则会先扩容到合适的空间后再进行修改，<strong>所以使用SDS既不用自行申请空间，也不会出现缓冲区溢出的情况。</strong></p>
+<p>还是上面这个例子，在SDS中我们调用的是<code>sdscat</code>，其在进行拼接操作前会先查看空间是否满足，发现不满足则先申请空间，</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h61c5gg3fkj216l0dmaaw.jpg" srcset="/img/loading.gif" lazyload alt="image-20220910111231296"></p>
+<p>申请后，再进行拼接操作。拼接后如下：</p>
+<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h61car6r7nj219i0dg3zy.jpg" srcset="/img/loading.gif" lazyload alt="image-20220910111736890"></p>
+<p>同时我们注意到一点，在分配足够的空间来完成拼接的同时，SDS还同样申请了同样大小空间的未分配空间，这不是偶然，而是SDS的预分配策略，详情如下。</p>
+<h4 id="减少修改字符串时的内存重分配次数："><a href="#减少修改字符串时的内存重分配次数：" class="headerlink" title="减少修改字符串时的内存重分配次数："></a>减少修改字符串时的内存重分配次数：</h4><p>首先我们先说下C字符串的痛点，由于并没有<strong>len</strong>这一属性，所以底层数组的长度永远是字符串长度+1，正是存在这种字符串长度与底层数组长度的关联，所以在每次进行增长或缩短操作前总需要进行一次内存重分配，比如增长操作中的拼接操作，那么在执行操作前则必须进行一次内存重分配来扩展底层数组的空间，如果忘记这步操作则会造成缓冲区溢出，而比如缩短操作中的截断操作，在执行完此操作后必须进行一次内存重分配来回收这部分不再使用的内存，否则将会造成内存泄漏。<strong>而内存重分配涉及复杂的算法，并且需要执行系统调用，所以它通常是一个比较耗时的操作</strong></p>
+<p>而对于Redis这样一个追求效率，频繁修改的场合，显然每次修改都要进行一次内存重分配是不能接受的。综上原因，Redis使用<strong>free</strong>属性，也就是未分配空间来断开字符串长度与底层数组长度的关联。数组里不再仅有字符串，还有未使用的空间。</p>
+<p>通过未分配空间，SDS实现了<strong>空间预分配</strong>和<strong>惰性空间释放</strong>来减少内存重分配的次数。</p>
+<p><strong>空间预分配：</strong></p>
+<p>上面拼接的例子我们已经看到了，当SDS API进行字符串增长操作，需要进行空间拓展的时候，SDS不仅分配了足够的空间来完成操作，还多分配了相同空间的未分配空间。这就是SDS的空间预分配策略，而分配空间的大小还与分配后SDS的长度有关（也就是len的值）,分两种情况：</p>
+<ul>
+<li>如果分配的SDS的长度&lt;1MB，则是和上面的情况一样，分配相同长度的未分配空间</li>
+<li>如果分配的SDS的长度&gt;1MB，则是再分配1MB。</li>
+</ul>
+<p><strong>通过空间预分配策略，连续增长字符串N次时，内存重分配的次数从N次变为最多N次</strong></p>
+<p><strong>惰性空间释放：</strong></p>
+<p>与C字符串不同的是，SDS再进行缩短操作后并不会立即调用内存重分配来回收收缩后多出来的字节，而是用free属性将这些字节的数量记录下来，并等待将来使用。</p>
+<h4 id="二进制安全："><a href="#二进制安全：" class="headerlink" title="二进制安全："></a>二进制安全：</h4><p>同样先说一下C字符串的痛点，我们知道C字符串是根据空字符来结尾的，所以在字符串里面不能包含空字符，否则最先被程序读入的空字符会被做为字符串的结尾，这些限制使得C字符串只能保存文本数据，而不能保存像图片，视频，压缩文件等的二进制数据</p>
+<p>而SDS API则是二进制安全的，它会以处理二进制的方式来处理字符串，不会对输入的数据进行任何限制、过滤或假设，也就是<strong>数据在写入时什么样的，读出来就是怎么样的</strong>，这也是我们将SDS的buf属性称为<strong>字节数组</strong>的原因–<strong>Redis不是用这个数组来保存字符，而是用它来保存一系列二进制数据</strong>，最后虽然还是会在结尾加上空字符，但并不以其判断结尾，而是用<strong>len</strong>。</p>
+<h4 id="兼容部分C字符串函数："><a href="#兼容部分C字符串函数：" class="headerlink" title="兼容部分C字符串函数："></a>兼容部分C字符串函数：</h4><p>上面我们有说到SDS延续了以空字符结尾的习惯，所以它可以直接复用一些C字符串的函数。</p>
+<h2 id="链表："><a href="#链表：" class="headerlink" title="链表："></a>链表：</h2><blockquote>
+<p>链表有着高效的节点重排能力，顺序性的节点访问方式，并且可以通过增删节点来灵活调整链表的长度。现在的高级编程语言能内置了链表这一数据结构，而C语言没有，所以Redis自己实现了链表。</p>
+<p>在Redis中链表的使用场景：链表键的底层实现之一就是链表，即当列表的节点数量较多，或者列表存储的值都是较长的字符串时。除了列表键，链表还被用于发布与订阅，慢查询，监视器等功能，服务器端则还用来保存多个客户端的状态信息，客户端则还用来做输出缓冲区。</p>
+</blockquote>
+<h3 id="结构：-1"><a href="#结构：-1" class="headerlink" title="结构："></a>结构：</h3><p>节点结构（adlist.h&#x2F;listNode）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">listNode</span>&#123;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">listNode</span>* <span class="hljs-title">prev</span>;</span><br>	<span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">listNode</span>* <span class="hljs-title">next</span>;</span><br>	<span class="hljs-type">void</span>* value;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>虽然通过两两的节点相连就能构成链表了，但Redis为了功能性，再包装了一层，直接定义了一个链表的结构：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list</span>&#123;</span><br>	listNode* head;<br>	listNode* tail;<br>	<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> len;<br>	<span class="hljs-type">void</span>* (*dup)(<span class="hljs-type">void</span>* ptr);<br>	<span class="hljs-type">void</span> (*<span class="hljs-built_in">free</span>)(<span class="hljs-type">void</span> *ptr);<br>	<span class="hljs-type">int</span> (*match)(<span class="hljs-type">void</span>* ptr,<span class="hljs-type">void</span>* key);<br>&#125;<span class="hljs-built_in">list</span>;<br></code></pre></td></tr></table></figure>
+
+<p>这里面包括了头节点，尾节点，节点个数，复制函数，释放函数，比较函数。</p>
+<ul>
+<li>dup 用于复制链表节点的值</li>
+<li>free 用于释放链表节点的值</li>
+<li>match 用于对比链表节点所保存的值和另一个输入值是否相等</li>
+</ul>
+<h3 id="特性："><a href="#特性：" class="headerlink" title="特性："></a>特性：</h3><p>Redis的链表特性可以总结如下：</p>
+<ul>
+<li>“无环”：head结点的父节点指针和tail节点的子指针都指向NULL。对链表的访问以NULL结尾。</li>
+<li>“双端”：双向链表，访问某节点的父子节点的时间复杂度都是O(1)。</li>
+<li>“头尾指针”：访问链表的头节点和尾节点的复杂度都是O(1)。</li>
+<li>“len”: 因为增加了len属性，获取链表节点个数复杂度为O(1)。</li>
+<li>“多态”：value的属性时void*，可以通过list结构的dup、free、match三个属性为节点设置特定类型函数，所以链表可以用于保存各种不同类型的值。</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%89%93%E6%80%AA%E5%8D%87%E7%BA%A7/" class="category-chain-item">打怪升级</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%89%93%E6%80%AA%E5%8D%87%E7%BA%A7/redis/" class="category-chain-item">redis</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/redis/">#redis</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>🥇Redis数据结构----SDS，链表</div>
+      <div>https://opengxj.github.io/2022/09/10/Redis数据结构----SDS，链表/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>PEngxJ</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年9月10日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/09/01/%E6%89%93%E9%80%A0Go%E7%9A%84%E6%AD%A6%E5%99%A8--Viper/" title="🏵打造Go的武器--Viper✪">
+                        <span class="hidden-mobile">🏵打造Go的武器--Viper✪</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Mamba</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>KOBE</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

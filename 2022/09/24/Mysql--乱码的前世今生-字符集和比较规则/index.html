@@ -1,0 +1,681 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/3dd.png">
+  <link rel="icon" href="/img/3dd.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="PEngxJ">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="🍟Mysql–乱码的前世今生-字符集和比较规则 字符集：简介：众所周知计算机中能存储的只有二进制的数据，那我们怎么存储字符串的呢？答案是我们建立了一种规则来将字符串映射为二进制数据。字符有那么多，总不可能所有都包含进来吧，几乎这两点我们就能得到字符集一个言简意赅的定义：某个字符范围的编码规则。 一些重要的字符集：对于同一个字符，不同的人为了达到不同的目的，人们设置了很多种字符集。下面是一些常见的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="🍟Mysql--乱码的前世今生-字符集和比较规则">
+<meta property="og:url" content="https://opengxj.github.io/2022/09/24/Mysql--%E4%B9%B1%E7%A0%81%E7%9A%84%E5%89%8D%E4%B8%96%E4%BB%8A%E7%94%9F-%E5%AD%97%E7%AC%A6%E9%9B%86%E5%92%8C%E6%AF%94%E8%BE%83%E8%A7%84%E5%88%99/index.html">
+<meta property="og:site_name" content="PEngxJ的小破站">
+<meta property="og:description" content="🍟Mysql–乱码的前世今生-字符集和比较规则 字符集：简介：众所周知计算机中能存储的只有二进制的数据，那我们怎么存储字符串的呢？答案是我们建立了一种规则来将字符串映射为二进制数据。字符有那么多，总不可能所有都包含进来吧，几乎这两点我们就能得到字符集一个言简意赅的定义：某个字符范围的编码规则。 一些重要的字符集：对于同一个字符，不同的人为了达到不同的目的，人们设置了很多种字符集。下面是一些常见的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/e6c9d24egy1h6hz7xehjvj208c04o0sl.jpg">
+<meta property="article:published_time" content="2022-09-24T12:42:33.000Z">
+<meta property="article:modified_time" content="2022-09-25T02:22:03.232Z">
+<meta property="article:author" content="PEngxJ">
+<meta property="article:tag" content="Mysql">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/e6c9d24egy1h6hz7xehjvj208c04o0sl.jpg">
+  
+  
+  
+  <title>🍟Mysql--乱码的前世今生-字符集和比较规则 - PEngxJ的小破站</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"opengxj.github.io","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>PEngxJ的小破站</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://tva1.sinaimg.cn/large/e6c9d24egy1h6hz7xehjvj208c04o0sl.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="🍟Mysql--乱码的前世今生-字符集和比较规则"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-09-24 20:42" pubdate>
+          2022年9月24日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          28 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">🍟Mysql--乱码的前世今生-字符集和比较规则</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="🍟Mysql–乱码的前世今生-字符集和比较规则"><a href="#🍟Mysql–乱码的前世今生-字符集和比较规则" class="headerlink" title="🍟Mysql–乱码的前世今生-字符集和比较规则"></a>🍟Mysql–乱码的前世今生-字符集和比较规则</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h6imy0r024j20vq0hsaah.jpg" srcset="/img/loading.gif" lazyload></p>
+<h2 id="字符集："><a href="#字符集：" class="headerlink" title="字符集："></a>字符集：</h2><h3 id="简介："><a href="#简介：" class="headerlink" title="简介："></a>简介：</h3><p>众所周知计算机中能存储的只有二进制的数据，那我们怎么存储字符串的呢？答案是我们建立了一种规则来将字符串映射为二进制数据。字符有那么多，总不可能所有都包含进来吧，几乎这两点我们就能得到字符集一个言简意赅的定义：<strong>某个字符范围的编码规则</strong>。</p>
+<h3 id="一些重要的字符集："><a href="#一些重要的字符集：" class="headerlink" title="一些重要的字符集："></a>一些重要的字符集：</h3><p>对于同一个字符，不同的人为了达到不同的目的，人们设置了很多种字符集。下面是一些常见的字符集：</p>
+<ul>
+<li><p>ASCII字符集：共收录128个字符，包括空格、标点符号、数字、大小写字母和一些不可见字符。由于总共才128个字符，所以仅使用一个字节来编码。</p>
+</li>
+<li><p>GB2312字符集：收录了汉字以及拉丁字母、希腊字母、日文平假名及片假名字母，俄语西里尔字母。其中汉字6763个，其他文字符号682个。同时这种字符集又兼容ASCII字符集，所以在编码上有些奇怪：</p>
+<ul>
+<li>如果该字符在ASCII字符集中，那么将采用一个字节来编码</li>
+<li>其他都为2个字节</li>
+</ul>
+<p>这里我们发现了个新概念：变长编码方式，即在一个字符集中表示一个字符所需要的字节数可能不同。</p>
+</li>
+<li><p>GBK字符集：在GB2312上进行了扩产，编码上兼容GB2312</p>
+</li>
+<li><p>utf8字符集：收录了地球上能想到的所有字符，而且还在不断扩充，一样地兼容了ASCII字符集，采用变长编码方式，编码一个字符需要使用1-4个字节</p>
+</li>
+</ul>
+<h3 id="Mysql支持的字符集："><a href="#Mysql支持的字符集：" class="headerlink" title="Mysql支持的字符集："></a>Mysql支持的字符集：</h3><p>首先我们解决一个疑惑：utf8mb3与utf8mb4。</p>
+<p>上面我们提到utf8字符集采用了变长编码方式，一个字符可能由1-4字节编码，但是其实我们常用的字符用1-3个字节就足够编码了，而在Mysql中一个字符编码所用最大字节长度在某些方面会影响系统的存储和性能所以，Mysql设立了以上两种概念：</p>
+<ul>
+<li>Utf8mb3: 其实就是utf8的阉割版，只使用1-3个字节表示字符。</li>
+<li>Utf8mb4: 真正的utf8。</li>
+</ul>
+<p>在Mysql中，utf8实际上指的是utf8mb3，是它的一个别名，如果有要用4个字节编码的情况，例如存emoji表情，那一定要明确指定utf8mb4。</p>
+<p>接着我们了解下查看字符集的指令：<code>SHOW (CHARACTER SET|CHARSET)[LIKE 匹配的模式] </code>CHARACTER SET和CHARSET是同义词，用哪个都行。</p>
+<h2 id="比较规则："><a href="#比较规则：" class="headerlink" title="比较规则："></a>比较规则：</h2><h3 id="简介：-1"><a href="#简介：-1" class="headerlink" title="简介："></a>简介：</h3><p>在字符串被编码为相应的二进制数据后，如何比较字符的大小就是比较规则的事了，最简单的莫过于直接比较二进制编码的大小，而这种情况并不是一直都可以，比如我们有时的业务逻辑是将’a’与’A’认为是相等的，我们要怎样解决呢，将所有的字符都转换为大写或小写，再进行比较，这还算简单，就是转换下大小写，实际的情况是英文字符不止一种，汉字有几万个，所以人们为了达到适当的比较的目的，设计了很多比较规则，一个字符集就可以拥有多个比较规则。</p>
+<h3 id="查看比较规则："><a href="#查看比较规则：" class="headerlink" title="查看比较规则："></a>查看比较规则：</h3><p>SHOW COLLATION [LIKE 匹配模式]，就可以看到系统支持的比较规则，可以注意到，一个字符集可以有多个比较规则，比较规则名称的前缀就是相应的字符集，而且每个字符集都有一个默认的比较规则。</p>
+<h2 id="字符集和比较规则的应用："><a href="#字符集和比较规则的应用：" class="headerlink" title="字符集和比较规则的应用："></a>字符集和比较规则的应用：</h2><h3 id="各级别的字符集和比较规则："><a href="#各级别的字符集和比较规则：" class="headerlink" title="各级别的字符集和比较规则："></a>各级别的字符集和比较规则：</h3><p>在Mysql中字符集的级别分为：服务器级别，数据库级别，表级别，列级别。优先级越来越大，比如如果有设置了数据库级别的字符集那就不会去用服务器级别，如果没有设置那就用服务器级别的字符集。比较规则也同理。服务器级别和其它几个级别的设置方式有点不同，具体如下：</p>
+<ul>
+<li>服务器级别：服务器级别的在启动选项中设置，例如在配置选项中写入 character_set_server&#x3D;字符集名称，collaction_set_server&#x3D;比较规则。</li>
+<li>其它：在创建时可以指明，也可以在后续进行更改，例如<code>CHARCTER SET GB2312 和 COLLATE gb2312_chinese_ci</code></li>
+<li>可以通过相应的系统变量(SHOW VARIABLES [LIKE 匹配模式])查看各级别当前的字符集，具体如下：<ul>
+<li>服务器级别：SHOW VARIABLES LIKE ‘character_set_server’，便可查看，同样的还有’character_set_collaction’</li>
+<li>数据库级别：‘character_set_database’ 和 ‘collaction_set_database’，当然前提你得先输入USE进入相应数据库</li>
+<li>表级别：SHOW CREATE TABLE ‘表名’</li>
+<li>列级别：show full columns from ‘表名’</li>
+</ul>
+</li>
+<li>需要注意的一点：在上方数据库及以下级别中我们可以中途修改它们的字符集和比较规则，但要注意一点：对于字段中的值，转换后的字符集一定要能表示，不然就会出错</li>
+</ul>
+<p>上面我们展示了各级别查看和修改字符集的方法，在修改时都是一起修改的，那如果只修改其中一个会怎样呢？</p>
+<ul>
+<li>只修改字符集：如果我们只修改了字符集，由于比较规则是和字符集想对应的，所以比较规则也会被改为字符集的默认比较规则。</li>
+<li>只修改比较规则：这个也同理，字符集也要进行修改，修改成支持该比较规则的字符集。</li>
+</ul>
+<h3 id="客户端和服务器通信中的字符集："><a href="#客户端和服务器通信中的字符集：" class="headerlink" title="客户端和服务器通信中的字符集："></a>客户端和服务器通信中的字符集：</h3><blockquote>
+<p>毋庸质疑，字符在编码时和解码时使用不同的字符集是绝对行不通的，如果真这样做了，解码后就会出现我们的熟客–乱码。正常人谁会用不同的字符集去编解码字符呀，但Mysql的客户端和服务器可能会发生这样的情况，具体如下。</p>
+</blockquote>
+<p>首先，我们知道我们在客户端向服务器发送请求时其实发送的是一段字符串，服务器向客户端发送的响应结果也是一段字符串，而字符串其实就是一段对字符进行编码而形成的二进制数据，在mysql中对这段二进制数据的处理涉及多个步骤，它也会被不同的字符集进行编解码。主要涉及到以下三个系统变量：</p>
+<ul>
+<li>character_set_client:服务器解码时使用的字符集。</li>
+<li>character_set_connection:在上一步解码后的数据会被该字符集重新编码。</li>
+<li>character_set_result: 服务器返回的结果编码时使用的字符集。</li>
+</ul>
+<p>我们将整个过程分为三个阶段，看看其中可能发生的问题。</p>
+<p><strong>请求阶段：</strong></p>
+<p>Mysql客户端会使用操作系统使用的字符集（windows为gbk，类Unix为utf8）对请求进行编码，需要注意的是如果我们使用的是可视化工具如navicat来发送，因为其里面可以设置字符集所以可能和系统不一样。</p>
+<p>Mysql服务器端接收到请求的字符串采用的就是和character_set_client一样的字符集，所以其就使用character_set_client去解码，这时就会可能就会出现第一处便解码使用的字符集不同的情况，这样的结果就是服务器不能正确解码，无法明白客户端的请求，无法做出正确的回应。</p>
+<p><strong>处理阶段：</strong></p>
+<p>如果第一步都正常完成了，那么解码后的字符串就会再被character_set_connection编码，然后如果该请求涉及的列的字符集刚好和character_set_connection一样，那么它就会直接进行相应的操作，否则还要进行一次字符集转换的操作，最后拿得结果。</p>
+<p><strong>返回阶段：</strong></p>
+<p>上面处理结果最后拿到的记录也是编码过的二进制数据，我们首先对其解码，解码后再通过character_set_result进行编码，编码后发送到客户端，这里又可能出现便解码使用的字符集不同的情况，而这次导致的后果，就是<strong>乱码</strong>，客户端无法理解服务端返回的二进制数据。</p>
+<p>很头晕，转来转去的，所以我们一般将上面三个系统变量设置为与客户端使用的字符集一致的情况，也减少了许多无谓的字符集转换。Mysql为我们设置一个方便的指令：<code>SET NAMES 字符集名</code>,这样就能一次性设置三个系统变量。另外如果想在服务器启动的时候这三个系统变量就一样，可以指定一个<code>default-character-set</code>的启动选项。</p>
+<h3 id="比较规则的应用："><a href="#比较规则的应用：" class="headerlink" title="比较规则的应用："></a>比较规则的应用：</h3><p>比较规则的应用，说一个我们较常见的例子就是排序，排序时我们就是遵循比较规则得出一定的顺序。而且同一个字符集可以有不同的比较规则（例如区分字母大小写的，和不区分大小写的），所以当我们对某个字符串做比较或者对某个字符串的列做排序操作时没有得到想象中的结果，可以考虑一下是不是比较规则的问题。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%89%93%E6%80%AA%E5%8D%87%E7%BA%A7/" class="category-chain-item">打怪升级</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%89%93%E6%80%AA%E5%8D%87%E7%BA%A7/Mysql/" class="category-chain-item">Mysql</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Mysql/">#Mysql</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>🍟Mysql--乱码的前世今生-字符集和比较规则</div>
+      <div>https://opengxj.github.io/2022/09/24/Mysql--乱码的前世今生-字符集和比较规则/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>PEngxJ</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年9月24日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/09/24/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84----%E5%AD%97%E5%85%B8/" title="🍔Redis数据结构----字典">
+                        <span class="hidden-mobile">🍔Redis数据结构----字典</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Mamba</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>KOBE</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/008vxvgGgy1h75q7wvczjj30tq0emjrq.jpg">
 <meta property="article:published_time" content="2022-10-15T00:43:33.000Z">
-<meta property="article:modified_time" content="2022-10-15T07:24:27.042Z">
+<meta property="article:modified_time" content="2022-10-15T08:40:14.164Z">
 <meta property="article:author" content="PEngxJ">
 <meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary_large_image">
@@ -221,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          7.3k 字
+          7.4k 字
         
       </span>
     
@@ -501,7 +501,7 @@
 <p>我们这里提到的是变长的情况，那如果是变短的情况呢，<mark>后面的previous_entry_length会不会变回一个字节？</mark>，答案是不会，因为redis认为这个空间重新分配是很复杂的事，会影响效率，居然它现在能容纳前面节点的长度，那就先用着，避免后面一修改又要去重新分配空间。</p>
 <p>因为连锁更新在最坏情况下需要对压缩列表执行 <code>N</code> 次空间重分配操作， 而每次空间重分配的最坏复杂度为 O(N) ， 所以连锁更新的最坏复杂度为 O(N^2) 。</p>
 <blockquote>
-<p> 这里插一嘴，之前看一个人(<a target="_blank" rel="noopener" href="http://zhangtielei.com/posts/blog-redis-ziplist.html">Redis内部数据结构详解(4)——ziplist</a>)对压缩列表插入的源码分析，里面说了是先计算出需要新分配空间后我们再去分配的，当时误解了意思，以为是对后面的每个结点都计算出需要新分配的空间后再去分配新空间。其实不然，实际真的是一个一个节点来分配的。</p>
+<p> 这里插一嘴，之前看一个人(<a target="_blank" rel="noopener" href="http://zhangtielei.com/posts/blog-redis-ziplist.html">Redis内部数据结构详解(4)——ziplist</a>)对压缩列表插入的源码分析，里面说了是先计算出需要新分配空间后我们再去分配的，当时误解了意思，以为是对后面的每个结点都计算出需要新分配的空间后再去分配新空间。其实不然，实际真的是一个一个节点来分配的。<a target="_blank" rel="noopener" href="https://www.cnblogs.com/cquccy/p/14305233.html">redis6.0.5之ziplist阅读笔记3–压缩列表(ziplist)之插入和删除</a>，可以结合这篇一起看</p>
 </blockquote>
 <p>当然也不用很悲观，上面引用的例子是一个极端的情况，它真正造成性能问题的几率是很低的：</p>
 <ul>
@@ -605,6 +605,12 @@
                 <div class="post-prevnext my-3">
                   <article class="post-prev col-6">
                     
+                    
+                      <a href="/2022/10/15/Redis%E5%AF%B9%E8%B1%A1----%E4%BA%94%E5%A4%A7%E5%AF%B9%E8%B1%A1/" title="🧀Redis对象----五大对象">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">🧀Redis对象----五大对象</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
                     
                   </article>
                   <article class="post-next col-6">

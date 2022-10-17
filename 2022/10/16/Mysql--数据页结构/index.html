@@ -16,16 +16,16 @@
   <meta name="author" content="PEngxJ">
   <meta name="keywords" content="">
   
-    <meta name="description" content="🥖Mysql–数据页结构 简介： 我们在前面的文章中已经提到了：Innodb中页做为内存和磁盘数据交换的基本单位，人们为了达到不同的目的设置了多种不同的页，比如存放表空间头部信息的页，存放Insert Buffer信息的页，存放 INODE 信息的页，存放 undo 日志信息的页等等等等，这些奇奇怪怪的页先放放，我们本次的重点是存放数据的页，也就是索引页，我们暂且称它为数据页  数据页代表的这块">
+    <meta name="description" content="我们一直说记录放在页中，页是内存和磁盘交换数据的基本单位，那这个页到底长啥样呢？它主要又七部分组成，File Header、Page Header 、Infimum+supermum、User Records、Free Space、Page Directory和File Trailer，我们一起一趟究竟！">
 <meta property="og:type" content="article">
 <meta property="og:title" content="🥖Mysql--数据页结构">
 <meta property="og:url" content="https://opengxj.github.io/2022/10/16/Mysql--%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84/index.html">
 <meta property="og:site_name" content="PEngxJ的小破站">
-<meta property="og:description" content="🥖Mysql–数据页结构 简介： 我们在前面的文章中已经提到了：Innodb中页做为内存和磁盘数据交换的基本单位，人们为了达到不同的目的设置了多种不同的页，比如存放表空间头部信息的页，存放Insert Buffer信息的页，存放 INODE 信息的页，存放 undo 日志信息的页等等等等，这些奇奇怪怪的页先放放，我们本次的重点是存放数据的页，也就是索引页，我们暂且称它为数据页  数据页代表的这块">
+<meta property="og:description" content="我们一直说记录放在页中，页是内存和磁盘交换数据的基本单位，那这个页到底长啥样呢？它主要又七部分组成，File Header、Page Header 、Infimum+supermum、User Records、Free Space、Page Directory和File Trailer，我们一起一趟究竟！">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://tva1.sinaimg.cn/large/008vxvgGgy1h77i1wvpqrj30bz06zweg.jpg">
 <meta property="article:published_time" content="2022-10-16T14:31:33.000Z">
-<meta property="article:modified_time" content="2022-10-17T05:16:38.405Z">
+<meta property="article:modified_time" content="2022-10-17T07:26:34.122Z">
 <meta property="article:author" content="PEngxJ">
 <meta property="article:tag" content="Mysql">
 <meta name="twitter:card" content="summary_large_image">
@@ -221,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          6.1k 字
+          6.2k 字
         
       </span>
     
@@ -232,7 +232,7 @@
         
         
         
-          51 分钟
+          52 分钟
         
       </span>
     
@@ -275,7 +275,10 @@
             
               <div class="markdown-body">
                 
-                <h1 id="🥖Mysql–数据页结构"><a href="#🥖Mysql–数据页结构" class="headerlink" title="🥖Mysql–数据页结构"></a>🥖Mysql–数据页结构</h1><p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h787njpaojj30vq0hstbd.jpg" srcset="/img/loading.gif" lazyload></p>
+                <p>我们一直说记录放在页中，页是内存和磁盘交换数据的基本单位，那这个页到底长啥样呢？它主要又七部分组成，File Header、Page Header 、Infimum+supermum、User Records、Free Space、Page Directory和File Trailer，我们一起一趟究竟！</p>
+<span id="more"></span>
+
+<h1 id="🥖Mysql–数据页结构"><a href="#🥖Mysql–数据页结构" class="headerlink" title="🥖Mysql–数据页结构"></a>🥖Mysql–数据页结构</h1><p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h787njpaojj30vq0hstbd.jpg" srcset="/img/loading.gif" lazyload></p>
 <h2 id="简介："><a href="#简介：" class="headerlink" title="简介："></a>简介：</h2><blockquote>
 <p>我们在前面的文章中已经提到了：Innodb中页做为内存和磁盘数据交换的基本单位，人们为了达到不同的目的设置了多种不同的页，比如存放表空间头部信息的页，存放Insert Buffer信息的页，存放 INODE 信息的页，存放 undo 日志信息的页等等等等，这些奇奇怪怪的页先放放，我们本次的重点是存放数据的页，也就是索引页，我们暂且称它为数据页</p>
 </blockquote>

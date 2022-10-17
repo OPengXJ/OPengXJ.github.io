@@ -1,0 +1,733 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/3dd.png">
+  <link rel="icon" href="/img/3dd.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="PEngxJ">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="🍞Mysql–记录的行格式  简介： 你是否有思考过，Mysql表中的数据存在了哪？以什么格式存的？又是以什么方式去访问这些数据的？只有了解了这些才能学习到开发者那些精雕细琢的设计。 我们知道Mysql服务器上负责写入和读取数据的存储引擎，人们为了不同的目的设计了许多不同的存储引擎，真实数据在不同存储引擎中存放的格式一般也是不同的，因为Innodb现在是mysql的默认存储引擎，所以我接下来好好">
+<meta property="og:type" content="article">
+<meta property="og:title" content="🍞Mysql--记录的行格式">
+<meta property="og:url" content="https://opengxj.github.io/2022/10/16/Mysql--%E8%AE%B0%E5%BD%95%E7%9A%84%E8%A1%8C%E6%A0%BC%E5%BC%8F/index.html">
+<meta property="og:site_name" content="PEngxJ的小破站">
+<meta property="og:description" content="🍞Mysql–记录的行格式  简介： 你是否有思考过，Mysql表中的数据存在了哪？以什么格式存的？又是以什么方式去访问这些数据的？只有了解了这些才能学习到开发者那些精雕细琢的设计。 我们知道Mysql服务器上负责写入和读取数据的存储引擎，人们为了不同的目的设计了许多不同的存储引擎，真实数据在不同存储引擎中存放的格式一般也是不同的，因为Innodb现在是mysql的默认存储引擎，所以我接下来好好">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008vxvgGgy1h76xpuyqn1j30sg0g0q3o.jpg">
+<meta property="article:published_time" content="2022-10-16T02:42:33.000Z">
+<meta property="article:modified_time" content="2022-10-16T14:27:05.794Z">
+<meta property="article:author" content="PEngxJ">
+<meta property="article:tag" content="Mysql">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008vxvgGgy1h76xpuyqn1j30sg0g0q3o.jpg">
+  
+  
+  
+  <title>🍞Mysql--记录的行格式 - PEngxJ的小破站</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"opengxj.github.io","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>PEngxJ的小破站</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://tva1.sinaimg.cn/large/008vxvgGgy1h76xpuyqn1j30sg0g0q3o.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="🍞Mysql--记录的行格式"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-10-16 10:42" pubdate>
+          2022年10月16日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          45 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">🍞Mysql--记录的行格式</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="🍞Mysql–记录的行格式"><a href="#🍞Mysql–记录的行格式" class="headerlink" title="🍞Mysql–记录的行格式"></a>🍞Mysql–记录的行格式</h1><p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h77hwsi4kcj30vq0hstc5.jpg" srcset="/img/loading.gif" lazyload> </p>
+<h2 id="简介："><a href="#简介：" class="headerlink" title="简介："></a>简介：</h2><blockquote>
+<p>你是否有思考过，Mysql表中的数据存在了哪？以什么格式存的？又是以什么方式去访问这些数据的？只有了解了这些才能学习到开发者那些精雕细琢的设计。</p>
+<p>我们知道Mysql服务器上负责写入和读取数据的存储引擎，人们为了不同的目的设计了许多不同的存储引擎，真实数据在不同存储引擎中存放的格式一般也是不同的，因为Innodb现在是mysql的默认存储引擎，所以我接下来好好聊下Innodb的数据存储结构。</p>
+<p>在Innodb中，数据被持久化在磁盘上，而数据的处理过程是发生在内存中的，所以读取数据时都得先从磁盘上把数据读到内存再操作，如果有对数据进行修改还要把新数据刷新回磁盘中。那读数据到内存的过程是怎么样的呢？当然不可能是一行一行的读啦，mysql将将数据分为若干个页，页做为内存和磁盘交换数据的基本单位，一个页大小一般为16KB。</p>
+<p>这篇文章讨论的行格式是什么呢？操作mysql时我们是以记录的格式向表中插入数据的，而这些记录存在页中的格式就称为行格式或者记录格式。</p>
+<p>设计 InnoDB 存储引擎的大叔们到现在为止设计了4种不同类型的 行格式 ，分别是 Compact 、 Redundant 、Dynamic 和 Compressed 行格式，随着时间的推移，他们可能会设计出更多的行格式，但是不管怎么变，在原理 上大体都是相同的。</p>
+</blockquote>
+<h2 id="指定行格式："><a href="#指定行格式：" class="headerlink" title="指定行格式："></a>指定行格式：</h2><p>首先我们学习如何指定行格式，没有像字符集那样要分好几个级别，行格式都是在表层面修改的，也就是在创建表时指定和修改表时指定。也就是</p>
+<ul>
+<li>CREATE TABLE 表名 (列的信息) ROW_FORMAT&#x3D;行格式名称</li>
+<li>ALTER TABLE 表名 ROW_FORMAT&#x3D;行格式名称</li>
+</ul>
+<h2 id="Compact行格式："><a href="#Compact行格式：" class="headerlink" title="Compact行格式："></a>Compact行格式：</h2><blockquote>
+<p>我们以行格式Compact来学习Innodb的行格式，因为学完它后，其他的行格式其实也差不多</p>
+</blockquote>
+<p>先看图：</p>
+<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h7748y7852j313u0d0t9w.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>从图中可以看出一行记录分为两部分：记录的额外信息和记录的真实数据。</p>
+<h3 id="记录的额外信息："><a href="#记录的额外信息：" class="headerlink" title="记录的额外信息："></a>记录的额外信息：</h3><p>这部分信息是服务器为了描述这条记录而不得不额外添加的一些信息，这些额外信息分为3类，分别是 变长字段长度列表 、 NULL值列表 和 记录头信息 ，我们分别看一下。</p>
+<h4 id="变长字段长度列表："><a href="#变长字段长度列表：" class="headerlink" title="变长字段长度列表："></a>变长字段长度列表：</h4><p>我们知道mysql中支持一些变长字段，比如varchar(M)、varbinary(M)、各种TEXT类型和各种BLOB类型，变长字段中存储多少字节的数据是不固定的，所以我们在存储真实数据的时候需要顺便把这些数据占用的字节数也存起来，这样才不至于把 MySQL 服务器搞懵（密密麻麻的数据碍一起，谁是谁的）。也就是说对于变长字段，我们在存入数据时是要存两部分的，一部分是数据的真实数据，另一部分是该字段的占用的字节数。</p>
+<p>在 Compact 行格式中，把所有变长字段的真实数据占用的字节长度都存放在记录的开头部位，从而形成一个<strong>变长字段长度列表</strong>，各变长字段数据占用的字节数按照列的顺序逆序存放，记住是逆序存放哦，（对性能有考虑的，后面会提到）。</p>
+<p>如果我们执行以下语句</p>
+<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h774qbach0j314o0hejte.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>因为我们的c1、c2、c4列是变长字段的，所以第一条记录在页中应该是这样子的。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h774tydifjj315g0fuq4u.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>上面展示的这条例子中，几个字段占用的字节数都较少，所以都用一个字节就存储下来了，而其实如果对于占用字节数较多的字段是会用两个字节表示的，具体的抉择如下：</p>
+<p>我们首先声明一下W、M和L分别代表什么意思：</p>
+<ul>
+<li>W：某个字符集中表示一个字符最多需要使用的字节数为 W ，也就是使用 SHOW CHARSET 语句的结果中的 Maxlen 列，比方说 utf8 字符集中的 W 就是 3 ， gbk 字符集中的 W 就是 2 ， ascii 字符集中的 W 就是 1。</li>
+<li>M：对于变长类型 VARCHAR(M) 来说，这种类型表示能存储最多 M 个字符(注意是字符不是字节)，所以这个类型能表示的字符串最多占用的字节数就是 M×W 。</li>
+<li>L：假设它实际存储的字符串占用的字节数是 L 。</li>
+</ul>
+<p>确定使用1个字节还是2个字节表示真正字符串占用的字节数的规则就是这样:</p>
+<ol>
+<li><p>如果 M×W &lt;&#x3D; 255 ，那么使用1个字节来表示真正字符串占用的字节数。</p>
+</li>
+<li><p>如果 M×W &gt; 255 ，则分为两种情况:</p>
+<ul>
+<li><p>如果 L &lt;&#x3D; 127 ，则用1个字节来表示真正字符串占用的字节数。 </p>
+</li>
+<li><p>如果 L &gt; 127 ，则用2个字节来表示真正字符串占用的字节数。</p>
+</li>
+</ul>
+</li>
+</ol>
+<p>总结一下就是说:如果该可变字段允许存储的最大字节数( M×W )超过255字节并且真实存储的字节数( L ) 超过127字节，则使用2个字节，否则使用1个字节。</p>
+<p>还有一点是，我们用两字节表示后，<strong>mysql怎么知道读到的当前的这个字节是整个长度的字节，还是整个长度的半个字节</strong>，mysql用标记位巧妙地化解了这个问题，也就是使用该字节的第一个二进制位作为标志位:如果该字节的第一个位为0，那 该字节就是一个单独的字段长度(使用一个字节表示不大于127的二进制的第一个位都为0)， 如果该字节的第一个位为1，那该字节就是半个字段长度。</p>
+<p><strong>CHAR(M)列的存储格式</strong></p>
+<p>我们这里还要补充一点，其实除了我们上面说的那几个字段类型Innodb会存储他们的字段长度，CHAR（M）类型也是有可能会的，上面没有的原因是因为我们在创建表时指定了字符集为ASCII，如果换成了其他变长编码的字符集那就会存粗它的长度了。</p>
+<p>而且要知道变长字符集的 CHAR(M) 类型的列要求至少占用 M 个字节，比方说对于使用 utf8 字符集的 CHAR(10) 的列来说，该列存储的数据字节长度的范围是10~30个字节。即 使我们向该列中存储一个空字符串也会占用 10 个字节，这是怕将来更新该列的值的字节长度大于原有值的字节 长度而小于10个字节时，可以在该记录处直接更新，而不是在存储空间中重新分配一个新的记录空间，导致原有 的记录空间成为所谓的碎片</p>
+<h4 id="NULL值列表："><a href="#NULL值列表：" class="headerlink" title="NULL值列表："></a>NULL值列表：</h4><p>这是Innodb对于节约空间的考虑，很容易理解，NULL值本身就不是很大的意义，只是一个标识而已，如果还在真实数据内存入一个个的NULL，可想是很占用存储的，所以 Compact 行格式把这些值为 NULL 的列统一管理起来，存储到NULL值列表中，具体的过程可以总结为：先统计、再用二进制位逆序表示、限制用整数个字节表示。详细的如下：</p>
+<ol>
+<li><p>首先统计表中允许存储 NULL 的列有哪些。我们知道主键列、被 NOT NULL 修饰的列都是不可以存储 NULL 值的，所以在统计的时候不会把这些列放入二进制位的。</p>
+</li>
+<li><p>如果表中没有允许存储 <strong>NULL</strong> 的列，则 NULL值列表也不存在了，否则将每个允许存储 NULL 的列对应一个二进制位.  ，二进制位按照列的顺序逆序排列，二进制位表示的意义如下:</p>
+</li>
+</ol>
+<ul>
+<li><p>二进制位的值为 1 时，代表该列的值为 NULL 。</p>
+</li>
+<li><p>二进制位的值为 0 时，代表该列的值不为 NULL 。</p>
+</li>
+</ul>
+<ol start="3">
+<li>MySQL规定NULL值列表必须用整数个字节的位表示，如果使用的二进制位个数不是整数个字节，则在字节 的高位补 0 。</li>
+</ol>
+<p>综上，我们上边那条记录的NULL值在页中的格式如下：</p>
+<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h775rv8x7qj314s0gk3z6.jpg" srcset="/img/loading.gif" lazyload></p>
+<h4 id="记录头信息："><a href="#记录头信息：" class="headerlink" title="记录头信息："></a>记录头信息：</h4><p>除了 变长字段长度列表 、 NULL值列表 之外，还有一个用于描述记录的 记录头信息 ，它是由固定的 5 个字节组成。 5 个字节也就是 40 个二进制位，不同的位代表不同的意思，如图:</p>
+<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h775uhgb25j315g086jrx.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>居然这么多个字段，没事，我们先放一放，后面我们会详细的讲它。</p>
+<h3 id="记录的真实数据："><a href="#记录的真实数据：" class="headerlink" title="记录的真实数据："></a>记录的真实数据：</h3><p>对于 record_format_demo 表来说， 记录的真实数据 除了 c1 、 c2 、 c3 、 c4 这几个我们自己定义的列的数据 以外， MySQL 会为每个记录默认的添加一些列(也称为 隐藏列 )，具体的列如下:</p>
+<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h775yse5znj316m06s74r.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>这里需要提一下 InnoDB 表对主键的生成策略:优先使用用户自定义主键作为主键，如果用户没有定义主键，则 选取一个 Unique 键作为主键，如果表中连 Unique 键都没有定义的话，则 InnoDB 会为表默认添加一个名为row_id 的隐藏列作为主键。所以我们从上表中可以看出:InnoDB存储引擎会为每条记录都添加 <strong>transaction_id</strong> 和 <strong>roll_pointer</strong> 这两个列，但是 <strong>row_id</strong> 是可选的(在没有自定义主键以及Unique键的情况下才会添加该列)。 这些隐藏列的值不用我们操心， InnoDB 存储引擎会自己帮我们生成的</p>
+<p>综上，我们上面最开始插入的两条数据应该是这样的：<br><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h7763ffe2gj31ce0gadi3.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>看这个图的时候我们需要注意几点:</p>
+<ol>
+<li>表 record_format_demo 使用的是 ascii 字符集，所以 0x61616161 就表示字符串 ‘aaaa’ ， 0x626262 就表 示字符串 ‘bbb’ ，以此类推。</li>
+<li>注意第1条记录中 c3 列的值，它是 CHAR(10) 类型的，它实际存储的字符串是: ‘cc’ ，而 ascii 字符集中 的字节表示是 ‘0x6363’ ，虽然表示这个字符串只占用了2个字节，但整个 c3 列仍然占用了10个字节的空 间，除真实数据以外的8个字节的统统都用空格字符填充，空格字符在 ascii 字符集的表示就是 0x20 。</li>
+<li>注意第2条记录中 c3 和 c4 列的值都为 NULL ，它们被存储在了前边的 NULL值列表 处，在记录的真实数据处 就不再冗余存储，从而节省存储空间。</li>
+</ol>
+<h2 id="行溢出数据："><a href="#行溢出数据：" class="headerlink" title="行溢出数据："></a>行溢出数据：</h2><h3 id="VARCHAR-M-最多存储多少数据"><a href="#VARCHAR-M-最多存储多少数据" class="headerlink" title="VARCHAR(M)最多存储多少数据"></a>VARCHAR(M)最多存储多少数据</h3><p>我们知道对于 VARCHAR(M) 类型的列最多可以占用 65535 个字节。其中的 M 代表该类型最多存储的字符数量，如果我们使用 ascii 字符集的话，一个字符就代表一个字节，我们可以存一个VARCHAR(65535)吗？显然是不行的，这个 65535 个字节除了列本身的数据之外，还包括一些 其他的数据，比如说我们为了存储一个 VARCHAR(M) 类型的列，其实需要占用3部分存储 空间:</p>
+<ul>
+<li>真实数据</li>
+<li>真实数据占用字节的长度</li>
+<li>NULL 值标识，如果该列有 NOT NULL 属性则可以没有这部分存储空间</li>
+</ul>
+<p>如果该 VARCHAR 类型的列没有 NOT NULL 属性，那最多只能存储 65532 个字节的数据，因为真实数据的长度可能占用2个字节， NULL 值标识需要占用1个字节。如果 VARCHAR 类型的列有 NOT NULL 属性，那最多只能存储 65533 个字节的数据，因为真实数据的长度可能占用 2个字节，不需要 NULL 值标识。</p>
+<p>也就是说我们可以创建一个字符集为ASCII的VARCHAR(65532)或者VARCHAR(65533)的列。</p>
+<p>那如果字符集不是ASCII而是变长编码的字符集呢？依你聪明的小脑袋应该猜到了，也就是会根据变长编码字符集需要的最大字节数来咯。比如在列的值允许为 NULL 的情况下， gbk 字符集表示一个字符最多需要 2 个字 节，那在该字符集下， M 的最大取值就是 32766 (也就是:65532&#x2F;2)</p>
+<h3 id="记录中的数据太多造成的行溢出："><a href="#记录中的数据太多造成的行溢出：" class="headerlink" title="记录中的数据太多造成的行溢出："></a>记录中的数据太多造成的行溢出：</h3><p>首先解答为什么会行溢出：</p>
+<p>MySQL 中磁盘和内存交互的基本单位是 页 ，也就是说 MySQL 是以 页为基本单位来管理存储空间的，我们 的记录都会被分配到某个页中存储。而一个页的大小一般是 16KB ，也就是 16384 字节，而一个 VARCHAR(M) 类 型的列就最多可以存储 65532 个字节，这样就可能造成一个页存放不了一条记录的尴尬情况。</p>
+<p>在 Compact 和 Reduntant 行格式中，对于占用存储空间非常大的列，在 记录的真实数据处只会存储该列的一部分数据（768个字节），把剩余的数据分散存储在几个其他的页中，然后记录的真实数据处用20个字节存储指向这些页的地址 (当然这20个字节中还包括这些分散在其他页面中的数据的占用的字节数)，这些页也被称为溢出页，从而可以找到剩余数据所在的页。</p>
+<p>最后需要注意的是，不只是 <strong>VARCHAR(M)</strong> 类型的列，其他的 <strong>TEXT</strong>、<strong>BLOB</strong> 类型的列在存储数据非常多的时候也会发生行溢出 。</p>
+<h3 id="行溢出的临界值："><a href="#行溢出的临界值：" class="headerlink" title="行溢出的临界值："></a>行溢出的临界值：</h3><p>MySQL 中规定<strong>一个页中至少存放两行记录</strong>，原因后面讲索引的时候会讲到，主要还是高效的问题。</p>
+<p>其实我们了解到这里就行了，也就是知道当一行数据字节数太多时会发生行溢出就行了，当然如果你想了解下怎么算这个值，也可以看看下面的。</p>
+<p>假设我们创建了一个表，表中只有一列数据，我们往这个表中插入两条记录，每条记录最少插入多少字节的数据才会出现行溢出的现象呢?首先得分析一下页中的空间都是如何利用的。</p>
+<p>每个页除了存放我们的记录以外，也需要存储一些额外的信息，乱七八糟的额外信息加起来需要<strong>136</strong> 个字节 的空间(现在只要知道这个数字就好了)，其他的空间都可以被用来存储记录。 每个记录需要的额外信息是 27 字节。这27个字节包括下边这些部分: </p>
+<ul>
+<li>2个字节用于存储真实数据的长度 </li>
+<li>1个字节用于存储列是否是NULL值</li>
+<li>5个字节大小的头信息</li>
+<li>6个字节的 row_id 列</li>
+<li>6个字节的 transaction_id 列</li>
+<li>7个字节的 roll_pointer 列</li>
+</ul>
+<p>假设一个列中存储的数据字节数为n，那么发生行溢出现象时需要满足这个式子: 136 + 2×(27 + n) &gt; 16384，求解这个式子得出的解是: n &gt; 8098 </p>
+<p>总之，其实也可以不用去管他，知道一行数据太大会发现行溢出就对了。</p>
+<h2 id="Dynamic和Compressed行格式"><a href="#Dynamic和Compressed行格式" class="headerlink" title="Dynamic和Compressed行格式"></a>Dynamic和Compressed行格式</h2><p>下边要介绍另外两个行格式， Dynamic 和 Compressed 行格式，我现在使用的 MySQL 版本是 5.7 ，它的默认行格 式就是 Dynamic ，这俩行格式和Compact行格式挺像，只不过在处理 行溢出 数据时有点儿分歧，它们不会在记录的真实数据处存储字段真实数据的前 768 个字节，而是把所有的字节都存储到其他页面中，只在记录的真实数据处存储其他页面的地址。</p>
+<p>Compressed 行格式和 Dynamic 还有不同的一点是， Compressed 行格式会采用压缩算法对页面进行压缩，以节省空间。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%89%93%E6%80%AA%E5%8D%87%E7%BA%A7/" class="category-chain-item">打怪升级</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%89%93%E6%80%AA%E5%8D%87%E7%BA%A7/Mysql/" class="category-chain-item">Mysql</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Mysql/">#Mysql</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>🍞Mysql--记录的行格式</div>
+      <div>https://opengxj.github.io/2022/10/16/Mysql--记录的行格式/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>PEngxJ</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年10月16日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/10/16/Mysql--%E6%95%B0%E6%8D%AE%E9%A1%B5%E7%BB%93%E6%9E%84/" title="🥖Mysql--数据页结构">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">🥖Mysql--数据页结构</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/10/15/Redis%E5%AF%B9%E8%B1%A1----%E4%BA%94%E5%A4%A7%E5%AF%B9%E8%B1%A1/" title="🧀Redis对象----五大对象">
+                        <span class="hidden-mobile">🧀Redis对象----五大对象</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Mamba</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>KOBE</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -23,13 +23,13 @@
 <meta property="og:site_name" content="PEngxJ的小破站">
 <meta property="og:description" content="Redis高效的原因很大一部分原因就是因为数据库的底层实现为字典，Redis的字典暗藏了什么玄机，让我们一探究竟。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://tva1.sinaimg.cn/large/e6c9d24egy1h6hmd8qlrfj208b04oq2x.jpg">
+<meta property="og:image" content="https://img.tucang.cc/api/image/show/cab05c198cf70718539e16f4d6f6614e">
 <meta property="article:published_time" content="2022-09-24T05:02:33.000Z">
-<meta property="article:modified_time" content="2022-09-25T02:26:26.155Z">
+<meta property="article:modified_time" content="2023-02-02T15:16:26.720Z">
 <meta property="article:author" content="PEngxJ">
 <meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/e6c9d24egy1h6hmd8qlrfj208b04oq2x.jpg">
+<meta name="twitter:image" content="https://img.tucang.cc/api/image/show/cab05c198cf70718539e16f4d6f6614e">
   
   
   
@@ -192,7 +192,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('https://tva1.sinaimg.cn/large/e6c9d24egy1h6hmd8qlrfj208b04oq2x.jpg') no-repeat center center; background-size: cover;">
+     style="background: url('https://img.tucang.cc/api/image/show/cab05c198cf70718539e16f4d6f6614e') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -278,7 +278,7 @@
                 <p>Redis高效的原因很大一部分原因就是因为数据库的底层实现为字典，Redis的字典暗藏了什么玄机，让我们一探究竟。</p>
 <span id="more"></span>
 
-<h1 id="🍔Redis数据结构—-字典"><a href="#🍔Redis数据结构—-字典" class="headerlink" title="🍔Redis数据结构—-字典"></a>🍔Redis数据结构—-字典</h1><p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h6hwwms7coj20vq0hswhm.jpg" srcset="/img/loading.gif" lazyload></p>
+<h1 id="🍔Redis数据结构—-字典"><a href="#🍔Redis数据结构—-字典" class="headerlink" title="🍔Redis数据结构—-字典"></a>🍔Redis数据结构—-字典</h1><p><img src="https://img.tucang.cc/api/image/show/a38d8e52720e2e9b3d860a50e7e87e8a" srcset="/img/loading.gif" lazyload></p>
 <h2 id="简介："><a href="#简介：" class="headerlink" title="简介："></a>简介：</h2><blockquote>
 <p>字典是一种用于存储键值对的数据结构，里面的值被唯一的键一一映射，具有高效的查询能力，和链表同样的是C语言没有自带字典，所以Redis自己实现了字典。</p>
 <p>字典在Redis中很受重用，比如Redis数据库的底层实现正是字典，还有Hash键的底层实现之一也是字典（当键比较多或者值都是较长的字符串时）</p>
@@ -349,12 +349,12 @@
 
 <p>rehash完后面就都一样了。</p>
 <p>再附上rehash过程图解方便理解：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h6hu3kgpfij20k10iu3zn.jpg" srcset="/img/loading.gif" lazyload></p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h6hu3pji1vj20k10ekab2.jpg" srcset="/img/loading.gif" lazyload></p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h6hu468ip4j20k10eo75c.jpg" srcset="/img/loading.gif" lazyload></p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h6hu48itd4j20k10gx75e.jpg" srcset="/img/loading.gif" lazyload></p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h6hu4am9obj20k10is0tx.jpg" srcset="/img/loading.gif" lazyload></p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h6hu4eumt9j20k10ed3zf.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/4beb763084ec1f97bc9250f870d5294e" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/7236eccfd86f89e0d1cb2a3e942d69d7" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/6a8c17c270bfa05c2e2ce8339b6c5322" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/d288532687c692e98cbdb0f3dcecb9ea" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/47b8f5c6f584c203089110b5c794a9db" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/cfdb63f74d82e0644c69b71a889766ab" srcset="/img/loading.gif" lazyload></p>
 <p>渐进式rehash的好处就是它采取了分而治之的方式，将rehash键值对所需的计算均摊到对字典的每个添加、删除、查找、和更新操作上，从而避免了集中式rehash带来的庞大计算量。</p>
 <h3 id="渐进式rehash期间的哈希表操作："><a href="#渐进式rehash期间的哈希表操作：" class="headerlink" title="渐进式rehash期间的哈希表操作："></a>渐进式rehash期间的哈希表操作：</h3><p>因为在rehash期间，键值对会分布在ht[0]和ht[1]上，所以在进行如删除、查找、更新等操作时就会先在ht[0]上找相应键值对，找不到则会再去ht[1]上找，而在添加操作上，则键值对会被直接添加到ht[1],这样ht[0]的键值对就会只减不增，随着rehash进行最后成为一张空表。</p>
 

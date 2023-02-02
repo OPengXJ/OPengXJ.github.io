@@ -23,13 +23,13 @@
 <meta property="og:site_name" content="PEngxJ的小破站">
 <meta property="og:description" content="redis并没有直接使用这些数据结构来实现键值对数据库， 而是基于之前的数据结构创建了一个对象系统，让redis的键值对的底层数据结构更加灵活，公用对象节约内存，引用计数技术让控制更加便利。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://tva1.sinaimg.cn/large/008vxvgGgy1h760eufruvj30jy09lzl8.jpg">
+<meta property="og:image" content="https://img.tucang.cc/api/image/show/0c7067c291ec45199a6094473a647296">
 <meta property="article:published_time" content="2022-10-15T07:29:33.000Z">
-<meta property="article:modified_time" content="2022-10-17T07:18:17.628Z">
+<meta property="article:modified_time" content="2023-02-02T15:10:09.112Z">
 <meta property="article:author" content="PEngxJ">
 <meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008vxvgGgy1h760eufruvj30jy09lzl8.jpg">
+<meta name="twitter:image" content="https://img.tucang.cc/api/image/show/0c7067c291ec45199a6094473a647296">
   
   
   
@@ -192,7 +192,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('https://tva1.sinaimg.cn/large/008vxvgGgy1h760eufruvj30jy09lzl8.jpg') no-repeat center center; background-size: cover;">
+     style="background: url('https://img.tucang.cc/api/image/show/0c7067c291ec45199a6094473a647296') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -278,7 +278,7 @@
                 <p>redis并没有直接使用这些数据结构来实现键值对数据库， 而是基于之前的数据结构创建了一个对象系统，让redis的键值对的底层数据结构更加灵活，公用对象节约内存，引用计数技术让控制更加便利。</p>
 <span id="more"></span>
 
-<h1 id="🧀Redis对象—-五大对象"><a href="#🧀Redis对象—-五大对象" class="headerlink" title="🧀Redis对象—-五大对象"></a>🧀Redis对象—-五大对象</h1><p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h76wu0ljr8j30vq0hsjt5.jpg" srcset="/img/loading.gif" lazyload></p>
+<h1 id="🧀Redis对象—-五大对象"><a href="#🧀Redis对象—-五大对象" class="headerlink" title="🧀Redis对象—-五大对象"></a>🧀Redis对象—-五大对象</h1><p><img src="https://img.tucang.cc/api/image/show/f4420603772a4db7912c1e31b24e45df" srcset="/img/loading.gif" lazyload></p>
 <blockquote>
 <p>Redis 并没有直接使用这些数据结构来实现键值对数据库， 而是基于这些数据结构创建了一个<mark>对象系统</mark>， 这个系统包含<strong>字符串对象</strong>、<strong>列表对象</strong>、<strong>哈希对象</strong>、<strong>集合对象</strong>和<strong>有序集合对象</strong>这五种类型的对象， 每种对象都用到了至少一种我们前面所介绍的数据结构。</p>
 <p>通过这五种不同类型的对象， Redis 可以在执行命令之前， 根据对象的类型来判断一个对象是否可以执行给定的命令。 使用对象的另一个好处是， 我们可以<strong>针对不同的使用场景， 为对象设置多种不同的数据结构实现</strong>， 从而优化对象在不同场景下的使用效率。</p>
@@ -438,7 +438,7 @@
 <p><code>embstr</code> 编码是专门用于保存短字符串的一种优化编码方式， 这种编码和 <code>raw</code> 编码一样， 都使用 <code>redisObject</code> 结构和 <code>sdshdr</code> 结构来表示字符串对象， 但 <code>raw</code> 编码会调用两次内存分配函数来分别创建 <code>redisObject</code> 结构和 <code>sdshdr</code> 结构， 而 <code>embstr</code> 编码则通过调用一次内存分配函数来分配一块连续的空间， 空间中依次包含 <code>redisObject</code> 和 <code>sdshdr</code> 两个结构， 如下图所示。</p>
 </li>
 </ol>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h761ri37w9j30mw04caa6.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/8b9ec49d4f500d38e815d32231e24490" srcset="/img/loading.gif" lazyload></p>
 <p><code>embstr</code> 编码的字符串对象在执行命令时， 产生的效果和 <code>raw</code> 编码的字符串对象执行命令时产生的效果是相同的， 但使用 <code>embstr</code> 编码的字符串对象来保存短字符串值有以下好处：</p>
 <ol>
 <li><code>embstr</code> 编码将创建字符串对象所需的内存分配次数从 <code>raw</code> 编码的两次降低为一次。</li>
@@ -482,7 +482,7 @@
 <p>quicklist.c - A doubly linked list of ziplists (一个ziplist的双向链表)</p>
 </blockquote>
 <p>我们再看看它的结构：</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h762yvua7oj30ok0gh0tz.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/634337d5bbee2302cbda1404a7c254c4" srcset="/img/loading.gif" lazyload></p>
 <p>现在明白了吧，redis并没有放弃<code>ziplist</code> 和 <code>linkedlist</code>，<code>quicklist</code>其实就是一个以 <code>ziplist</code>为节点（quicklistNode中存放指向 ziplist 的指针）的<code>linkedlist</code>。</p>
 <p>现在我们能回答我们最初的问题了，quicklist 的结构为什么这样设计呢？答案是<code>quicklist</code> 平衡了 <code>ziplist</code> 和<code>linkedlist</code>的优缺点：</p>
 <ul>

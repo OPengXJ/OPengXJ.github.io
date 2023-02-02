@@ -16,24 +16,24 @@
   <meta name="author" content="PEngxJ">
   <meta name="keywords" content="">
   
-    <meta name="description" content="🖥️如何选屏幕？ 一块好的屏幕，可以让我们的体验提高很多档次，但是现在市面上的显示器都太鱼龙混杂了，在不做点功课的情况下要选一块好屏幕还是挺难的。 按照先看评测的科普做了这样一篇笔记。  尺寸大还是分辨率高：预算有限的情况下优先尺寸还是分辨率： 尺寸大显示范围肯定大些，但在相同分辨率下，其实他们显示的内容是一样的，图标和文字只是等比放大，总结：只有尺寸增加的同时，物理像素也相应增加，也就是分辨率">
+    <meta name="description" content="我们都知道Go在并发上的强悍能力，浅一些时我们知道与Goroutine的轻便有很大关系，而深层次些呢，主要是和Go独特的调度模型GMP有关。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="🖥️如何选屏幕？">
-<meta property="og:url" content="https://opengxj.github.io/2022/10/29/%E5%A6%82%E4%BD%95%E9%80%89%E5%B1%8F%E5%B9%95%EF%BC%9F/index.html">
+<meta property="og:title" content="🧐GMP学习笔记">
+<meta property="og:url" content="https://opengxj.github.io/2022/11/03/GMP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
 <meta property="og:site_name" content="PEngxJ的小破站">
-<meta property="og:description" content="🖥️如何选屏幕？ 一块好的屏幕，可以让我们的体验提高很多档次，但是现在市面上的显示器都太鱼龙混杂了，在不做点功课的情况下要选一块好屏幕还是挺难的。 按照先看评测的科普做了这样一篇笔记。  尺寸大还是分辨率高：预算有限的情况下优先尺寸还是分辨率： 尺寸大显示范围肯定大些，但在相同分辨率下，其实他们显示的内容是一样的，图标和文字只是等比放大，总结：只有尺寸增加的同时，物理像素也相应增加，也就是分辨率">
+<meta property="og:description" content="我们都知道Go在并发上的强悍能力，浅一些时我们知道与Goroutine的轻便有很大关系，而深层次些呢，主要是和Go独特的调度模型GMP有关。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://tva1.sinaimg.cn/large/008vxvgGgy1h7njro4d5jj31gs0fwq4h.jpg">
-<meta property="article:published_time" content="2022-10-29T11:42:01.000Z">
-<meta property="article:modified_time" content="2022-10-30T12:21:45.559Z">
+<meta property="og:image" content="https://tva1.sinaimg.cn/large/008vxvgGgy1h7s75vlkv4j307b05bt8q.jpg">
+<meta property="article:published_time" content="2022-11-03T12:05:33.000Z">
+<meta property="article:modified_time" content="2022-11-07T11:42:54.164Z">
 <meta property="article:author" content="PEngxJ">
-<meta property="article:tag" content="选屏幕">
+<meta property="article:tag" content="GMP">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008vxvgGgy1h7njro4d5jj31gs0fwq4h.jpg">
+<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008vxvgGgy1h7s75vlkv4j307b05bt8q.jpg">
   
   
   
-  <title>🖥️如何选屏幕？ - PEngxJ的小破站</title>
+  <title>🧐GMP学习笔记 - PEngxJ的小破站</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -192,13 +192,13 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('https://tva1.sinaimg.cn/large/008vxvgGgy1h7njro4d5jj31gs0fwq4h.jpg') no-repeat center center; background-size: cover;">
+     style="background: url('https://tva1.sinaimg.cn/large/008vxvgGgy1h7s75vlkv4j307b05bt8q.jpg') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="🖥️如何选屏幕？"></span>
+            <span id="subtitle" data-typed-text="🧐GMP学习笔记"></span>
           
         </div>
 
@@ -209,8 +209,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-10-29 19:42" pubdate>
-          2022年10月29日 晚上
+        <time datetime="2022-11-03 20:05" pubdate>
+          2022年11月3日 晚上
         </time>
       </span>
     
@@ -221,7 +221,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.9k 字
+          1.4k 字
         
       </span>
     
@@ -232,7 +232,7 @@
         
         
         
-          17 分钟
+          12 分钟
         
       </span>
     
@@ -270,73 +270,46 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">🖥️如何选屏幕？</h1>
+            <h1 style="display: none">🧐GMP学习笔记</h1>
             
             
               <div class="markdown-body">
                 
-                <h1 id="🖥️如何选屏幕？"><a href="#🖥️如何选屏幕？" class="headerlink" title="🖥️如何选屏幕？"></a>🖥️如何选屏幕？</h1><blockquote>
-<p>一块好的屏幕，可以让我们的体验提高很多档次，但是现在市面上的显示器都太鱼龙混杂了，在不做点功课的情况下要选一块好屏幕还是挺难的。</p>
-<p>按照先看评测的科普做了这样一篇笔记。</p>
+                <p>我们都知道Go在并发上的强悍能力，浅一些时我们知道与Goroutine的轻便有很大关系，而深层次些呢，主要是和Go独特的调度模型GMP有关。</p>
+<span id="more"></span>
+
+<h1 id="🧐GMP学习笔记"><a href="#🧐GMP学习笔记" class="headerlink" title="🧐GMP学习笔记"></a>🧐GMP学习笔记</h1><h2 id="简介："><a href="#简介：" class="headerlink" title="简介："></a>简介：</h2><blockquote>
+<p>Goroutine &#x3D; Golang + Coroutine。<strong>Goroutine是golang实现的协程，是用户级线程</strong>。</p>
 </blockquote>
-<h2 id="尺寸大还是分辨率高："><a href="#尺寸大还是分辨率高：" class="headerlink" title="尺寸大还是分辨率高："></a>尺寸大还是分辨率高：</h2><h3 id="预算有限的情况下优先尺寸还是分辨率："><a href="#预算有限的情况下优先尺寸还是分辨率：" class="headerlink" title="预算有限的情况下优先尺寸还是分辨率："></a>预算有限的情况下优先尺寸还是分辨率：</h3><ol>
-<li><p>尺寸大显示范围肯定大些，但在相同分辨率下，其实他们显示的内容是一样的，图标和文字只是等比放大，总结：<strong>只有尺寸增加的同时，物理像素也相应增加，也就是分辨率也提高，才能显示更多的内容。</strong></p>
-<p>这里有一个注意的点是：有可能分辨率较高，而尺寸不够大，如果按照正常分辨率显示来显示内容，那内容就会显地太小，所以系统就会默认地为文字和内容等比放大，这样虽然显示的内容没有之前多，但是高分辨率还是有优势的，也就是它能显示地更细捏些。何为细腻：</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h7mbkh2imzj30zw0kyq4w.jpg" srcset="/img/loading.gif" lazyload></p>
-</li>
-</ol>
-<h3 id="细腻："><a href="#细腻：" class="headerlink" title="细腻："></a>细腻：</h3><p>上面我们提到了细腻一词。<strong>一款好的屏幕就是应该让我们在合适的区域下看不到像素点</strong>，</p>
-<p>常见分辨率下得离多远才能不看到像素点如下图，<strong>越远越不好</strong></p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h7mbp5506cj31s00ke762.jpg" srcset="/img/loading.gif" lazyload></p>
-<p>下面是相应的分辨率下会超出舒适范围界限（一般人不会离屏幕超过75cm）的尺寸（也就是如果要买这个分辨率，那这些尺寸就不合适了，因为在正常使用下能看到屏幕像素点）：</p>
+<p>Goroutine具有以下特点：</p>
 <ul>
-<li><p><strong>1080P:</strong>  24、27、32的都超出了，但是要注意从上图可以看出，24寸和27寸的舒适范围界线其实差不多，但是却多了很大的范围，所以1080P，24和27, 27会更值些</p>
+<li>相比线程，其启动的代价很小，以很小栈空间启动（2Kb左右）</li>
+<li>能够动态地伸缩栈的大小，最大可以支持到Gb级别</li>
+<li>工作在用户态，切换成很小</li>
+<li>与线程关系是n:m，即可以在n个系统线程上多工调度m个Goroutine</li>
+</ul>
+<h2 id="进程、线程、Goroutine"><a href="#进程、线程、Goroutine" class="headerlink" title="进程、线程、Goroutine"></a>进程、线程、Goroutine</h2><p><strong>进程：</strong>进程是资源调度的基本单位，我们编写的代码称为程序，一般存储在磁盘上，当我们将程序从磁盘加载到内存运行起来后，一个运行的程序则称为进程。为了让进程不相互影响，OS提供了隔离机制，也就是在进程运行起来后，OS为其分配一块地址空间，然后OS在从自己管理的物理内存里面分配出来物理内存页，然后通过一个MMU的单元，将分配的虚拟内存与物理内存页映射起来，这样，读写虚拟内存地址最终通过映射来使用物理内存地址，这样每个进程之间的内存是独立的，安全的。每个进程会把虚拟内存空间分成4个段(代码段, 数据端，堆，栈)。</p>
+<ul>
+<li><p>代码段：用来存放进程(应用App)的代码指令。</p>
 </li>
-<li><p><strong>2K</strong>：24和27刚好可以卡在舒适范围内</p>
+<li><p>数据端：用来存放全局变量的内存。</p>
 </li>
-<li><p><strong>4K：</strong>即使是32寸也能保证在舒适范围内</p>
+<li><p><strong>堆</strong>：调用os的malloc&#x2F;free 来动态分配的内存。</p>
+</li>
+<li><p><strong>栈</strong>：用来存放局部变量，函数参数，函数调用与跳转。</p>
 </li>
 </ul>
-<h2 id="屏幕贵还贵在哪？"><a href="#屏幕贵还贵在哪？" class="headerlink" title="屏幕贵还贵在哪？"></a>屏幕贵还贵在哪？</h2><blockquote>
-<p>要看屏幕贵在哪就看那些贵的屏幕在吹什么？</p>
-<p>总结就是6点：亮度、对比度、可视角度、色深、色准以及HDR或者更亲民的低蓝光</p>
-</blockquote>
-<h3 id="亮度（nit）、对比度（-xxx-1）："><a href="#亮度（nit）、对比度（-xxx-1）：" class="headerlink" title="亮度（nit）、对比度（ xxx :1）："></a>亮度（nit）、对比度（ xxx :1）：</h3><p>这里就有两个坑了，对于亮度，有些屏幕标称有多少多少nit，但真实却没有。</p>
-<p>200nit的概念：把屏幕放在窗户边可能就看不清了。</p>
-<p>对于对比度：低对比度，看起来就像屏幕蒙上了一层灰</p>
-<p><strong>问题出在了哪？ **  驱动板，更细点说是HDMI插口。当我们用HDMI插口时，驱动板就会告诉电脑「我是台电视」，识别成电视会有什么问题呢，我们简单的知道就是为了防止电视信号在传输转换过程中后出现白燥点所以会给砍掉一些信号，再通过拉伸去补全，这样造成的直接结果就是亮度和对比度不准了。解决办法其实加一个DP口就解决了，因为DP协议定制的比较晚，所以不用去考虑兼容电视，也就不会出现上述问题。</strong>不过，有一些好的厂商，驱动写的较好，即使用HDMI也没问题**</p>
-<h3 id="五彩斑斓的白："><a href="#五彩斑斓的白：" class="headerlink" title="五彩斑斓的白："></a>五彩斑斓的白：</h3><p>不好的显示器对白会出现不同的奇怪现象：有的发白、有的发黄、有的发蓝</p>
-<ol>
-<li><p>显示器得调下色温模式</p>
-</li>
-<li><p>即使调到最标准的色温模式，但是其实调完后的真实色温还是和设置的参数色温不一样</p>
-<p>原因是：<strong>背光模组</strong></p>
-<p>面板厂商，背光模组一般是和液晶面板打包一起出售的，也就是原厂背光，这些采用原厂背光的显示器一般就没问题，而有一些低价显示器的厂商为了降低成本，只会用前面的液晶面板，后面的背光模组买自其它的第三方，也就是组装背光，所以这种显示器就较大可能出现白得不平衡的情况。</p>
-</li>
-</ol>
-<h3 id="可视角度："><a href="#可视角度：" class="headerlink" title="可视角度："></a>可视角度：</h3><p>厂家都会标称 178°，但是其实不同机型在偏转的角度下在对比度下降（人眼感知明显）、白色偏差和色彩劣化这几个方面都会有点不同。（白色偏差和色彩劣化要控制在1以内较好）</p>
-<p>但是一般这些参数不会在页面直接看到。所以一般是<strong>先认准IPS，然后再看怎么搞到上面这几个参数。</strong></p>
-<h3 id="闪烁："><a href="#闪烁：" class="headerlink" title="闪烁："></a>闪烁：</h3><blockquote>
-<p>商品页面里还会经常提到另一个词 「bit」</p>
-<p>bit的多少就像我们水彩笔套装里水彩笔颜色的多少</p>
-</blockquote>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h7mej2fu32j31bu0k8aeq.jpg" srcset="/img/loading.gif" lazyload></p>
-<p>如果用这些色彩笔画彩虹，那么在不同颜色之间的过渡就是「色阶」</p>
-<p>如果颜色更多，也就是bit更好，那么这道彩虹的色阶就更不明显。</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h7mem5uahrj311u0ga0ua.jpg" srcset="/img/loading.gif" lazyload></p>
-<p>但是其实在市面的屏幕真实情况没有上面那张图那么明显。原因是这些6bit的显示器通过了一种算法实现了近似8bit的显示效果。而正因为这样，对于我们用户可能遇到的情况就是观察到闪烁现象。所以咱们尽量别买6bit的。<strong>但是这里又有一个坑，也就是上面说的，可以通过算法来将6bit升级到8bit，所以厂家都把这些假8bit标为6bit</strong>，</p>
-<p><strong>所以真正的8bit显示器现在只能都宣传为10bit</strong></p>
-<h3 id="低蓝光"><a href="#低蓝光" class="headerlink" title="低蓝光"></a>低蓝光</h3><p>实际就是将蓝光的光谱降低了，但蓝光降低了，屏幕就会发黄</p>
-<p>而且，其实所有的显示器都能做到这一点，所以不用纠结一个显示器有没有低蓝光。</p>
-<h3 id="色准："><a href="#色准：" class="headerlink" title="色准："></a><strong>色准：</strong></h3><p>真实的颜色和标准颜色的偏移值会用ΔE表示，如果想买色准较好的那肯定是ΔE越小越好</p>
-<h3 id="广色域："><a href="#广色域：" class="headerlink" title="广色域："></a>广色域：</h3><p>看显示面积对SRGB的覆盖率即可。</p>
-<p>但是行业发展到今天，现在的屏幕对SRGB一般都是超覆盖的，</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h7nklbo3xgj30sa0ru0ut.jpg" srcset="/img/loading.gif" lazyload></p>
-<p>所以这些过饱和的显示器需要对这些超过sRGB的色域进行「限缩」。</p>
-<p>也就是这样</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h7nkpghw06j30wu0reac2.jpg" srcset="/img/loading.gif" lazyload></p>
-<p>所以看显示器广色域好不好，就是看他有没有色域限缩，没有色域限缩就会过饱和，就会不准，然后有色域收缩还不行，还要看它的限缩后保留的好不好，去掉了太多就与完整的色域差太多了。</p>
-
+<p>每个进程(应用App)相当于一个容器，所有应用App里面需要的资源和机制都在进程里面。</p>
+<p>线程是OS独立调度执行的单元，OS调度执行的单位就是线程，线程需要以进程作为容器和使用进程相关的环境。应用态没有进程就不会有线程。</p>
+<p><strong>线程：</strong>线程是调度执行的基本单位，例如”在桌面上双击打开一个App”, 桌面App程序会调用OS的系统调用接口fork，让OS 创建一个<strong>进程</strong>出来，<strong>OS为你准备好进程的结构体对象</strong>，将这个App的文件(xxx.exe, 存放编译好的代码指令)加载到进程的代码段，同时OS会为你创建一个线程(main thread), 在代码里面，还可以调用OS的接口，来创建多个线程，这样OS就可以调度这些线程执行了。</p>
+<p>进程和线程的关系如下（<strong>重要‼️</strong>）:</p>
+<p>每个线程共享进程的代码段内存空间，所以我们编写多线程代码的时候，可以在任何线程调用任何函数。</p>
+<p>每个线程共享进程的数据段内存空间，所以我们编写多线程代码的时候，可以在任何线程访问全局变量。</p>
+<p>每个线程共享进程的堆，所以我们编写多线程代码的时候，可以在一个线程访问另外一个线程new&#x2F;malloc出来的内存对象。</p>
+<p>每个线程都有自己的栈的空间，所以可以独立调用执行函数（参数，局部变量，函数跳转）相互之间不受影响。</p>
+<p><strong>线程的切换一般不会引起进程切换。在不同进程中进行线程切换,如从一个进程内的线程切换到另一个进程中的线程时，会引起进程切换</strong></p>
+<p><strong>协程：</strong>我们知道线程的切换比进程的切换带来的损耗已经改善了许多了，可是在当今互联网爆发的时代，为每一个请求创建一个线程还是有点费功夫的，所以聪明的工程师们，想出了一个方法：<strong>一个线程可以分为 “内核态 “线程和” 用户态 “线程</strong>，一个 “用户态线程” 必须要绑定一个 “内核态线程”，但是 CPU 并不知道有 “用户态线程” 的存在，它只知道它运行的是一个 “内核态线程”，带来的改变是，用户态线程–<strong>协程</strong>的创建成本低，上下文切换成本低，上下文切换不需要硬件支持</p>
+<h2 id="线程模型："><a href="#线程模型：" class="headerlink" title="线程模型："></a>线程模型：</h2>
                 
               </div>
             
@@ -354,12 +327,12 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E9%99%88%E8%AF%8D%E6%BB%A5%E8%B0%83/" class="category-chain-item">陈词滥调</a>
+  <a href="/categories/Go/" class="category-chain-item">Go</a>
   
   
     <span>></span>
     
-  <a href="/categories/%E9%99%88%E8%AF%8D%E6%BB%A5%E8%B0%83/%E5%A6%82%E4%BD%95%E9%80%89%E4%B8%80%E5%9D%97%E5%B1%8F%E5%B9%95/" class="category-chain-item">如何选一块屏幕</a>
+  <a href="/categories/Go/Go%E7%9A%84%E9%AD%94%E6%B3%95/" class="category-chain-item">Go的魔法</a>
   
   
 
@@ -376,7 +349,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E9%80%89%E5%B1%8F%E5%B9%95/">#选屏幕</a>
+        <a href="/tags/GMP/">#GMP</a>
       
     </div>
   
@@ -388,8 +361,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>🖥️如何选屏幕？</div>
-      <div>https://opengxj.github.io/2022/10/29/如何选屏幕？/</div>
+      <div>🧐GMP学习笔记</div>
+      <div>https://opengxj.github.io/2022/11/03/GMP学习笔记/</div>
     </div>
     <div class="license-meta">
       
@@ -401,7 +374,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年10月29日</div>
+          <div>2022年11月3日</div>
         </div>
       
       
@@ -431,9 +404,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/11/03/GMP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="🧐GMP学习笔记">
+                      <a href="/2022/11/13/mysql%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB%E9%85%8D%E7%BD%AE/" title="">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">🧐GMP学习笔记</span>
+                        <span class="hidden-mobile"></span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -441,8 +414,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/10/17/%E6%89%93%E9%80%A0Go%E7%9A%84%E6%AD%A6%E5%99%A8--Gin/" title="🏓打造Go的武器--Gin🏓">
-                        <span class="hidden-mobile">🏓打造Go的武器--Gin🏓</span>
+                      <a href="/2022/10/29/%E5%A6%82%E4%BD%95%E9%80%89%E5%B1%8F%E5%B9%95%EF%BC%9F/" title="🖥️如何选屏幕？">
+                        <span class="hidden-mobile">🖥️如何选屏幕？</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

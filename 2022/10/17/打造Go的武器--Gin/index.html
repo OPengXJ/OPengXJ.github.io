@@ -23,13 +23,13 @@
 <meta property="og:site_name" content="PEngxJ的小破站">
 <meta property="og:description" content="Gin是Go中效率非常高的一个WEB框架，并且它的路由分组、中间件等提供了很高的易用性和灵活性，让我们一起一探究竟吧。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://tva1.sinaimg.cn/large/008vxvgGgy1h78cj2ax0zj317i0j8gn1.jpg">
+<meta property="og:image" content="https://img.tucang.cc/api/image/show/3b38a55c08981881c0cf8f3e1141e35e">
 <meta property="article:published_time" content="2022-10-17T07:40:33.000Z">
-<meta property="article:modified_time" content="2022-10-19T13:17:30.026Z">
+<meta property="article:modified_time" content="2023-02-03T02:41:48.349Z">
 <meta property="article:author" content="PEngxJ">
 <meta property="article:tag" content="Gin">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008vxvgGgy1h78cj2ax0zj317i0j8gn1.jpg">
+<meta name="twitter:image" content="https://img.tucang.cc/api/image/show/3b38a55c08981881c0cf8f3e1141e35e">
   
   
   
@@ -192,7 +192,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('https://tva1.sinaimg.cn/large/008vxvgGgy1h78cj2ax0zj317i0j8gn1.jpg') no-repeat center center; background-size: cover;">
+     style="background: url('https://img.tucang.cc/api/image/show/3b38a55c08981881c0cf8f3e1141e35e') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -278,7 +278,7 @@
                 <p>Gin是Go中效率非常高的一个WEB框架，并且它的路由分组、中间件等提供了很高的易用性和灵活性，让我们一起一探究竟吧。</p>
 <span id="more"></span>
 
-<h1 id="🏓打造Go的武器–Gin🏓"><a href="#🏓打造Go的武器–Gin🏓" class="headerlink" title="🏓打造Go的武器–Gin🏓"></a>🏓打造Go的武器–Gin🏓</h1><p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h7awhpiq6hj30vq0hstbd.jpg" srcset="/img/loading.gif" lazyload></p>
+<h1 id="🏓打造Go的武器–Gin🏓"><a href="#🏓打造Go的武器–Gin🏓" class="headerlink" title="🏓打造Go的武器–Gin🏓"></a>🏓打造Go的武器–Gin🏓</h1><p><img src="https://img.tucang.cc/api/image/show/2094cb91c9988d03efa9643dd39f89b6" srcset="/img/loading.gif" lazyload></p>
 <h2 id="简介："><a href="#简介：" class="headerlink" title="简介："></a>简介：</h2><blockquote>
 <p>Gin 是一个用 Go编写的 Web 框架。 它具有类似martini的API，但性能要好得多，多亏了 <a target="_blank" rel="noopener" href="https://github.com/julienschmidt/httprouter">httprouter</a>。速度提高了 40 倍。它的特性如下：</p>
 </blockquote>
@@ -312,7 +312,7 @@
 </ul>
 <p>一个 Go 项目包含 3 大部分：Go 应用 、项目管理和文档。所以，我们的项目目录也可以分为这 3 大类。同时，Go 应用又贯穿开发阶段、测试阶段和部署阶段，相应的应用类的目录，又可以按开发流程分为更小的子类。我们这里主要是先讲Go应用这一模块，后面有机会再专门出文章讲讲另外两类。</p>
 <p>我们先大致看一下建议的目录长啥样：</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h78m6vxxu6j31ai0jcac4.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/08eb7e0392cff4af2566e7fb1f465ebc" srcset="/img/loading.gif" lazyload></p>
 <ol>
 <li>&#x2F;web</li>
 </ol>
@@ -417,7 +417,7 @@
 
 <h3 id="在项目中规范使用："><a href="#在项目中规范使用：" class="headerlink" title="在项目中规范使用："></a>在项目中规范使用：</h3><p>该部分结合上面的目录结构，对路由初始化，api接口接入，路由处理函数的存放位置做一个小结。</p>
 <p>以我的演示项目为例</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h7af7haeg6j30de0eagm6.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/4a63dbc05142724a27e302748f13cd4d" srcset="/img/loading.gif" lazyload></p>
 <ol>
 <li><p>路由初始化：</p>
 <p>我们将路由初始化的函数放在router目录下的router.go中，里面主要就是完成获取一个gin.engine，一些参数的设置，和注册路由（调用同目录下的router_xx.go中的函数）。然后将这个初始化后的engine返回给main.go，在main.go新建http.Server的实例，并把engine绑定到它的handler中，然后启动服务</p>

@@ -23,13 +23,13 @@
 <meta property="og:site_name" content="PEngxJ的小破站">
 <meta property="og:description" content="Redis另外几个重要的数据结构，数据结构完结篇🎉">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://tva1.sinaimg.cn/large/008vxvgGgy1h75q7wvczjj30tq0emjrq.jpg">
+<meta property="og:image" content="https://img.tucang.cc/api/image/show/f7f9134aef25c52aa35599907c12df4f">
 <meta property="article:published_time" content="2022-10-15T00:43:33.000Z">
-<meta property="article:modified_time" content="2022-10-17T07:13:42.681Z">
+<meta property="article:modified_time" content="2023-02-03T02:29:53.686Z">
 <meta property="article:author" content="PEngxJ">
 <meta property="article:tag" content="redis">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008vxvgGgy1h75q7wvczjj30tq0emjrq.jpg">
+<meta name="twitter:image" content="https://img.tucang.cc/api/image/show/f7f9134aef25c52aa35599907c12df4f">
   
   
   
@@ -192,7 +192,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('https://tva1.sinaimg.cn/large/008vxvgGgy1h75q7wvczjj30tq0emjrq.jpg') no-repeat center center; background-size: cover;">
+     style="background: url('https://img.tucang.cc/api/image/show/f7f9134aef25c52aa35599907c12df4f') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -278,7 +278,7 @@
                 <p>Redis另外几个重要的数据结构，数据结构完结篇🎉</p>
 <span id="more"></span>
 
-<h1 id="🥞Redis数据结构—-跳跃表、整数集合、压缩列表"><a href="#🥞Redis数据结构—-跳跃表、整数集合、压缩列表" class="headerlink" title="🥞Redis数据结构—-跳跃表、整数集合、压缩列表"></a>🥞Redis数据结构—-跳跃表、整数集合、压缩列表</h1><p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h75zymgq7wj30vq0hsq9b.jpg" srcset="/img/loading.gif" lazyload></p>
+<h1 id="🥞Redis数据结构—-跳跃表、整数集合、压缩列表"><a href="#🥞Redis数据结构—-跳跃表、整数集合、压缩列表" class="headerlink" title="🥞Redis数据结构—-跳跃表、整数集合、压缩列表"></a>🥞Redis数据结构—-跳跃表、整数集合、压缩列表</h1><p><img src="https://img.tucang.cc/api/image/show/6bc2e3a8cabd54c2423d9499c8001e58" srcset="/img/loading.gif" lazyload></p>
 <h2 id="跳跃表："><a href="#跳跃表：" class="headerlink" title="跳跃表："></a>跳跃表：</h2><h3 id="简介："><a href="#简介：" class="headerlink" title="简介："></a>简介：</h3><blockquote>
 <p>跳跃表是一种有序的数据结构，通过在每个节点维护指向其他节点的指针，以达到快速访问节点的目的，时间复杂度平均能达到O(log<sub>n</sub>)，最坏为n，介于它是有序的特点，也提供了对节点进行范围操作的能力。</p>
 <p>跳跃表做为有序集合的底层实现之一，当有序集合中的对象较多，又或者有序集合中元素的成员是比较长的字符串时，就会使用跳跃表做为底层实现。</p>
@@ -286,28 +286,28 @@
 </blockquote>
 <h4 id="关于跳跃表："><a href="#关于跳跃表：" class="headerlink" title="关于跳跃表："></a>关于跳跃表：</h4><p><strong>介绍下跳跃表</strong></p>
 <p><strong>前提：跳表处理的是有序的链表，所以我们先看个不能再普通了的有序列表（一般是双向链表）</strong></p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h75q7zr1esj30u002ut94.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/ee425864135d9517429a53a28efeb998" srcset="/img/loading.gif" lazyload></p>
 <p>如果我们想查找某个数，只能遍历链表逐个比对，时间复杂度 ，插入和删除操作都一样。</p>
 <p>为了提高查找效率，我们对链表做个”索引“</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h75q81zwegj30u005vq3q.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/fc8f619b822bc671bbd242cdb563a26d" srcset="/img/loading.gif" lazyload></p>
 <p>像这样，我们每隔一个节点取一个数据作为索引节点（或者增加一个指针），比如我们要找 31 直接在索引链表就找到了（遍历 3 次），如果找 16 的话，在遍历到 31的时候，发现大于目标节点，就跳到下一层(原数据层)，接着遍历~ (蓝线表示搜索路径)</p>
 <blockquote>
 <p>可能你会以为，就这，不加索引我找16也是4次。把数据量扩大看看～～</p>
 </blockquote>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h75qegql35j30u009hq3c.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/541f1f32de180fb5fab377cf90012b07" srcset="/img/loading.gif" lazyload></p>
 <p>每加一层索引，我们搜索的时间复杂度就降为原来的</p>
 <p>加了几层索引，查找一个节点需要遍历的节点个数明线减少了，效率提高不少，bingo~</p>
 <p>有没有似曾相识的感觉，像不像二分查找或者二叉搜索树，通过索引来跳过大量的节点，从而提高搜索效率。</p>
 <p>这样的多层链表结构，就是『<strong>跳表</strong>』了</p>
 <p><strong>跳表索引动态更新</strong></p>
 <p>我们上边建立索引层都是下层节点个数的 1&#x2F;2，高层索引的节点数就是 2 个，但是我们随意插入或者删除一个原有链表的节点，这个比例就肯定会被破坏。</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h75qxapckij30u00b474p.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/9e20b688a12591c828a9eba75bc49902" srcset="/img/loading.gif" lazyload></p>
 <p>作为一种动态数据结构，我们需要某种手段来维护索引与原始链表大小之间的平衡，也就是说，如果链表中节点多了，索引节点就相应地增加一些，避免复杂度退化。</p>
 <p>如果重建索引的话，效率就不能保证了。跳表是通过随机函数来维护前面提到的“平衡性”</p>
 <p>redis正是如此，它的实现方法很妙，等下面关于redis中跳跃表实现的内容读完再来体会体会。</p>
 <h3 id="跳跃表的实现："><a href="#跳跃表的实现：" class="headerlink" title="跳跃表的实现："></a>跳跃表的实现：</h3><p>Redis 的跳跃表由 <code>redis.h/zskiplistNode</code> 和 <code>redis.h/zskiplist</code> 两个结构定义， 其中 <code>zskiplistNode</code> 结构用于表示跳跃表节点， 而 <code>zskiplist</code> 结构则用于保存跳跃表节点的相关信息， 比如节点的数量， 以及指向表头节点和表尾节点的指针， 最大的层数。</p>
 <p>跳跃表的实现如下图：</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h75rc92u5pj30jf0f3my1.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/e2d073eeea52f11a3e6ee644e4a327b8" srcset="/img/loading.gif" lazyload></p>
 <p>最左边的结构为zskiplist，它的4个结构描述如下：</p>
 <ul>
 <li>header：指向头节点的指针</li>
@@ -384,9 +384,9 @@
 <p>一个压缩列表可以包含任意多个节点（entry）， 每个节点可以保存一个字节数组或者一个整数值。</p>
 <p><strong>压缩列表</strong></p>
 <p>压缩列表的结构如下：</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h75txr05mij30ty03yq31.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/b7aa14a959a9f3509798854dc47a82d7" srcset="/img/loading.gif" lazyload></p>
 <p>由4大部分组层，下面是关于这4大部分详细的介绍</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h75txsvyn9j31iq0e0q7u.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/1256a4ceac14ddf3e5ea1277674938a7" srcset="/img/loading.gif" lazyload></p>
 <p><strong>压缩列表节点</strong></p>
 <p>每个压缩列表节点可以保存一个字节数组或者一个整数值， 其中， 字节数组可以是以下三种长度的其中一种：</p>
 <ol>
@@ -411,7 +411,7 @@
 <li>如果前一节点的长度小于 <code>254</code> 字节， 那么 <code>previous_entry_length</code> 属性的长度为 <code>1</code> 字节： 前一节点的长度就保存在这一个字节里面。</li>
 <li>如果前一节点的长度大于等于 <code>254</code> 字节， 那么 <code>previous_entry_length</code> 属性的长度为 <code>5</code> 字节： 其中属性的第一字节会被设置为 <code>0xFE</code>（十进制值 <code>254</code>）， <strong>而之后的四个字节</strong>则用于保存前一节点的长度。</li>
 </ul>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h75uija6ipj318y044wew.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/a814cd2371314422ec2347714a63af87" srcset="/img/loading.gif" lazyload></p>
 <p><strong>第二个重点是</strong>：因为节点的 <code>previous_entry_length</code> 属性记录了前一个节点的长度， 所以程序可以通过指针运算， 根据当前节点的起始地址来计算出前一个节点的起始地址。</p>
 <h4 id="encoding："><a href="#encoding：" class="headerlink" title="encoding："></a>encoding：</h4><p>节点的 <code>encoding</code> 属性记录了节点的 <code>content</code> 属性所保存数据的类型以及长度：</p>
 <ul>
@@ -490,13 +490,13 @@
 <li>编码的后六位 <code>001011</code> 记录了字节数组的长度 <code>11</code> ；</li>
 <li><code>content</code> 属性保存着节点的值 <code>&quot;hello world&quot;</code> 。</li>
 </ul>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h75yd6tosuj30bz03agln.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/ccea9372600a49fc2c63f82e66c3e530" srcset="/img/loading.gif" lazyload></p>
 <p>下面展示了一个保存整数值的节点示例：</p>
 <ul>
 <li>编码 <code>11000000</code> 表示节点保存的是一个 <code>int16_t</code> 类型的整数值；</li>
 <li><code>content</code> 属性保存着节点的值 <code>10086</code> 。</li>
 </ul>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h75yd8fsubj30aq03adfu.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/bc3e882642b2de74a9022337ffe48029" srcset="/img/loading.gif" lazyload></p>
 <h3 id="连续更新："><a href="#连续更新：" class="headerlink" title="连续更新："></a>连续更新：</h3><p>前面说过， 每个节点的 <code>previous_entry_length</code> 属性都记录了前一个节点的长度，但是这个用于保存该长度的字节数是不一定的，有可能为5也可能为1。</p>
 <p>以下面的一个例子为例，我们看看何时会发生连续更新。</p>
 <p>现在， 考虑这样一种情况： 在一个压缩列表中， 有多个连续的、长度介于 <code>250</code> 字节到 <code>253</code> 字节之间的节点 <code>e1</code> 至 <code>eN</code>，	因为<code>e1</code>到<code>eN</code>都是小于254个字节的，所以它们的<code>previous_entry_length</code> ，就只为一个字节，这时我们将一个长度大于等于254字节的节点插到列表的前面，这时<code>e1</code>的<code>previous_entry_length</code>也就得更新为5个字节长度来保存这个信息，而因为<code>e1</code>的<code>previous_entry_length</code>更新后使<code>e1</code>的总长也发生了改变，这时<code>e2</code>也得更新它的<code>previous_entry_length</code>，如此反复更新<code>e3</code>，一直到<code>eN</code></p>

@@ -23,13 +23,13 @@
 <meta property="og:site_name" content="PEngxJ的小破站">
 <meta property="og:description" content="我们一直说记录放在页中，页是内存和磁盘交换数据的基本单位，那这个页到底长啥样呢？它主要又七部分组成，File Header、Page Header 、Infimum+supermum、User Records、Free Space、Page Directory和File Trailer，我们一起一趟究竟！">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://tva1.sinaimg.cn/large/008vxvgGgy1h77i1wvpqrj30bz06zweg.jpg">
+<meta property="og:image" content="https://img.tucang.cc/api/image/show/813af9435beef701ae011f63eb873fb1">
 <meta property="article:published_time" content="2022-10-16T14:31:33.000Z">
-<meta property="article:modified_time" content="2022-10-17T07:26:34.122Z">
+<meta property="article:modified_time" content="2023-02-03T02:37:35.062Z">
 <meta property="article:author" content="PEngxJ">
 <meta property="article:tag" content="Mysql">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008vxvgGgy1h77i1wvpqrj30bz06zweg.jpg">
+<meta name="twitter:image" content="https://img.tucang.cc/api/image/show/813af9435beef701ae011f63eb873fb1">
   
   
   
@@ -192,7 +192,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('https://tva1.sinaimg.cn/large/008vxvgGgy1h77i1wvpqrj30bz06zweg.jpg') no-repeat center center; background-size: cover;">
+     style="background: url('https://img.tucang.cc/api/image/show/813af9435beef701ae011f63eb873fb1') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -278,12 +278,12 @@
                 <p>我们一直说记录放在页中，页是内存和磁盘交换数据的基本单位，那这个页到底长啥样呢？它主要又七部分组成，File Header、Page Header 、Infimum+supermum、User Records、Free Space、Page Directory和File Trailer，我们一起一趟究竟！</p>
 <span id="more"></span>
 
-<h1 id="🥖Mysql–数据页结构"><a href="#🥖Mysql–数据页结构" class="headerlink" title="🥖Mysql–数据页结构"></a>🥖Mysql–数据页结构</h1><p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h787njpaojj30vq0hstbd.jpg" srcset="/img/loading.gif" lazyload></p>
+<h1 id="🥖Mysql–数据页结构"><a href="#🥖Mysql–数据页结构" class="headerlink" title="🥖Mysql–数据页结构"></a>🥖Mysql–数据页结构</h1><p><img src="https://img.tucang.cc/api/image/show/153b32c36a29871ee1918228eb7f6895" srcset="/img/loading.gif" lazyload></p>
 <h2 id="简介："><a href="#简介：" class="headerlink" title="简介："></a>简介：</h2><blockquote>
 <p>我们在前面的文章中已经提到了：Innodb中页做为内存和磁盘数据交换的基本单位，人们为了达到不同的目的设置了多种不同的页，比如存放表空间头部信息的页，存放Insert Buffer信息的页，存放 INODE 信息的页，存放 undo 日志信息的页等等等等，这些奇奇怪怪的页先放放，我们本次的重点是存放数据的页，也就是索引页，我们暂且称它为数据页</p>
 </blockquote>
 <p>数据页代表的这块 16KB 大小的存储空间可以被划分为多个部分，不同部分有不同的功能，各个部分如图所示:</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h77ic93f6xj30wm0ogtah.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/8a98c31425f03ab225976c83839c27e9" srcset="/img/loading.gif" lazyload></p>
 <p><strong>不用急，我们等下会一个个的搞懂他们的含义。</strong></p>
 <h2 id="记录在页中的存储："><a href="#记录在页中的存储：" class="headerlink" title="记录在页中的存储："></a>记录在页中的存储：</h2><p>在页的7个组成部分中，我们自己存储的记录会按照我们指定的 行格式 存储到 User Records 部分。但是在一开 始生成页的时候，其实并没有 User Records 这个部分，每当我们插入一条记录，都会从 Free Space 部分，也就 是尚未使用的存储空间中申请一个记录大小的空间划分到 User Records 部分，当 Free Space 部分的空间全部被 User Records 部分替代掉之后，也就意味着这个页使用完了，如果还有新的记录插入的话，就需要去申请新的页了。</p>
 <p>为了更好的管理在 User Records 中的这些记录， InnoDB 可费了一番力气呢，在哪费力气了呢?不就是把记录按照指定的行格式一条一条摆在 User Records 部分么?其实这话还得从记录行格式的 记录头信息中说起。（前面说行格式留下的坑将在这里填上～～）</p>
@@ -291,13 +291,13 @@
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql">mysql<span class="hljs-operator">&gt;</span> <span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> page_demo(<br><span class="hljs-operator">-</span><span class="hljs-operator">&gt;</span> c1 <span class="hljs-type">INT</span>,<br><span class="hljs-operator">-</span><span class="hljs-operator">&gt;</span> c2 <span class="hljs-type">INT</span>,<br><span class="hljs-operator">-</span><span class="hljs-operator">&gt;</span>     c3 <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">10000</span>),<br><span class="hljs-operator">-</span><span class="hljs-operator">&gt;</span>     <span class="hljs-keyword">PRIMARY</span> KEY (c1)<br><span class="hljs-operator">-</span><span class="hljs-operator">&gt;</span> ) CHARSET<span class="hljs-operator">=</span>ascii ROW_FORMAT<span class="hljs-operator">=</span>Compact;<br>Query OK, <span class="hljs-number">0</span> <span class="hljs-keyword">rows</span> affected (<span class="hljs-number">0.03</span> sec)<br></code></pre></td></tr></table></figure>
 
 <p>这个新创建的 page_demo 表有3个列，其中 c1 和 c2 列是用来存储整数的， c3 列是用来存储字符串的。需要注 意的是，我们把 <strong>c1</strong> 列指定为主键，所以在具体的行格式中InnoDB就没必要为我们去创建那个所谓的 <strong>row_id</strong> 隐藏列了。而且我们为这个表指定了 ascii 字符集以及 Compact 的行格式。所以这个表中记录的行格式示意图就是 这样的:</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h782yot33qj310b0u0n09.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/4f625f40c710a6da91776299a775fe39" srcset="/img/loading.gif" lazyload></p>
 <p>下面我们开始揭开每个部分的面纱～</p>
 <p>我们先往表中插入几行数据：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql">mysql<span class="hljs-operator">&gt;</span> <span class="hljs-keyword">INSERT</span> <span class="hljs-keyword">INTO</span> page_demo <span class="hljs-keyword">VALUES</span>(<span class="hljs-number">1</span>, <span class="hljs-number">100</span>, <span class="hljs-string">&#x27;aaaa&#x27;</span>), (<span class="hljs-number">2</span>, <span class="hljs-number">200</span>, <span class="hljs-string">&#x27;bbbb&#x27;</span>), (<span class="hljs-number">3</span>, <span class="hljs-number">300</span>, <span class="hljs-string">&#x27;cccc&#x27;</span>),(<span class="hljs-number">4</span>, <span class="hljs-number">400</span>, <span class="hljs-string">&#x27;dddd&#x27;</span>);<br>Query OK, <span class="hljs-number">4</span> <span class="hljs-keyword">rows</span> affected (<span class="hljs-number">0.00</span> sec)<br>Records: <span class="hljs-number">4</span>  Duplicates: <span class="hljs-number">0</span>  Warnings: <span class="hljs-number">0</span><br></code></pre></td></tr></table></figure>
 
 <p>因为此刻的重点是记录头信息，所以我们省去了几个部分，下面是这几条记录在页中目前的格式</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h7834ru63qj31r80legox.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/56636e0ce89a0e4ad76e5a89c49c8dc6" srcset="/img/loading.gif" lazyload></p>
 <p>好了，正式开始。</p>
 <p><strong>delete_mask</strong></p>
 <p>别看上面几条记录中间还有空隙，真实数据在页中是紧碍着摆放的，删来删去的，其他的记录调整空间是挺麻烦的，所以就用<strong>这个属性标记着当前记录是否被删除</strong>，占用1个二进制位，值为 0 的时候代表记录并没有被删除，为 1 的时候代表记录被删除掉了。所有被删除掉的记 录都会组成一个所谓的<strong>垃圾链表</strong>，在这个链表中的记录占用的空间称之为所谓的<strong>可重用空间</strong>，之后如果有 新记录插入到表中的话，可能把这些被删除的记录占用的存储空间覆盖掉。</p>
@@ -312,7 +312,7 @@
 <p>这个属性表示当前记录的类型，一共有4种类型的记录， 0 表示普通记录， 1表示B+树非叶节点记录，2表示最小记录，3表示最大记录。</p>
 <p><strong>next_record</strong></p>
 <p>这玩意儿非常重要，它表示从当前记录的真实数据到下一条记录的真实数据的地址偏移量。假如第一条录的next_record 值为 32 ，意味着从第一条记录的真实数据的地址处向后找 32 个字节便是下一条记录的真实数据所在的位置（这里的下一条记录可不是按插入顺序的下一条记录，而是根据主键排序后的下一条记录）。还记得上面的最小最大记录吗，Innodb规定不管你怎么插入数据，这两个人的含义是雷打不动的，也就是规定最小记录加上next_record必须是第一条记录，最后一条记录加上next_record必须是最大记录，这就让这些记录像一个链表一样，按照主键值的大小从最小记录串到最大记录。就像这样</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h783xx4bklj316g0m2whc.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/8958a8c03f0e17d9807b0b03ed8b8728" srcset="/img/loading.gif" lazyload></p>
 <p>结合前面的delete_mask，如果此时删除第二条记录会发生什么？相信你很容易就能猜到，也就是</p>
 <ol>
 <li>第二条记录的delete_mask变为1，next_record变为0</li>
@@ -331,7 +331,7 @@
 <li><strong>将每个组的最后一条记录的地址偏移量单独提取出来按顺序存储到靠近 页 的尾部的地方</strong>，这个地方就是所谓的 Page Directory ，也就是 页目录 (此时应该返回头看看页面各个部分的图)。页面目录中的这些地址 偏移量被称为 槽 (英文名: Slot )，所以这个页面目录就是由槽组成的。</li>
 </ol>
 <p>比方说现在的 page_demo 表中正常的记录共有6条， InnoDB 会把它们分成两组，第一组中只有一个最小记录， 第二组中是剩余的5条记录，看下边的示意图:</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h784f65jrsj317y0mu41m.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/5586f6b988f3ce394222aebe3ed9a914" srcset="/img/loading.gif" lazyload></p>
 <p>如图所示，最小记录的n_owned为1，地址偏移量为99,对应的是槽0，最大记录的n_owned为5，表示的是我们插入的4条记录加上最大记录，地址偏移量为112，对应的槽1。</p>
 <p>为什么最小记录的 n_owned 值为1，而最大记录的 n_owned 值为 5 呢，这里头有什么猫腻么?</p>
 <p>是的，设计 InnoDB的大叔们对每个分组中的记录条数是有规定的:对于最小记录所在的分组只能有<strong>1</strong> 条记录，最大记录所在的分组拥有的记录条数只能在 <strong>1~8</strong> 条之间，剩下的分组中记录的条数范围只能在是 <strong>4~8</strong> 条之间。 <strong>所以分组是按照下边的步骤进行的:</strong></p>
@@ -342,7 +342,7 @@
 </ul>
 <h3 id="如何加快查询过程的？"><a href="#如何加快查询过程的？" class="headerlink" title="如何加快查询过程的？"></a>如何加快查询过程的？</h3><p>真实的情况肯定是不止两个槽的，而是有多个槽，查询过程也就是先根据主键值，使用二分法找到相应的槽，不过这里的二分法和我们平时找一个值的二分法不同，这里的二分法是找到high-low&#x3D;&#x3D;1时停止。此时还不确定能不能找到，还要从high对应的组中最小的记录开始遍历，<strong>怎么定位到high对应的组的最小记录呢？</strong>因为我们的槽保存的是组内最后一行的偏移量，所以无法直接定位到，我们可以采用投机的方式，因为在页中，行是根据主键的大小依次排列的，那么我们就可以靠low对应的槽它的偏移量+1得到high对应的槽组内的第一条记录了。</p>
 <h2 id="Page-Header"><a href="#Page-Header" class="headerlink" title="Page Header"></a>Page Header</h2><p>设计 InnoDB的大叔们为了能得到一个数据页中存储的记录的状态信息，比如本页中已经存储了多少条记录，第一条记录的地址是什么，页目录中存储了多少个槽等等，特意在页中定义了一个叫 Page Header 的部分，它是页结构的第二部分，这个部分占用固定的 56 个字节，专门存储各种状态信息，具体各个字节都是干嘛的看下面这张表</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h7857dktvvj31800sitdy.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/d4bae983115ff7267a67e51a6b60710a" srcset="/img/loading.gif" lazyload></p>
 <p>PAGE_DIRECTION 和 PAGE_N_DIRECTION 的意思: </p>
 <p><strong>PAGE_DIRECTION</strong></p>
 <p>假如新插入的一条记录的主键值比上一条记录的主键值大，我们说这条记录的插入方向是右边，反之则是左边。用来表示最后一条记录插入方向的状态就是 PAGE_DIRECTION 。</p>
@@ -350,7 +350,7 @@
 <p>假设连续几次插入新记录的方向都是一致的， InnoDB 会把沿着同一个方向插入记录的条数记下来，这个条 数就用 PAGE_N_DIRECTION 这个状态表示。当然，如果最后一条记录的插入方向改变了的话，这个状态的值会被清零重新统计。</p>
 <p>至于我们没提到的那些属性，我没说是因为现在不需要大家知道。不要着急，当我们学完了后边的内容，再回头看，一切都是那么清晰。</p>
 <h2 id="File-Header"><a href="#File-Header" class="headerlink" title="File Header"></a>File Header</h2><p>上边唠叨的 Page Header 是专门针对 数据页 记录的各种状态信息，比方说页里头有多少个记录了呀，有多少个 槽了呀。我们现在描述的 File Header 针对各种类型的页都通用，也就是说不同类型的页都会以 File Header 作 为第一个组成部分，它描述了一些针对各种页都通用的一些信息，比方说这个页的编号是多少，它的上一个页、下一个页是谁，这个部分占用固定的 38 个字节，是由下边这些内容组成的:</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h785eiqr1xj319e0i876p.jpg" srcset="/img/loading.gif" lazyload><strong>FIL_PAGE_SPACE_OR_CHKSUM</strong></p>
+<p><img src="https://img.tucang.cc/api/image/show/575efe0abd0cd69e63a34019eb61dfa0" srcset="/img/loading.gif" lazyload><strong>FIL_PAGE_SPACE_OR_CHKSUM</strong></p>
 <p>页的检验和，检验和就是对于较长的字符串使用某种算法进行计算，得到一个长度较小的值，后面就会使用这个值去比较字符串。这个值就是检验和，后面就不用去比较这么长的字符串，如果校验和都不一样两个长字节串肯定是不同 的，所以省去了直接比较两个比较长的字节串的时间损耗。<strong>说了那么多，得出这个检验和，它是用在哪里呢？</strong> 详情在File Trailer部分～～</p>
 <p><strong>FIL_PAGE_OFFSET</strong></p>
 <p>每一个页都有一个单独的页号，就跟你的身份证号码一样，InnoDB 通过页号来可以唯一定位一个页 。</p>
@@ -384,7 +384,7 @@
 </ul>
 <p><strong>FIL_PAGE_PREV 和 FIL_PAGE_NEXT</strong></p>
 <p>我们前边强调过， InnoDB 都是以页为单位存放数据的，有时候我们存放某种类型的数据占用的空间非常大 (比方说一张表中可以<strong>有成千上万条记录</strong>)， InnoDB 可能不可以一次性为这么多数据分配一个非常大的存储空间，如果分散到多个不连续的页中存储的话需要把这些页关联起来， FIL_PAGE_PREV 和 FIL_PAGE_NEXT 就分别代表本页的上一个和下一个页的页号。这样通过建立一个双向链表把许许多多的页就都串联起来了，而无需这些页在物理上真正连着。需要注意的是，并不是所有类型的页都有上一个和下一个页的属性，不过 我们本集中唠叨的 数据页 (也就是类型为 FIL_PAGE_INDEX 的页)是有这两个属性的，所以所有的数据页其 实是一个双链表，就像这样:</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h786140kzgj316w0gognv.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/23cb8e2ba0e908e9a8ad5c45057dd114" srcset="/img/loading.gif" lazyload></p>
 <p>关于 File Header 的其他属性我们暂时用不到，等用到的时候再提哈~</p>
 <h2 id="File-Trailer"><a href="#File-Trailer" class="headerlink" title="File Trailer"></a>File Trailer</h2><p>我们知道 InnoDB 存储引擎会把数据存储到磁盘上，但是磁盘速度太慢，需要以 页 为单位把数据加载到内存中处 理，如果该页中的数据在内存中被修改了，那么在修改后的某个时间需要把数据同步到磁盘中。但是在同步了一 半的时候中断电了咋办，这不是莫名尴尬么?为了检测一个页是否完整(也就是在同步的时候有没有发生只同步 一半的尴尬情况)，设计 InnoDB 的大叔们在每个页的尾部都加了一个 File Trailer 部分，这个部分由 8 个字节组成，可以分成2个小部分:</p>
 <ul>

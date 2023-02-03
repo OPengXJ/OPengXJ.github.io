@@ -23,13 +23,13 @@
 <meta property="og:site_name" content="PEngxJ的小破站">
 <meta property="og:description" content="让我们一起看看记录是如何一行一行摆在页中的，在里面长什么样？">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://tva1.sinaimg.cn/large/008vxvgGgy1h76xpuyqn1j30sg0g0q3o.jpg">
+<meta property="og:image" content="https://img.tucang.cc/api/image/show/d5d9a18b936754376bc09a48ff37a4be">
 <meta property="article:published_time" content="2022-10-16T02:42:33.000Z">
-<meta property="article:modified_time" content="2022-10-17T07:20:27.660Z">
+<meta property="article:modified_time" content="2023-02-03T02:35:13.675Z">
 <meta property="article:author" content="PEngxJ">
 <meta property="article:tag" content="Mysql">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/008vxvgGgy1h76xpuyqn1j30sg0g0q3o.jpg">
+<meta name="twitter:image" content="https://img.tucang.cc/api/image/show/d5d9a18b936754376bc09a48ff37a4be">
   
   
   
@@ -192,7 +192,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('https://tva1.sinaimg.cn/large/008vxvgGgy1h76xpuyqn1j30sg0g0q3o.jpg') no-repeat center center; background-size: cover;">
+     style="background: url('https://img.tucang.cc/api/image/show/d5d9a18b936754376bc09a48ff37a4be') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -278,7 +278,7 @@
                 <p>让我们一起看看记录是如何一行一行摆在页中的，在里面长什么样？</p>
 <span id="more"></span>
 
-<h1 id="🍞Mysql–记录的行格式"><a href="#🍞Mysql–记录的行格式" class="headerlink" title="🍞Mysql–记录的行格式"></a>🍞Mysql–记录的行格式</h1><p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h77hwsi4kcj30vq0hstc5.jpg" srcset="/img/loading.gif" lazyload> </p>
+<h1 id="🍞Mysql–记录的行格式"><a href="#🍞Mysql–记录的行格式" class="headerlink" title="🍞Mysql–记录的行格式"></a>🍞Mysql–记录的行格式</h1><p><img src="https://img.tucang.cc/api/image/show/39c6bef6cc8b39b3340a4645a2c11fee" srcset="/img/loading.gif" lazyload> </p>
 <h2 id="简介："><a href="#简介：" class="headerlink" title="简介："></a>简介：</h2><blockquote>
 <p>你是否有思考过，Mysql表中的数据存在了哪？以什么格式存的？又是以什么方式去访问这些数据的？只有了解了这些才能学习到开发者那些精雕细琢的设计。</p>
 <p>我们知道Mysql服务器上负责写入和读取数据的存储引擎，人们为了不同的目的设计了许多不同的存储引擎，真实数据在不同存储引擎中存放的格式一般也是不同的，因为Innodb现在是mysql的默认存储引擎，所以我接下来好好聊下Innodb的数据存储结构。</p>
@@ -295,15 +295,15 @@
 <p>我们以行格式Compact来学习Innodb的行格式，因为学完它后，其他的行格式其实也差不多</p>
 </blockquote>
 <p>先看图：</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h7748y7852j313u0d0t9w.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/6f63b6d8a7051c8bfbef45812b7379f3" srcset="/img/loading.gif" lazyload></p>
 <p>从图中可以看出一行记录分为两部分：记录的额外信息和记录的真实数据。</p>
 <h3 id="记录的额外信息："><a href="#记录的额外信息：" class="headerlink" title="记录的额外信息："></a>记录的额外信息：</h3><p>这部分信息是服务器为了描述这条记录而不得不额外添加的一些信息，这些额外信息分为3类，分别是 变长字段长度列表 、 NULL值列表 和 记录头信息 ，我们分别看一下。</p>
 <h4 id="变长字段长度列表："><a href="#变长字段长度列表：" class="headerlink" title="变长字段长度列表："></a>变长字段长度列表：</h4><p>我们知道mysql中支持一些变长字段，比如varchar(M)、varbinary(M)、各种TEXT类型和各种BLOB类型，变长字段中存储多少字节的数据是不固定的，所以我们在存储真实数据的时候需要顺便把这些数据占用的字节数也存起来，这样才不至于把 MySQL 服务器搞懵（密密麻麻的数据碍一起，谁是谁的）。也就是说对于变长字段，我们在存入数据时是要存两部分的，一部分是数据的真实数据，另一部分是该字段的占用的字节数。</p>
 <p>在 Compact 行格式中，把所有变长字段的真实数据占用的字节长度都存放在记录的开头部位，从而形成一个<strong>变长字段长度列表</strong>，各变长字段数据占用的字节数按照列的顺序逆序存放，记住是逆序存放哦，（对性能有考虑的，后面会提到）。</p>
 <p>如果我们执行以下语句</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h774qbach0j314o0hejte.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/0a4a23bfd388b1a00306f19f5dca7269" srcset="/img/loading.gif" lazyload></p>
 <p>因为我们的c1、c2、c4列是变长字段的，所以第一条记录在页中应该是这样子的。</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h774tydifjj315g0fuq4u.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/48fb80a34e6e324abbd6de03a3507de8" srcset="/img/loading.gif" lazyload></p>
 <p>上面展示的这条例子中，几个字段占用的字节数都较少，所以都用一个字节就存储下来了，而其实如果对于占用字节数较多的字段是会用两个字节表示的，具体的抉择如下：</p>
 <p>我们首先声明一下W、M和L分别代表什么意思：</p>
 <ul>
@@ -346,14 +346,14 @@
 <li>MySQL规定NULL值列表必须用整数个字节的位表示，如果使用的二进制位个数不是整数个字节，则在字节 的高位补 0 。</li>
 </ol>
 <p>综上，我们上边那条记录的NULL值在页中的格式如下：</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h775rv8x7qj314s0gk3z6.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/52668884eb9842908d3cca12fbc832d5" srcset="/img/loading.gif" lazyload></p>
 <h4 id="记录头信息："><a href="#记录头信息：" class="headerlink" title="记录头信息："></a>记录头信息：</h4><p>除了 变长字段长度列表 、 NULL值列表 之外，还有一个用于描述记录的 记录头信息 ，它是由固定的 5 个字节组成。 5 个字节也就是 40 个二进制位，不同的位代表不同的意思，如图:</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h775uhgb25j315g086jrx.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/4fdf8d58107695f2c481058a03c8768b" srcset="/img/loading.gif" lazyload></p>
 <p>居然这么多个字段，没事，我们先放一放，后面我们会详细的讲它。</p>
 <h3 id="记录的真实数据："><a href="#记录的真实数据：" class="headerlink" title="记录的真实数据："></a>记录的真实数据：</h3><p>对于 record_format_demo 表来说， 记录的真实数据 除了 c1 、 c2 、 c3 、 c4 这几个我们自己定义的列的数据 以外， MySQL 会为每个记录默认的添加一些列(也称为 隐藏列 )，具体的列如下:</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h775yse5znj316m06s74r.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/9d37565d9d227f922d7ce092fb25fefb" srcset="/img/loading.gif" lazyload></p>
 <p>这里需要提一下 InnoDB 表对主键的生成策略:优先使用用户自定义主键作为主键，如果用户没有定义主键，则 选取一个 Unique 键作为主键，如果表中连 Unique 键都没有定义的话，则 InnoDB 会为表默认添加一个名为row_id 的隐藏列作为主键。所以我们从上表中可以看出:InnoDB存储引擎会为每条记录都添加 <strong>transaction_id</strong> 和 <strong>roll_pointer</strong> 这两个列，但是 <strong>row_id</strong> 是可选的(在没有自定义主键以及Unique键的情况下才会添加该列)。 这些隐藏列的值不用我们操心， InnoDB 存储引擎会自己帮我们生成的</p>
-<p>综上，我们上面最开始插入的两条数据应该是这样的：<br><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h7763ffe2gj31ce0gadi3.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>综上，我们上面最开始插入的两条数据应该是这样的：<br><img src="https://img.tucang.cc/api/image/show/ff85b76b5476e3d4f8687e0c11725258" srcset="/img/loading.gif" lazyload></p>
 <p>看这个图的时候我们需要注意几点:</p>
 <ol>
 <li>表 record_format_demo 使用的是 ascii 字符集，所以 0x61616161 就表示字符串 ‘aaaa’ ， 0x626262 就表 示字符串 ‘bbb’ ，以此类推。</li>

@@ -23,13 +23,13 @@
 <meta property="og:site_name" content="PEngxJ的小破站">
 <meta property="og:description" content="在我们学习 Go 的时候，肯定发现常常时不时就会看到在一些函数的的第一个参数就是 ctx context.Context，而这个context 在这边使用的目的及含义到底是什么呢，本篇我们一起来了解什么是 context，以及使用的场景及方式。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://tva1.sinaimg.cn/large/e6c9d24egy1h6ino1sjyhj21400miq54.jpg">
+<meta property="og:image" content="https://img.tucang.cc/api/image/show/5097b3b85c884e7da45847fe658780e2">
 <meta property="article:published_time" content="2022-09-10T01:43:33.000Z">
-<meta property="article:modified_time" content="2022-10-26T12:10:16.199Z">
+<meta property="article:modified_time" content="2023-02-03T03:07:23.956Z">
 <meta property="article:author" content="PEngxJ">
 <meta property="article:tag" content="Context">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://tva1.sinaimg.cn/large/e6c9d24egy1h6ino1sjyhj21400miq54.jpg">
+<meta name="twitter:image" content="https://img.tucang.cc/api/image/show/5097b3b85c884e7da45847fe658780e2">
   
   
   
@@ -192,7 +192,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('https://tva1.sinaimg.cn/large/e6c9d24egy1h6ino1sjyhj21400miq54.jpg') no-repeat center center; background-size: cover;">
+     style="background: url('https://img.tucang.cc/api/image/show/5097b3b85c884e7da45847fe658780e2') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -278,7 +278,7 @@
                 <p>在我们学习 Go 的时候，肯定发现常常时不时就会看到在一些函数的的第一个参数就是 ctx context.Context，而这个context 在这边使用的目的及含义到底是什么呢，本篇我们一起来了解什么是 context，以及使用的场景及方式。</p>
 <span id="more"></span>
 
-<h1 id="🥤Context学习笔记"><a href="#🥤Context学习笔记" class="headerlink" title="🥤Context学习笔记"></a>🥤Context学习笔记</h1><p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h72n6kt9hej30vq0hs0y2.jpg" srcset="/img/loading.gif" lazyload></p>
+<h1 id="🥤Context学习笔记"><a href="#🥤Context学习笔记" class="headerlink" title="🥤Context学习笔记"></a>🥤Context学习笔记</h1><p><img src="https://pic3.58cdn.com.cn/nowater/webim/big/n_v23cc47189fcee482a9ef352acacc9b328.jpg" srcset="/img/loading.gif" lazyload></p>
 <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Context即上下文，我们可以将其想象做一个承载了截止日期、取消信号和其它请求范围值的包裹，在应用程序的各个层之间、连续调用的函数间穿梭。它主要被使用来实现以下功能：</p>
 <ul>
 <li>终止操作的取消信号</li>
@@ -286,14 +286,14 @@
 </ul>
 <p>我们根据这两个功能来好好认识下context。</p>
 <h2 id="Cancel"><a href="#Cancel" class="headerlink" title="Cancel"></a>Cancel</h2><h3 id="为什么取消："><a href="#为什么取消：" class="headerlink" title="为什么取消："></a>为什么取消：</h3><p>简而言之，及时取消，为了防止我们的系统做不必要的工作。以一个完整的Web请求为例：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h6ixprpipnj215008kjru.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/8b1f49ef7cc6fe1a7af5d54bd28fd5f5" srcset="/img/loading.gif" lazyload></p>
 <p>如果一切正常，那么流程图如下所示：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h6ixsldunkj213y05y0td.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/170f1eddf9d130fded0229a5e5cb96d7" srcset="/img/loading.gif" lazyload></p>
 <p>但是，如果客户在中间取消请求，会发生什么？例如，如果客户端在请求中关闭浏览器，就会发生这种情况。</p>
 <p>在不取消的情况下，即使这两项工作的结果无法得到利用，应用程序服务器和数据库还是会继续完成工作：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h6ixvj2rtmj213w05umxy.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/85af4a24d65e6489f539304731764920" srcset="/img/loading.gif" lazyload></p>
 <p>而我们理想中的状态如下，也就是在上层取消后，我们的下层的工作也跟着一起结束：</p>
-<p><img src="https://tva1.sinaimg.cn/large/e6c9d24egy1h6ixyj94o6j21480800u8.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/dd9ea851d501169717eaf3b94e6edd3b" srcset="/img/loading.gif" lazyload></p>
 <blockquote>
 <p>context是Go并发控制的一大利器，我们这里先插播下Go的其他并发控制方式。</p>
 </blockquote>
@@ -415,7 +415,7 @@
 
 <p>对 key 的要求是可比较，因为之后需要通过 key 取出 context 中的值，可比较是必须的。</p>
 <p>通过层层传递 context，最终形成这样一棵树：</p>
-<p><img src="https://tva1.sinaimg.cn/large/008vxvgGgy1h7iy4y5z0zj308b0983yy.jpg" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/293eb555eddd74faeb1216fe432b94c1" srcset="/img/loading.gif" lazyload></p>
 <p>和链表有点像，只是它的方向相反：Context 指向它的父节点，链表则指向下一个节点。通过 WithValue 函数，可以创建层层的 valueCtx，存储 goroutine 间可以共享的变量。</p>
 <p>取值的过程，实际上是一个递归查找的过程：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs go"><span class="hljs-function"><span class="hljs-keyword">func</span> <span class="hljs-params">(c *valueCtx)</span></span> Value(key <span class="hljs-keyword">interface</span>&#123;&#125;) <span class="hljs-keyword">interface</span>&#123;&#125; &#123;<br>	<span class="hljs-keyword">if</span> c.key == key &#123;<br>		<span class="hljs-keyword">return</span> c.val<br>	&#125;<br>	<span class="hljs-keyword">return</span> c.Context.Value(key)<br>&#125;<br></code></pre></td></tr></table></figure>

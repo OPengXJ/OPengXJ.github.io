@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://image.baidu.com/search/down?url=https://tvax2.sinaimg.cn/large/005VAap7gy1hax76clntsj307b05bgm8.jpg">
 <meta property="article:published_time" content="2023-02-06T12:05:33.000Z">
-<meta property="article:modified_time" content="2023-02-09T06:03:29.420Z">
+<meta property="article:modified_time" content="2023-02-09T06:19:54.676Z">
 <meta property="article:author" content="PEngxJ">
 <meta property="article:tag" content="GMP">
 <meta name="twitter:card" content="summary_large_image">
@@ -278,7 +278,8 @@
                 <p>我们都知道Go在并发上的强悍能力，浅一些时我们知道与Goroutine的轻便有很大关系，而深层次些呢，主要是和Go独特的调度模型GMP有关。</p>
 <span id="more"></span>
 
-<h1 id="🧐GMP学习笔记🏎️"><a href="#🧐GMP学习笔记🏎️" class="headerlink" title="🧐GMP学习笔记🏎️"></a>🧐GMP学习笔记🏎️</h1><h2 id="简介："><a href="#简介：" class="headerlink" title="简介："></a>简介：</h2><blockquote>
+<h1 id="🧐GMP学习笔记🏎️"><a href="#🧐GMP学习笔记🏎️" class="headerlink" title="🧐GMP学习笔记🏎️"></a>🧐GMP学习笔记🏎️</h1><p><img src="https://image.baidu.com/search/down?url=https://tvax1.sinaimg.cn/large/005VAap7gy1hax7f70j4yj30vq0hs79g.jpg" srcset="/img/loading.gif" lazyload></p>
+<h2 id="简介："><a href="#简介：" class="headerlink" title="简介："></a>简介：</h2><blockquote>
 <p>Goroutine &#x3D; Golang + Coroutine。<strong>Goroutine是golang实现的协程，是用户级线程</strong>。</p>
 </blockquote>
 <p>Goroutine具有以下特点：</p>
@@ -313,7 +314,7 @@
 <h2 id="协程的映射关系："><a href="#协程的映射关系：" class="headerlink" title="协程的映射关系："></a>协程的映射关系：</h2><h3 id="N-：1"><a href="#N-：1" class="headerlink" title="N ：1"></a>N ：1</h3><blockquote>
 <p>n个协程(用户态线程)绑定一个线程</p>
 </blockquote>
-<div align=center><img src=https://pic6.58cdn.com.cn/nowater/webim/big/n_v200279a35d82247738f5a83f5b47856da.jpg width=50% hight=50%></img></div>
+<div align=center><img src=https://img.tucang.cc/api/image/show/6b818bf6dd7497ba87ea242480456fc1 width=50% hight=50%></img></div>
 
 <p><strong>优点：</strong>线程的切换由用户层全部完成，资源消耗少</p>
 <p><strong>缺点：</strong></p>
@@ -324,20 +325,20 @@
 <h3 id="1-：1"><a href="#1-：1" class="headerlink" title="1 ：1"></a>1 ：1</h3><blockquote>
 <p>协程的创建、销毁、切换都由内核完成，应用程序不参与线程的管理工作，只能调用内核级线程编程接口(应用程序创建一个新线程或撤销一个已有线程时，都会进行一个系统调用）</p>
 </blockquote>
-<div align=center><img src=https://pic6.58cdn.com.cn/nowater/webim/big/n_v22dbc8e41a15044d699ed8bf6b6c6dced.jpg width=50% hight=50%></img></div>
+<div align=center><img src=https://img.tucang.cc/api/image/show/6097891eaed9e44b39c365fddc88c08e width=50% hight=50%></img></div>
 
 <p><strong>优点：</strong>不会有上面n:1的缺点。</p>
 <p><strong>缺点：</strong>所有工作都交由cpu完成，资源消耗很多。</p>
 <h3 id="M-：N"><a href="#M-：N" class="headerlink" title="M ：N"></a>M ：N</h3><blockquote>
 <p>M:N线程模型充分吸收上面两种模型的优点，尽量规避缺点。其协程创建在用户空间中完成，协程的调度和同步也在应用程序中进行。一个应用程序中的多个用户级线程（协程）被绑定到一些（小于或等于用户级线程的数目）内核级线程上。</p>
 </blockquote>
-<div align=center><img src=https://pic3.58cdn.com.cn/nowater/webim/big/n_v29beda45c6a8a4e8dbe9fc3c73d775db4.jpg width=50% hight=50%></img></div>
+<div align=center><img src=https://img.tucang.cc/api/image/show/7337fad18705a828e828b0f71fd0b263 width=50% hight=50%></img></div>
 
 <p>&#x3D;&#x3D;Go的线程模型就是M:N,现在我们已经知道了线程模型了，压力来到了调度器这边，它应该怎样实现这种调度呢&#x3D;&#x3D;</p>
 <h2 id="🔥Go调度器："><a href="#🔥Go调度器：" class="headerlink" title="🔥Go调度器："></a>🔥Go调度器：</h2><h3 id="废弃的GM模型："><a href="#废弃的GM模型：" class="headerlink" title="废弃的GM模型："></a>废弃的GM模型：</h3><blockquote>
 <p>Go 目前使用的调度器是 2012 年重新设计的，因为之前的调度器性能存在问题，所以使用 4 年就被废弃了，G 表示 Goroutine， M 表示线程</p>
 </blockquote>
-<div align=center><img src=https://pic5.58cdn.com.cn/nowater/webim/big/n_v24b035a5701074e38ab86883b40163f12.png width=50% hight=50%></img></div>
+<div align=center><img src=https://img.tucang.cc/api/image/show/ac65e42c3226d205c9807372666ab974 width=50% hight=50%></img></div>
 
 <p>M 想要执行、放回 G 都必须访问全局 G 队列，并且 M 有多个，即多线程访问同一资源需要加锁进行保证互斥 &#x2F; 同步，所以全局 G 队列是有互斥锁进行保护的。</p>
 <p><strong>缺点：</strong></p>
@@ -349,7 +350,7 @@
 <h3 id="🚀GMP："><a href="#🚀GMP：" class="headerlink" title="🚀GMP："></a>🚀GMP：</h3><blockquote>
 <p>P(processor)，包含了运行Goroutine的资源，要运行Goroutine得先获取P。</p>
 </blockquote>
-<div align=center><img src=https://pic6.58cdn.com.cn/nowater/webim/big/n_v2f60212e749f64a78b339bd9b4f2f3e1b.jpg width=50% hight=50%></img></div>
+<div align=center><img src=https://img.tucang.cc/api/image/show/2150cc140d673bd51b8bb91a89aead02 width=50% hight=50%></img></div>
 
 <ol>
 <li><strong>全局队列（Global Queue）：</strong>存放等待运行的 G。</li>
@@ -376,7 +377,7 @@
 <li><strong>利用并行：</strong>可以有最多Gomaxprocs个线程同时运行。</li>
 <li><strong>抢占：</strong>在一半coroutine（协程）中要等待一个协程主动让出 CPU 才执行下一个协程，在 Go 中，一个 goroutine 最多占用 CPU 10ms，防止其他 goroutine 被饿死，这就是 goroutine 不同于 coroutine 的一个地方。</li>
 </ol>
-<h4 id="调度流程："><a href="#调度流程：" class="headerlink" title="调度流程："></a>调度流程：</h4><div align=center><img src=https://pic8.58cdn.com.cn/nowater/webim/big/n_v287cda6d523a6462fb9e13087c58cf3a3.jpg width=70% hight=70%></img></div>
+<h4 id="调度流程："><a href="#调度流程：" class="headerlink" title="调度流程："></a>调度流程：</h4><div align=center><img src=https://img.tucang.cc/api/image/show/0e8155b589228336d523353efe27b522 width=70% hight=70%></img></div>
 
 <p>从上图我们可以看出来：</p>
 <ul>
@@ -386,7 +387,7 @@
 <li>当G因系统调用(syscall)阻塞时会阻塞M，此时P会和M解绑即<strong>hand off</strong>，并寻找新的idle（空闲）的M，若没有idle的M就会新建一个M(流程5.1)。</li>
 <li>当G因channel或者network I&#x2F;O阻塞时，（<strong>注意⚠️：不同于上面的系统调用</strong>）不会阻塞M，M会寻找其他runnable的G；当阻塞的G恢复后会重新进入runnable进入P队列等待执行(流程5.3)</li>
 </ul>
-<h4 id="调度的生命周期及M0和G0"><a href="#调度的生命周期及M0和G0" class="headerlink" title="调度的生命周期及M0和G0"></a>调度的生命周期及M0和G0</h4><div align=center><img src=https://pic2.58cdn.com.cn/nowater/webim/big/n_v29176ff1bb3ec403caaa5d20be09733db.png width=50% hight=50%></img></div>
+<h4 id="调度的生命周期及M0和G0"><a href="#调度的生命周期及M0和G0" class="headerlink" title="调度的生命周期及M0和G0"></a>调度的生命周期及M0和G0</h4><div align=center><img src=https://img.tucang.cc/api/image/show/01452f2b0bc7d1e0f6f0c869ee57f701 width=50% hight=50%></img></div>
 
 <p>&#x3D;&#x3D;<strong>流程总结如下：</strong>&#x3D;&#x3D;</p>
 <ol>
@@ -405,15 +406,15 @@
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs go">ch := <span class="hljs-built_in">make</span>(**<span class="hljs-keyword">chan</span>** **<span class="hljs-type">int</span>**)<br>[...]<br>ch &lt;- v<br></code></pre></td></tr></table></figure>
 
 <p>当前 goroutine #G7 往 channel 里写入一个值，但此时接收端尚未准备好，此时goroutine将进行parked，即处于等待状态（ waiting mode ）,G7状态变由 <code>_Grunning</code> 为处于<code>_Gwaiting</code> 阻塞状态。</p>
-<p><img src="https://blogstatic.haohtml.com/uploads/2021/02/a22be6b0b06be0329f2554e33b66d78d.png" srcset="/img/loading.gif" lazyload alt="img">g0</p>
+<p><img src="https://img.tucang.cc/api/image/show/ee4bc3227169c67bf710ecd79834ba2c" srcset="/img/loading.gif" lazyload>g0</p>
 <p>然后g0介入，<code>g0</code> 会替换 goroutine 并进行第一轮调度（第一次切换：将 G7 切换到 g0）。</p>
-<p><img src="https://blogstatic.haohtml.com/uploads/2021/02/7a377028cef636f88dfb46c689744450.png" srcset="/img/loading.gif" lazyload alt="img">g0</p>
+<p><img src="https://img.tucang.cc/api/image/show/c1ba2711ab6b2484bc53a127e259004f" srcset="/img/loading.gif" lazyload>g0</p>
 <p><code>g0</code> 会获取一个新的goroutine。优先从当前与 <code>m</code> 绑定的 <code>p</code> 中的本地运行队列 <code>q.runq</code> 中获取一个新的 goroutine <code>#G2</code>（第二次切换：g0 再切换到 G2）</p>
-<p><img src="https://blogstatic.haohtml.com/uploads/2021/02/b9eccfab7f4a32ce3ae4259026024d06.jpg" srcset="/img/loading.gif" lazyload alt="img">g0</p>
+<p><img src="https://img.tucang.cc/api/image/show/fc2f2f015f88e15d5a710eb5a1d423b0" srcset="/img/loading.gif" lazyload>g0</p>
 <p>一旦有接收器读取到channel 中的数据，goroutine #G7 将会立即解除阻塞状态。</p>
 <p>v :&#x3D; &lt;-ch</p>
 <p>收到消息的goroutine #G7 将切换到 <code>g0</code> ，并通过将其放置在本地队列中, 并将状态由 <code>_Gwaiting</code> 变为 <code>_Grunnable</code> 。（言外之意想让哪个goroutine运行 g0 说了算）</p>
-<p><img src="https://blogstatic.haohtml.com/uploads/2021/02/3b714daf61dc1a61295da06abf86a967.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="https://img.tucang.cc/api/image/show/eaab1b8407474f495424de42ccca2eeb" srcset="/img/loading.gif" lazyload></p>
 <h5 id="G0的职责："><a href="#G0的职责：" class="headerlink" title="G0的职责："></a>G0的职责：</h5><ul>
 <li><p>Goroutine创建。<br>当调用<code>go func()&#123; ... &#125;()</code>或<code>go myFunction()</code>时，Go会将函数的创建委托给<code>g0</code>，随后再将其放置在本地队列中。新创建的goroutine优先执行，并放置在本地队列的顶部。为什么放在队顶可参考 <a target="_blank" rel="noopener" href="https://medium.com/a-journey-with-go/go-concurrency-scheduler-affinity-3b678f490488">Go：并发与调度器亲和性（ Go: Concurrency &amp; Scheduler Affinity ）</a></p>
 </li>
@@ -443,34 +444,34 @@
 <p>（Ps：这里更准确的说，并不是直接放到队列中的，而是先放到了一个runnext的位置，这个位置的Goroutine会被优先执行，如果在runnext位置上的Goroutine在还没被执行之前就又有新的Goroutine被创建，那这个runnext的位置将被新的Goroutine所取代，这时被取代的Goroutine才真正被放入队列中，而且虽然是被放在P1的本地队列中，可不一定就由m1执行，因为可能被其他的M偷了）</p>
 <p>想要深入了解可以参考以下文章</p>
 <p><a target="_blank" rel="noopener" href="https://golang.design/go-questions/sched/m-worker/">M是如何工作的</a></p>
-<div align=center><img src=https://img13.360buyimg.com/ddimg/jfs/t1/133065/36/29874/22690/63e46959Ffa73a506/e41f194bdfe49cdd.jpg width=50% hight=50%></img></div>
+<div align=center><img src=https://img.tucang.cc/api/image/show/d690ace099a899021a4b7a2c495a95e7 width=50% hight=50%></img></div>
 
 <p><strong>场景2:</strong></p>
-<p>(这个是简化的场景，在真实场景下得保证其他M都有任务执行，不会从该P中偷G的情况下)，G1 运行完成后 (函数：goexit)，M 1上运行的 goroutine 切换为 G0，G0 负责调度时协程的切换（函数：schedule）。从 P 1的本地队列取 G2，从 G0 切换到 G2，并开始运行 G2 (函数：execute)。（这一套操作都是原子操作，目的是防止别的M从这抢走P。）实现了线程 M1 的复用。<img src="https://cdn.learnku.com/uploads/images/202003/12/58489/JWDtmKG3rK.png!large" srcset="/img/loading.gif" lazyload></p>
+<p>(这个是简化的场景，在真实场景下得保证其他M都有任务执行，不会从该P中偷G的情况下)，G1 运行完成后 (函数：goexit)，M 1上运行的 goroutine 切换为 G0，G0 负责调度时协程的切换（函数：schedule）。从 P 1的本地队列取 G2，从 G0 切换到 G2，并开始运行 G2 (函数：execute)。（这一套操作都是原子操作，目的是防止别的M从这抢走P。）实现了线程 M1 的复用。<img src="https://img.tucang.cc/api/image/show/2f7a4dcdf357f69de7de8afea6895665" srcset="/img/loading.gif" lazyload></p>
 <p><strong>场景3:</strong></p>
 <p>假设每个 P 的本地队列只能存 4个 G（实际是256个）。G2 要创建了 6 个 G，前 4个 G（G3, G4, G5，G6）已经加入 p1 的本地队列，p1 本地队列已经满了，这时G2 在创建 G7 的时候，发现 P1 的本地队列已满，需要执行<strong>负载均衡</strong> (把 P1 中本地队列中前一半的 G，还有原来在runnext上被顶替掉的G <strong>转移</strong>到全局队列，下面的图有一点点不正确)</p>
-<p><img src="https://cdn.learnku.com/uploads/images/202003/11/58489/chqTgsiuWi.png!large" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/a4af883b10b372522c08d4eadafd4b60" srcset="/img/loading.gif" lazyload></p>
 <p><strong>场景4：</strong></p>
 <p>规定：<strong>在创建 G 时，运行的 G 会尝试唤醒其他空闲的 P 和 M 组合去执行</strong>。（在源码中，在创建G的最后面）可参考<a target="_blank" rel="noopener" href="https://zboya.github.io/post/go_scheduler/#go%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%90%AF%E5%8A%A8">G的创建</a></p>
-<p><img src="https://cdn.learnku.com/uploads/images/202003/11/58489/2FWNXSuHfX.png!large" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/9ac0034584c9f047dabf6716b779698f" srcset="/img/loading.gif" lazyload></p>
 <p>假定 G2 唤醒了 M2，M2 绑定了 P2，并运行 G0，但 P2 本地队列没有 G，M2 此时为自旋线程<strong>（没有 G 但为运行状态的线程，不断寻找 G）</strong>。</p>
 <p><strong>场景5:</strong></p>
 <p>M2 尝试从全局队列 (简称 “GQ”) 取一批 G 放到 P2 的本地队列（函数：<code>findrunnable()</code>）。M2 从全局队列取的 G 数量符合下面的公式：</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs go">n = min(<span class="hljs-built_in">len</span>(GQ)/GOMAXPROCS + <span class="hljs-number">1</span>, <span class="hljs-built_in">len</span>(GQ/<span class="hljs-number">2</span>))<br></code></pre></td></tr></table></figure>
 
 <p>至少从全局队列取 1 个 g，但每次不要从全局队列移动太多的 g 到 p 本地队列，给其他 p 留点。这是<strong>从全局队列到 P 本地队列的负载均衡</strong>。</p>
-<p><img src="https://cdn.learnku.com/uploads/images/202003/12/58489/0fn8DGqI8N.jpeg!large" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://img.tucang.cc/api/image/show/7c9d8481c96cd8af182dbeeb508fca8d" srcset="/img/loading.gif" lazyload></p>
 <p>假定我们场景中一共有 4 个 P（GOMAXPROCS 设置为 4，那么我们允许最多就能用 4 个 P 来供 M 使用）。所以 M2 只从能从全局队列取 1 个 G（即 G3）移动 P2 本地队列，然后完成从 G0 到 G3 的切换，运行 G3。</p>
 <p><strong>场景6:</strong></p>
-<p>假设 G2 一直在 M1 上运行，经过 2 轮后，M2 已经把 G7、G4 从全局队列获取到了 P2 的本地队列并完成运行，<strong>全局队列和 P2 的本地队列都空了</strong>，如下图的左半部分。<img src="https://cdn.learnku.com/uploads/images/202003/12/58489/qn1NRMLqnp.png!large" srcset="/img/loading.gif" lazyload alt="33-gmp场景8.png"></p>
+<p>假设 G2 一直在 M1 上运行，经过 2 轮后，M2 已经把 G7、G4 从全局队列获取到了 P2 的本地队列并完成运行，<strong>全局队列和 P2 的本地队列都空了</strong>，如下图的左半部分。<img src="https://img.tucang.cc/api/image/show/08ca544ace84f7edca428ff0d20cfc25" srcset="/img/loading.gif" lazyload></p>
 <p>全局队列已经没有 G，那 m 就要执行 work stealing (偷取)：从其他有 G 的 P 哪里偷取一半 G 过来，放到自己的 P 本地队列。P2 从 P1 的本地队列头部取一半的 G，本例中一半则只有 1 个 G8，放到 P2 的本地队列并执行。</p>
 <p><strong>场景7:</strong></p>
-<p>G1 本地队列 G5、G6 已经被其他 M 偷走并运行完成，当前 M1 和 M2 分别在运行 G2 和 G8，M3 和 M4 没有 goroutine 可以运行，M3 和 M4 处于自旋状态，它们不断寻找 goroutine。<img src="https://cdn.learnku.com/uploads/images/202003/12/58489/1DjlseEGTT.png!large" srcset="/img/loading.gif" lazyload alt="34-gmp场景9.png"></p>
+<p>G1 本地队列 G5、G6 已经被其他 M 偷走并运行完成，当前 M1 和 M2 分别在运行 G2 和 G8，M3 和 M4 没有 goroutine 可以运行，M3 和 M4 处于自旋状态，它们不断寻找 goroutine。<img src="https://img.tucang.cc/api/image/show/9332c4027e5f4267a7241a2024230dcb" srcset="/img/loading.gif" lazyload></p>
 <p>为什么要让 m3 和 m4 自旋，自旋本质是在运行，线程在运行却没有执行 G，就变成了浪费 CPU. 为什么不销毁现场，来节约 CPU 资源。因为创建和销毁 CPU 也会浪费时间，我们希望当有新 goroutine 创建时，立刻能有 M 运行它，如果销毁再新建就增加了时延，降低了效率。当然也考虑了过多的自旋线程是浪费 CPU，所以系统中最多有 GOMAXPROCS 个自旋的线程 (当前例子中的 GOMAXPROCS&#x3D;4，所以一共 4 个 P)，多余的没事做线程会让他们休眠。</p>
-<p><strong>场景10: 阻塞系统调用</strong></p>
-<p> 假定当前除了 M3 和 M4 为自旋线程，还有 M5 和 M6 为空闲的线程 (没有得到 P 的绑定，注意我们这里最多就只能够存在 4 个 P，所以 P 的数量应该永远是 M&gt;&#x3D;P, 大部分都是 M 在抢占需要运行的 P)，G8 创建了 G9，G8 进行了阻塞的系统调用，M2 和 P2 立即解绑，P2 会执行以下判断：如果 P2 本地队列有 G、全局队列有 G 或有空闲的 M，P2 都会立马唤醒 1 个 M 和它绑定，否则 P2 则会加入到空闲 P 列表，等待 M 来获取可用的 p。本场景中，P2 本地队列有 G9，可以和其他空闲的线程 M5 绑定。<img src="https://cdn.learnku.com/uploads/images/202003/12/58489/k3HKE9U21M.png!large" srcset="/img/loading.gif" lazyload alt="35-gmp场景10.png"></p>
+<p><strong>场景8: 阻塞系统调用</strong></p>
+<p> 假定当前除了 M3 和 M4 为自旋线程，还有 M5 和 M6 为空闲的线程 (没有得到 P 的绑定，注意我们这里最多就只能够存在 4 个 P，所以 P 的数量应该永远是 M&gt;&#x3D;P, 大部分都是 M 在抢占需要运行的 P)，G8 创建了 G9，G8 进行了阻塞的系统调用，M2 和 P2 立即解绑，P2 会执行以下判断：如果 P2 本地队列有 G、全局队列有 G 或有空闲的 M，P2 都会立马唤醒 1 个 M 和它绑定，否则 P2 则会加入到空闲 P 列表，等待 M 来获取可用的 p。本场景中，P2 本地队列有 G9，可以和其他空闲的线程 M5 绑定。<img src="https://img.tucang.cc/api/image/show/186ab7f77017fec4193a53f3ba18bc83" srcset="/img/loading.gif" lazyload></p>
 <p><strong>场景11：非阻塞的系统调用</strong></p>
-<p>M2 和 P2 会解绑，但 M2 会记住 P2，然后 G8 和 M2 进入系统调用状态。当 G8 和 M2 退出系统调用时，会尝试获取 P2，如果无法获取，则获取空闲的 P，如果依然没有，G8 会被记为可运行状态，并加入到全局队列，M2 因为没有 P 的绑定而变成休眠状态 (长时间休眠等待 GC 回收销毁)。<img src="https://cdn.learnku.com/uploads/images/202003/12/58489/zBvpl8ENSb.png!large" srcset="/img/loading.gif" lazyload alt="36-gmp场景11.png"></p>
+<p>M2 和 P2 会解绑，但 M2 会记住 P2，然后 G8 和 M2 进入系统调用状态。当 G8 和 M2 退出系统调用时，会尝试获取 P2，如果无法获取，则获取空闲的 P，如果依然没有，G8 会被记为可运行状态，并加入到全局队列，M2 因为没有 P 的绑定而变成休眠状态 (长时间休眠等待 GC 回收销毁)。<img src="https://img.tucang.cc/api/image/show/81d0bb706e7043785f7433d83b8b7361" srcset="/img/loading.gif" lazyload></p>
 <p><strong>场景12 用户态阻塞</strong></p>
 <p>如图G9发生因为channel发&#x2F;收或者网络I&#x2F;O而阻塞时，M会和G解绑继续执行队列中的Goroutine，并将该Goroutine从_Grunning状态，改为 _Gwaiting状态，M 会尝试获取并执行下一个可运行的 Goroutine。如果此时没有可运行的 Goroutine，则 M 会将 P 置为空闲并进入睡眠状态。</p>
 <p><img src="https://image.baidu.com/search/down?url=https://tvax4.sinaimg.cn/large/005VAap7gy1hax6ufud6fj30f007rwfg.jpg" srcset="/img/loading.gif" lazyload></p>

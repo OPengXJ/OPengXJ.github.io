@@ -1,0 +1,825 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/3dd.png">
+  <link rel="icon" href="/img/3dd.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="PEngxJ">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="我们都知道Go在并发上的强悍能力，浅一些时我们知道与Goroutine的轻便有很大关系，而深层次些呢，主要是和Go独特的调度模型GMP有关。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="🧐GMP学习笔记🏎️">
+<meta property="og:url" content="https://opengxj.github.io/2023/02/06/GMP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="PEngxJ的小破站">
+<meta property="og:description" content="我们都知道Go在并发上的强悍能力，浅一些时我们知道与Goroutine的轻便有很大关系，而深层次些呢，主要是和Go独特的调度模型GMP有关。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://image.baidu.com/search/down?url=https://tvax2.sinaimg.cn/large/005VAap7gy1hax76clntsj307b05bgm8.jpg">
+<meta property="article:published_time" content="2023-02-06T12:05:33.000Z">
+<meta property="article:modified_time" content="2023-02-09T06:03:29.420Z">
+<meta property="article:author" content="PEngxJ">
+<meta property="article:tag" content="GMP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://image.baidu.com/search/down?url=https://tvax2.sinaimg.cn/large/005VAap7gy1hax76clntsj307b05bgm8.jpg">
+  
+  
+  
+  <title>🧐GMP学习笔记🏎️ - PEngxJ的小破站</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"opengxj.github.io","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>PEngxJ的小破站</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://image.baidu.com/search/down?url=https://tvax2.sinaimg.cn/large/005VAap7gy1hax76clntsj307b05bgm8.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="🧐GMP学习笔记🏎️"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-02-06 20:05" pubdate>
+          2023年2月6日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          8.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          69 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">🧐GMP学习笔记🏎️</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>我们都知道Go在并发上的强悍能力，浅一些时我们知道与Goroutine的轻便有很大关系，而深层次些呢，主要是和Go独特的调度模型GMP有关。</p>
+<span id="more"></span>
+
+<h1 id="🧐GMP学习笔记🏎️"><a href="#🧐GMP学习笔记🏎️" class="headerlink" title="🧐GMP学习笔记🏎️"></a>🧐GMP学习笔记🏎️</h1><h2 id="简介："><a href="#简介：" class="headerlink" title="简介："></a>简介：</h2><blockquote>
+<p>Goroutine &#x3D; Golang + Coroutine。<strong>Goroutine是golang实现的协程，是用户级线程</strong>。</p>
+</blockquote>
+<p>Goroutine具有以下特点：</p>
+<ul>
+<li>相比线程，其启动的代价很小，以很小栈空间启动（2Kb左右）</li>
+<li>能够动态地伸缩栈的大小，最大可以支持到Gb级别</li>
+<li>工作在用户态，切换成很小</li>
+<li>与线程关系是n:m，即可以在n个系统线程上多工调度m个Goroutine</li>
+</ul>
+<h2 id="进程、线程、Goroutine"><a href="#进程、线程、Goroutine" class="headerlink" title="进程、线程、Goroutine"></a>进程、线程、Goroutine</h2><p><strong>进程：</strong>进程是资源调度的基本单位，我们编写的代码称为程序，一般存储在磁盘上，当我们将程序从磁盘加载到内存运行起来后，一个运行的程序则称为进程。为了让进程不相互影响，OS提供了隔离机制，也就是在进程运行起来后，OS为其分配一块地址空间，然后OS在从自己管理的物理内存里面分配出来物理内存页，然后通过一个MMU的单元，将分配的虚拟内存与物理内存页映射起来，这样，读写虚拟内存地址最终通过映射来使用物理内存地址，这样每个进程之间的内存是独立的，安全的。每个进程会把虚拟内存空间分成4个段(代码段, 数据端，堆，栈)。</p>
+<ul>
+<li><p>代码段：用来存放进程(应用App)的代码指令。</p>
+</li>
+<li><p>数据端：用来存放全局变量的内存。</p>
+</li>
+<li><p><strong>堆</strong>：调用os的malloc&#x2F;free 来动态分配的内存。</p>
+</li>
+<li><p><strong>栈</strong>：用来存放局部变量，函数参数，函数调用与跳转。</p>
+</li>
+</ul>
+<p>每个进程(应用App)相当于一个容器，所有应用App里面需要的资源和机制都在进程里面。</p>
+<p>线程是OS独立调度执行的单元，OS调度执行的单位就是线程，线程需要以进程作为容器和使用进程相关的环境。应用态没有进程就不会有线程。</p>
+<p><strong>线程：</strong>线程是调度执行的基本单位，例如”在桌面上双击打开一个App”, 桌面App程序会调用OS的系统调用接口fork，让OS 创建一个<strong>进程</strong>出来，<strong>OS为你准备好进程的结构体对象</strong>，将这个App的文件(xxx.exe, 存放编译好的代码指令)加载到进程的代码段，同时OS会为你创建一个线程(main thread), 在代码里面，还可以调用OS的接口，来创建多个线程，这样OS就可以调度这些线程执行了。</p>
+<p>进程和线程的关系如下（<strong>重要‼️</strong>）:</p>
+<p>每个线程共享进程的代码段内存空间，所以我们编写多线程代码的时候，可以在任何线程调用任何函数。</p>
+<p>每个线程共享进程的数据段内存空间，所以我们编写多线程代码的时候，可以在任何线程访问全局变量。</p>
+<p>每个线程共享进程的堆，所以我们编写多线程代码的时候，可以在一个线程访问另外一个线程new&#x2F;malloc出来的内存对象。</p>
+<p>每个线程都有自己的栈的空间，所以可以独立调用执行函数（参数，局部变量，函数跳转）相互之间不受影响。</p>
+<p><strong>线程的切换一般不会引起进程切换。在不同进程中进行线程切换,如从一个进程内的线程切换到另一个进程中的线程时，会引起进程切换</strong></p>
+<p>&#x3D;&#x3D;协程的由来&#x3D;&#x3D;</p>
+<p><strong>协程：</strong>我们知道线程的切换比进程的切换带来的损耗已经改善了许多了，可是在当今互联网爆发的时代，为每一个请求创建一个线程还是有点费功夫的，所以聪明的工程师们，想出了一个方法：<strong>一个线程可以分为 “内核态 “线程和” 用户态 “线程</strong>，一个 “用户态线程” 必须要绑定一个 “内核态线程”，但是 CPU 并不知道有 “用户态线程” 的存在，它只知道它运行的是一个 “内核态线程”，带来的改变是，用户态线程–<strong>协程</strong>的创建成本低，上下文切换成本低，上下文切换不需要硬件支持。</p>
+<h2 id="协程的映射关系："><a href="#协程的映射关系：" class="headerlink" title="协程的映射关系："></a>协程的映射关系：</h2><h3 id="N-：1"><a href="#N-：1" class="headerlink" title="N ：1"></a>N ：1</h3><blockquote>
+<p>n个协程(用户态线程)绑定一个线程</p>
+</blockquote>
+<div align=center><img src=https://pic6.58cdn.com.cn/nowater/webim/big/n_v200279a35d82247738f5a83f5b47856da.jpg width=50% hight=50%></img></div>
+
+<p><strong>优点：</strong>线程的切换由用户层全部完成，资源消耗少</p>
+<p><strong>缺点：</strong></p>
+<ol>
+<li>如果发生I&#x2F;O或页面故障而引起的阻塞，由于阻塞系统只能感知到内核线程，而不知道协程发生了阻塞，所以该阻塞将阻塞该进程的所有的协程。</li>
+<li>内核此时的调度都是基于进程的，也就是说每个进程在同一时间内只会选择一个协程进行运行，所以每一个程序都无法发挥多核的作用。</li>
+</ol>
+<h3 id="1-：1"><a href="#1-：1" class="headerlink" title="1 ：1"></a>1 ：1</h3><blockquote>
+<p>协程的创建、销毁、切换都由内核完成，应用程序不参与线程的管理工作，只能调用内核级线程编程接口(应用程序创建一个新线程或撤销一个已有线程时，都会进行一个系统调用）</p>
+</blockquote>
+<div align=center><img src=https://pic6.58cdn.com.cn/nowater/webim/big/n_v22dbc8e41a15044d699ed8bf6b6c6dced.jpg width=50% hight=50%></img></div>
+
+<p><strong>优点：</strong>不会有上面n:1的缺点。</p>
+<p><strong>缺点：</strong>所有工作都交由cpu完成，资源消耗很多。</p>
+<h3 id="M-：N"><a href="#M-：N" class="headerlink" title="M ：N"></a>M ：N</h3><blockquote>
+<p>M:N线程模型充分吸收上面两种模型的优点，尽量规避缺点。其协程创建在用户空间中完成，协程的调度和同步也在应用程序中进行。一个应用程序中的多个用户级线程（协程）被绑定到一些（小于或等于用户级线程的数目）内核级线程上。</p>
+</blockquote>
+<div align=center><img src=https://pic3.58cdn.com.cn/nowater/webim/big/n_v29beda45c6a8a4e8dbe9fc3c73d775db4.jpg width=50% hight=50%></img></div>
+
+<p>&#x3D;&#x3D;Go的线程模型就是M:N,现在我们已经知道了线程模型了，压力来到了调度器这边，它应该怎样实现这种调度呢&#x3D;&#x3D;</p>
+<h2 id="🔥Go调度器："><a href="#🔥Go调度器：" class="headerlink" title="🔥Go调度器："></a>🔥Go调度器：</h2><h3 id="废弃的GM模型："><a href="#废弃的GM模型：" class="headerlink" title="废弃的GM模型："></a>废弃的GM模型：</h3><blockquote>
+<p>Go 目前使用的调度器是 2012 年重新设计的，因为之前的调度器性能存在问题，所以使用 4 年就被废弃了，G 表示 Goroutine， M 表示线程</p>
+</blockquote>
+<div align=center><img src=https://pic5.58cdn.com.cn/nowater/webim/big/n_v24b035a5701074e38ab86883b40163f12.png width=50% hight=50%></img></div>
+
+<p>M 想要执行、放回 G 都必须访问全局 G 队列，并且 M 有多个，即多线程访问同一资源需要加锁进行保证互斥 &#x2F; 同步，所以全局 G 队列是有互斥锁进行保护的。</p>
+<p><strong>缺点：</strong></p>
+<ol>
+<li>G都是在全局队列中的，创建和调度都需要加锁，锁竞争对性能的影响很大</li>
+<li>较差的局部性：比如当 G 中包含创建新协程的时候，M 创建了 G’，为了继续执行 G，需要把 G’交给 M’执行，也造成了很差的局部性，因为 G’和 G 是相关的，最好放在 M 上执行，而不是其他 M’。</li>
+<li>系统调用 (CPU 在 M 之间的切换) 导致频繁的线程阻塞和取消阻塞操作增加了系统开销。(后面GMP就复用了M)</li>
+</ol>
+<h3 id="🚀GMP："><a href="#🚀GMP：" class="headerlink" title="🚀GMP："></a>🚀GMP：</h3><blockquote>
+<p>P(processor)，包含了运行Goroutine的资源，要运行Goroutine得先获取P。</p>
+</blockquote>
+<div align=center><img src=https://pic6.58cdn.com.cn/nowater/webim/big/n_v2f60212e749f64a78b339bd9b4f2f3e1b.jpg width=50% hight=50%></img></div>
+
+<ol>
+<li><strong>全局队列（Global Queue）：</strong>存放等待运行的 G。</li>
+<li><strong>P 的本地队列</strong>：同全局队列类似，存放的也是等待运行的 G，存的数量有限，<strong>不超过 256 个</strong>。新建 G’时，G’优先加入到 P 的本地队列，如果队列满了，则会把本地队列中一半的 G 移动到全局队列。</li>
+<li><strong>P 列表：</strong>所有的 P 都在程序启动时创建，并保存在数组中，最多有 GOMAXPROCS(可配置) 个。</li>
+<li><strong>M：</strong>线程想运行任务就得获取 P，从 P 的本地队列获取 G，P 队列为空时，M 也会尝试从全局队列拿一批 G 放到 P 的本地队列，或从其他 P 的本地队列偷一半放到自己 P 的本地队列。M 运行 G，G 执行之后，M 会从 P 获取下一个 G，不断重复下去。</li>
+</ol>
+<p><strong>P和M的数量问题：</strong></p>
+<ol>
+<li><p><strong>P 的数量：</strong>由启动时环境变量 GOMAXPROCS 或者是由 runtime 的方法 GOMAXPROCS() 决定。<strong>在程序启动的初始化部份就会全部创建</strong>，也意味着在程序执行的任意时刻都最多只有 GOMAXPROCS 个 goroutine 在同时运行。</p>
+</li>
+<li><p><strong>M的数量：</strong>最大限制10000个，但内核很难支持这么多，所以不用太在意这个数，M的数量不同于P，它是动态变化的，当需要新M或M阻塞时都会创建新的M。</p>
+</li>
+<li><p>P和M的数量没有绝对关系，当M阻塞，P就会放弃该M而去创建或复用另外一个M。</p>
+</li>
+</ol>
+<p>&#x3D;&#x3D;讲完了GMP的各个构成部份，下面讲讲它的设计策略&#x3D;&#x3D;</p>
+<ol>
+<li><strong>复用线程</strong>：避免频繁的创建、销毁线程，而是对线程的复用。<ul>
+<li>work stealing 机制：当本线程无可运行的 G 时，尝试从其他线程绑定的 P 偷取 G或者从全局队列拿G（<strong>先全局再偷</strong>），而不是销毁线程。</li>
+<li>hand off 机制： 当本线程因为 G 进行系统调用阻塞时，线程释放绑定的 P，把 P 转移给其他空闲的线程执行。</li>
+</ul>
+</li>
+<li><strong>利用并行：</strong>可以有最多Gomaxprocs个线程同时运行。</li>
+<li><strong>抢占：</strong>在一半coroutine（协程）中要等待一个协程主动让出 CPU 才执行下一个协程，在 Go 中，一个 goroutine 最多占用 CPU 10ms，防止其他 goroutine 被饿死，这就是 goroutine 不同于 coroutine 的一个地方。</li>
+</ol>
+<h4 id="调度流程："><a href="#调度流程：" class="headerlink" title="调度流程："></a>调度流程：</h4><div align=center><img src=https://pic8.58cdn.com.cn/nowater/webim/big/n_v287cda6d523a6462fb9e13087c58cf3a3.jpg width=70% hight=70%></img></div>
+
+<p>从上图我们可以看出来：</p>
+<ul>
+<li>每个P有个本地队列，本地队列保存待执行的goroutine(流程2)，当M绑定的P的的局部队列已经满了之后就会把goroutine放到全局队列(流程2-1)。</li>
+<li>每个P和一个M绑定，M是真正的执行P中goroutine的实体(流程3)，M从绑定的P中的局部队列获取G来执行。</li>
+<li>当M绑定的P的局部队列为空时，M会先从全局队列获取到本地队列来执行G(流程3.1)，当从全局队列中没有获取到可执行的G时候，M会从其他P的局部队列中偷取G来执行(流程3.2)，也就是<strong>work stealing</strong>。</li>
+<li>当G因系统调用(syscall)阻塞时会阻塞M，此时P会和M解绑即<strong>hand off</strong>，并寻找新的idle（空闲）的M，若没有idle的M就会新建一个M(流程5.1)。</li>
+<li>当G因channel或者network I&#x2F;O阻塞时，（<strong>注意⚠️：不同于上面的系统调用</strong>）不会阻塞M，M会寻找其他runnable的G；当阻塞的G恢复后会重新进入runnable进入P队列等待执行(流程5.3)</li>
+</ul>
+<h4 id="调度的生命周期及M0和G0"><a href="#调度的生命周期及M0和G0" class="headerlink" title="调度的生命周期及M0和G0"></a>调度的生命周期及M0和G0</h4><div align=center><img src=https://pic2.58cdn.com.cn/nowater/webim/big/n_v29176ff1bb3ec403caaa5d20be09733db.png width=50% hight=50%></img></div>
+
+<p>&#x3D;&#x3D;<strong>流程总结如下：</strong>&#x3D;&#x3D;</p>
+<ol>
+<li>runtime 创建最初的线程 m0 和 goroutine g0，并把 2 者关联。</li>
+<li>调度器初始化：初始化 m0、栈、垃圾回收，以及创建和初始化由 GOMAXPROCS 个 P 构成的 P 列表。</li>
+<li>我们自己编写的 main 函数是 main.main，runtime 中也有 1 个 main 函数 ——runtime.main，代码经过编译后，runtime.main 会调用 main.main，程序启动时会为 runtime.main 创建 goroutine，称它为 main goroutine 吧，然后把 main goroutine 加入到 P 的本地队列。</li>
+<li>启动 m0，m0 已经绑定了 P，会从 P 的本地队列获取 G，获取到 main goroutine。</li>
+<li>Goroutine拥有栈，M 根据 Goroutine 中的栈信息和调度信息设置运行环境<br>M 运行 Goroutine</li>
+<li>Goroutine 退出，再次回到 M 获取可运行的 Goroutine，这样重复下去，直到 main.main 退出，runtime.main 执行 Defer 和 Panic 处理，或调用 runtime.exit 退出程序。</li>
+</ol>
+<ul>
+<li><strong>M0</strong> 是启动程序后的编号为 0 的主线程，这个 M 对应的实例会在全局变量 runtime.m0 中，不需要在 heap 上分配，M0 负责执行初始化操作和启动第一个 G， 也就是runtime.main函数（我们写的main函数经过编译器后由这个runtime.main来调用执行），该函数的执行会判断是否在这个主协程上，在之后 M0 就和其他的 M 一样了</li>
+<li><strong>G0</strong> <strong>是每次启动一个 M 都会第一个创建的 gourtine</strong>，G0 仅用于负责调度的 G（每次调度时都会先切换回G0），G0 不指向任何可执行的函数，每个 M 都会有一个自己的 G0。G0和普通的G其实没有太大差别，主要的差别是在栈上，g0上的是系统分配的，固定8MB，不能扩展，缩小，不能被抢占，在调度或系统调用时会使用 G0 的栈空间，全局变量的 G0 是 M0 的 G0</li>
+</ul>
+<h5 id="G0的调度原理："><a href="#G0的调度原理：" class="headerlink" title="G0的调度原理："></a>G0的调度原理：</h5><p>为了更好理解 <code>g0</code> 的调度策略，假如现在有一个goroutine #G7，正在运行用户代码</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs go">ch := <span class="hljs-built_in">make</span>(**<span class="hljs-keyword">chan</span>** **<span class="hljs-type">int</span>**)<br>[...]<br>ch &lt;- v<br></code></pre></td></tr></table></figure>
+
+<p>当前 goroutine #G7 往 channel 里写入一个值，但此时接收端尚未准备好，此时goroutine将进行parked，即处于等待状态（ waiting mode ）,G7状态变由 <code>_Grunning</code> 为处于<code>_Gwaiting</code> 阻塞状态。</p>
+<p><img src="https://blogstatic.haohtml.com/uploads/2021/02/a22be6b0b06be0329f2554e33b66d78d.png" srcset="/img/loading.gif" lazyload alt="img">g0</p>
+<p>然后g0介入，<code>g0</code> 会替换 goroutine 并进行第一轮调度（第一次切换：将 G7 切换到 g0）。</p>
+<p><img src="https://blogstatic.haohtml.com/uploads/2021/02/7a377028cef636f88dfb46c689744450.png" srcset="/img/loading.gif" lazyload alt="img">g0</p>
+<p><code>g0</code> 会获取一个新的goroutine。优先从当前与 <code>m</code> 绑定的 <code>p</code> 中的本地运行队列 <code>q.runq</code> 中获取一个新的 goroutine <code>#G2</code>（第二次切换：g0 再切换到 G2）</p>
+<p><img src="https://blogstatic.haohtml.com/uploads/2021/02/b9eccfab7f4a32ce3ae4259026024d06.jpg" srcset="/img/loading.gif" lazyload alt="img">g0</p>
+<p>一旦有接收器读取到channel 中的数据，goroutine #G7 将会立即解除阻塞状态。</p>
+<p>v :&#x3D; &lt;-ch</p>
+<p>收到消息的goroutine #G7 将切换到 <code>g0</code> ，并通过将其放置在本地队列中, 并将状态由 <code>_Gwaiting</code> 变为 <code>_Grunnable</code> 。（言外之意想让哪个goroutine运行 g0 说了算）</p>
+<p><img src="https://blogstatic.haohtml.com/uploads/2021/02/3b714daf61dc1a61295da06abf86a967.jpg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h5 id="G0的职责："><a href="#G0的职责：" class="headerlink" title="G0的职责："></a>G0的职责：</h5><ul>
+<li><p>Goroutine创建。<br>当调用<code>go func()&#123; ... &#125;()</code>或<code>go myFunction()</code>时，Go会将函数的创建委托给<code>g0</code>，随后再将其放置在本地队列中。新创建的goroutine优先执行，并放置在本地队列的顶部。为什么放在队顶可参考 <a target="_blank" rel="noopener" href="https://medium.com/a-journey-with-go/go-concurrency-scheduler-affinity-3b678f490488">Go：并发与调度器亲和性（ Go: Concurrency &amp; Scheduler Affinity ）</a></p>
+</li>
+<li><p>Defer方法分配。</p>
+</li>
+<li><p>GC操作，例如stw，扫描goroutine的栈以及一些标清操作。</p>
+</li>
+<li><p>栈增长。在需要时，Go会增加goroutine的大小。该操作由<code>g0</code>在<code>prolog</code>方法中完成。</p>
+</li>
+</ul>
+<p>这个特殊的goroutine <code>g0</code>涉及许多其他操作（大量分配，cgo等），使我们的程序可以更高效地管理操作。</p>
+<p>参考文章<a target="_blank" rel="noopener" href="https://blog.haohtml.com/archives/22353">神奇的G0</a></p>
+<h4 id="调度过程中阻塞"><a href="#调度过程中阻塞" class="headerlink" title="调度过程中阻塞"></a>调度过程中阻塞</h4><p>GMP模型的阻塞可能发生在下面几种情况：</p>
+<ul>
+<li>I&#x2F;O，select</li>
+<li>block on syscall</li>
+<li>channel</li>
+<li>等待锁</li>
+<li>runtime.Gosched()</li>
+</ul>
+<p><strong>用户态阻塞</strong></p>
+<p>当goroutine因为channel操作或者network I&#x2F;O而阻塞时（实际上golang已经用netpoller实现了goroutine网络I&#x2F;O阻塞不会导致M被阻塞，仅阻塞G），对应的G会被放置到某个wait队列(如channel的waitq)，该G的状态由_Gruning变为_Gwaitting，而M会跳过该G尝试获取并执行下一个G，如果此时没有runnable的G供M运行，那么M将解绑P，并进入sleep状态；当阻塞的G被另一端的G2唤醒时（比如channel的可读&#x2F;写通知），G被标记为runnable，并寻找合适的P（根据系统状态和其他因素进行调整），放入它的本地队列运行</p>
+<p><strong>系统调用阻塞</strong></p>
+<p>当G被阻塞在某个系统调用上时，此时G会阻塞在_Gsyscall状态，M也处于 block on syscall 状态，此时的M可被抢占调度：执行该G的M会与P解绑，而P则尝试与其它idle的M绑定，继续执行其它G。如果没有其它idle的M，但P的Local队列中仍然有G需要执行，则创建一个新的M；当系统调用完成后，G会重新尝试获取一个idle的P进入它的Local队列恢复执行，如果没有idle的P，G会被标记为runnable加入到Global队列。</p>
+<h2 id="⛱️Go-调度器调度场景过程全解析"><a href="#⛱️Go-调度器调度场景过程全解析" class="headerlink" title="⛱️Go 调度器调度场景过程全解析"></a>⛱️Go 调度器调度场景过程全解析</h2><p><strong>场景1:</strong></p>
+<p>P 1拥有 G1，M1 获取 P 1后开始运行 G1，G1 使用 <code>go func()</code> 创建了 G2，为了局部性 G2 优先加入到 P1 的本地队列。</p>
+<p>（Ps：这里更准确的说，并不是直接放到队列中的，而是先放到了一个runnext的位置，这个位置的Goroutine会被优先执行，如果在runnext位置上的Goroutine在还没被执行之前就又有新的Goroutine被创建，那这个runnext的位置将被新的Goroutine所取代，这时被取代的Goroutine才真正被放入队列中，而且虽然是被放在P1的本地队列中，可不一定就由m1执行，因为可能被其他的M偷了）</p>
+<p>想要深入了解可以参考以下文章</p>
+<p><a target="_blank" rel="noopener" href="https://golang.design/go-questions/sched/m-worker/">M是如何工作的</a></p>
+<div align=center><img src=https://img13.360buyimg.com/ddimg/jfs/t1/133065/36/29874/22690/63e46959Ffa73a506/e41f194bdfe49cdd.jpg width=50% hight=50%></img></div>
+
+<p><strong>场景2:</strong></p>
+<p>(这个是简化的场景，在真实场景下得保证其他M都有任务执行，不会从该P中偷G的情况下)，G1 运行完成后 (函数：goexit)，M 1上运行的 goroutine 切换为 G0，G0 负责调度时协程的切换（函数：schedule）。从 P 1的本地队列取 G2，从 G0 切换到 G2，并开始运行 G2 (函数：execute)。（这一套操作都是原子操作，目的是防止别的M从这抢走P。）实现了线程 M1 的复用。<img src="https://cdn.learnku.com/uploads/images/202003/12/58489/JWDtmKG3rK.png!large" srcset="/img/loading.gif" lazyload></p>
+<p><strong>场景3:</strong></p>
+<p>假设每个 P 的本地队列只能存 4个 G（实际是256个）。G2 要创建了 6 个 G，前 4个 G（G3, G4, G5，G6）已经加入 p1 的本地队列，p1 本地队列已经满了，这时G2 在创建 G7 的时候，发现 P1 的本地队列已满，需要执行<strong>负载均衡</strong> (把 P1 中本地队列中前一半的 G，还有原来在runnext上被顶替掉的G <strong>转移</strong>到全局队列，下面的图有一点点不正确)</p>
+<p><img src="https://cdn.learnku.com/uploads/images/202003/11/58489/chqTgsiuWi.png!large" srcset="/img/loading.gif" lazyload></p>
+<p><strong>场景4：</strong></p>
+<p>规定：<strong>在创建 G 时，运行的 G 会尝试唤醒其他空闲的 P 和 M 组合去执行</strong>。（在源码中，在创建G的最后面）可参考<a target="_blank" rel="noopener" href="https://zboya.github.io/post/go_scheduler/#go%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%90%AF%E5%8A%A8">G的创建</a></p>
+<p><img src="https://cdn.learnku.com/uploads/images/202003/11/58489/2FWNXSuHfX.png!large" srcset="/img/loading.gif" lazyload></p>
+<p>假定 G2 唤醒了 M2，M2 绑定了 P2，并运行 G0，但 P2 本地队列没有 G，M2 此时为自旋线程<strong>（没有 G 但为运行状态的线程，不断寻找 G）</strong>。</p>
+<p><strong>场景5:</strong></p>
+<p>M2 尝试从全局队列 (简称 “GQ”) 取一批 G 放到 P2 的本地队列（函数：<code>findrunnable()</code>）。M2 从全局队列取的 G 数量符合下面的公式：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs go">n = min(<span class="hljs-built_in">len</span>(GQ)/GOMAXPROCS + <span class="hljs-number">1</span>, <span class="hljs-built_in">len</span>(GQ/<span class="hljs-number">2</span>))<br></code></pre></td></tr></table></figure>
+
+<p>至少从全局队列取 1 个 g，但每次不要从全局队列移动太多的 g 到 p 本地队列，给其他 p 留点。这是<strong>从全局队列到 P 本地队列的负载均衡</strong>。</p>
+<p><img src="https://cdn.learnku.com/uploads/images/202003/12/58489/0fn8DGqI8N.jpeg!large" srcset="/img/loading.gif" lazyload></p>
+<p>假定我们场景中一共有 4 个 P（GOMAXPROCS 设置为 4，那么我们允许最多就能用 4 个 P 来供 M 使用）。所以 M2 只从能从全局队列取 1 个 G（即 G3）移动 P2 本地队列，然后完成从 G0 到 G3 的切换，运行 G3。</p>
+<p><strong>场景6:</strong></p>
+<p>假设 G2 一直在 M1 上运行，经过 2 轮后，M2 已经把 G7、G4 从全局队列获取到了 P2 的本地队列并完成运行，<strong>全局队列和 P2 的本地队列都空了</strong>，如下图的左半部分。<img src="https://cdn.learnku.com/uploads/images/202003/12/58489/qn1NRMLqnp.png!large" srcset="/img/loading.gif" lazyload alt="33-gmp场景8.png"></p>
+<p>全局队列已经没有 G，那 m 就要执行 work stealing (偷取)：从其他有 G 的 P 哪里偷取一半 G 过来，放到自己的 P 本地队列。P2 从 P1 的本地队列头部取一半的 G，本例中一半则只有 1 个 G8，放到 P2 的本地队列并执行。</p>
+<p><strong>场景7:</strong></p>
+<p>G1 本地队列 G5、G6 已经被其他 M 偷走并运行完成，当前 M1 和 M2 分别在运行 G2 和 G8，M3 和 M4 没有 goroutine 可以运行，M3 和 M4 处于自旋状态，它们不断寻找 goroutine。<img src="https://cdn.learnku.com/uploads/images/202003/12/58489/1DjlseEGTT.png!large" srcset="/img/loading.gif" lazyload alt="34-gmp场景9.png"></p>
+<p>为什么要让 m3 和 m4 自旋，自旋本质是在运行，线程在运行却没有执行 G，就变成了浪费 CPU. 为什么不销毁现场，来节约 CPU 资源。因为创建和销毁 CPU 也会浪费时间，我们希望当有新 goroutine 创建时，立刻能有 M 运行它，如果销毁再新建就增加了时延，降低了效率。当然也考虑了过多的自旋线程是浪费 CPU，所以系统中最多有 GOMAXPROCS 个自旋的线程 (当前例子中的 GOMAXPROCS&#x3D;4，所以一共 4 个 P)，多余的没事做线程会让他们休眠。</p>
+<p><strong>场景10: 阻塞系统调用</strong></p>
+<p> 假定当前除了 M3 和 M4 为自旋线程，还有 M5 和 M6 为空闲的线程 (没有得到 P 的绑定，注意我们这里最多就只能够存在 4 个 P，所以 P 的数量应该永远是 M&gt;&#x3D;P, 大部分都是 M 在抢占需要运行的 P)，G8 创建了 G9，G8 进行了阻塞的系统调用，M2 和 P2 立即解绑，P2 会执行以下判断：如果 P2 本地队列有 G、全局队列有 G 或有空闲的 M，P2 都会立马唤醒 1 个 M 和它绑定，否则 P2 则会加入到空闲 P 列表，等待 M 来获取可用的 p。本场景中，P2 本地队列有 G9，可以和其他空闲的线程 M5 绑定。<img src="https://cdn.learnku.com/uploads/images/202003/12/58489/k3HKE9U21M.png!large" srcset="/img/loading.gif" lazyload alt="35-gmp场景10.png"></p>
+<p><strong>场景11：非阻塞的系统调用</strong></p>
+<p>M2 和 P2 会解绑，但 M2 会记住 P2，然后 G8 和 M2 进入系统调用状态。当 G8 和 M2 退出系统调用时，会尝试获取 P2，如果无法获取，则获取空闲的 P，如果依然没有，G8 会被记为可运行状态，并加入到全局队列，M2 因为没有 P 的绑定而变成休眠状态 (长时间休眠等待 GC 回收销毁)。<img src="https://cdn.learnku.com/uploads/images/202003/12/58489/zBvpl8ENSb.png!large" srcset="/img/loading.gif" lazyload alt="36-gmp场景11.png"></p>
+<p><strong>场景12 用户态阻塞</strong></p>
+<p>如图G9发生因为channel发&#x2F;收或者网络I&#x2F;O而阻塞时，M会和G解绑继续执行队列中的Goroutine，并将该Goroutine从_Grunning状态，改为 _Gwaiting状态，M 会尝试获取并执行下一个可运行的 Goroutine。如果此时没有可运行的 Goroutine，则 M 会将 P 置为空闲并进入睡眠状态。</p>
+<p><img src="https://image.baidu.com/search/down?url=https://tvax4.sinaimg.cn/large/005VAap7gy1hax6ufud6fj30f007rwfg.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>等到G9被唤醒后则会被加入Pderunnext中优先执行</p>
+<p><img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/005VAap7gy1hax720o07fj30cl08kq3x.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>学习材料：</p>
+<p><a target="_blank" rel="noopener" href="https://learnku.com/articles/41728">Golang三关-典藏版 Golang 调度器 GMP 原理与调度全分析</a></p>
+<p><a target="_blank" rel="noopener" href="https://go.cyub.vip/gmp/gmp-model.html">GMP模型</a></p>
+<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/258049386">终于有人把进程与线程讲清楚了</a></p>
+<p><a target="_blank" rel="noopener" href="https://medium.com/a-journey-with-go/go-concurrency-scheduler-affinity-3b678f490488">channel阻塞结束后的Goroutine被放在头部</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.haohtml.com/archives/22353">神奇的G0</a></p>
+<p><a target="_blank" rel="noopener" href="https://golang.design/go-questions/sched/m-worker/">M是如何找工作的</a></p>
+<p><a target="_blank" rel="noopener" href="https://zboya.github.io/post/go_scheduler/#go%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%90%AF%E5%8A%A8">G、M、P的结构及源码解析</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/Go/" class="category-chain-item">Go</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/Go/Go%E7%9A%84%E9%AD%94%E6%B3%95/" class="category-chain-item">Go的魔法</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/GMP/">#GMP</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>🧐GMP学习笔记🏎️</div>
+      <div>https://opengxj.github.io/2023/02/06/GMP学习笔记/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>PEngxJ</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年2月6日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/10/29/%E5%A6%82%E4%BD%95%E9%80%89%E5%B1%8F%E5%B9%95%EF%BC%9F/" title="🖥️如何选屏幕？">
+                        <span class="hidden-mobile">🖥️如何选屏幕？</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Mamba</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>KOBE</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

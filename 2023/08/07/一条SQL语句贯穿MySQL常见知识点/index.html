@@ -1,0 +1,1279 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/3dd.png">
+  <link rel="icon" href="/img/3dd.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="PEngxJ">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="让我们一起看看记录是如何一行一行摆在页中的，在里面长什么样？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="✍️MySQL--一条SQL语句贯穿MySQL常见知识点">
+<meta property="og:url" content="https://opengxj.github.io/2023/08/07/%E4%B8%80%E6%9D%A1SQL%E8%AF%AD%E5%8F%A5%E8%B4%AF%E7%A9%BFMySQL%E5%B8%B8%E8%A7%81%E7%9F%A5%E8%AF%86%E7%82%B9/index.html">
+<meta property="og:site_name" content="PEngxJ的小破站">
+<meta property="og:description" content="让我们一起看看记录是如何一行一行摆在页中的，在里面长什么样？">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img.tucang.cc/api/image/show/f19992a2502927adcc3f3be969651c78">
+<meta property="article:published_time" content="2023-08-07T02:42:33.000Z">
+<meta property="article:modified_time" content="2023-08-13T23:04:55.431Z">
+<meta property="article:author" content="PEngxJ">
+<meta property="article:tag" content="Mysql">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://img.tucang.cc/api/image/show/f19992a2502927adcc3f3be969651c78">
+  
+  
+  
+  <title>✍️MySQL--一条SQL语句贯穿MySQL常见知识点 - PEngxJ的小破站</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"opengxj.github.io","root":"/","version":"1.9.2","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>PEngxJ的小破站</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://img.tucang.cc/api/image/show/f19992a2502927adcc3f3be969651c78') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="✍️MySQL--一条SQL语句贯穿MySQL常见知识点"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-07 10:42" pubdate>
+          2023年8月7日 上午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          37k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          312 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">✍️MySQL--一条SQL语句贯穿MySQL常见知识点</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>让我们一起看看记录是如何一行一行摆在页中的，在里面长什么样？</p>
+<span id="more"></span>
+
+<h1 id="一条SQL语句贯穿MySQL常见知识点"><a href="#一条SQL语句贯穿MySQL常见知识点" class="headerlink" title="一条SQL语句贯穿MySQL常见知识点"></a>一条SQL语句贯穿MySQL常见知识点</h1><p><img src="https://img.tucang.cc/api/image/show/38dd4b12f16d2f9667fb169be0f0698b" srcset="/img/loading.gif" lazyload></p>
+<blockquote>
+<p>首先我们从宏观上观察一条语句的执行过程，也就是得顺着MySQL的架构开始说起，然后再在每一步中补充更多常见的知识点</p>
+</blockquote>
+<h2 id="Server层"><a href="#Server层" class="headerlink" title="Server层"></a>Server层</h2><p>Server 层包括连接器、查询缓存、解析器、优化器、执行器，涵盖 MySQL 的大多数核心服务功能，以及所有的内置函数（如日期、时间、数学和加密函数等），而且所有跨存储引擎的功能都在这一层实现，比如存储过程、触发器、视图等。</p>
+<h3 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h3><p>连接器负责跟客户端建立连接、获取权限、维持和管理连接。</p>
+<h4 id="权限问题"><a href="#权限问题" class="headerlink" title="权限问题"></a>权限问题</h4><p>发起连接后，如果用户密码都没有问题，连接器就会获取该用户的权限，然后保存起来，后续该用户在此连接里的任何操作，都会基于连接开始时读到的权限进行权限逻辑的判断。</p>
+<p>所以，如果一个用户已经建立了连接，即使管理员中途修改了该用户的权限，也不会影响已经存在连接的权限。修改完成后，只有再新建的连接才会使用新的权限设置。</p>
+<h4 id="长连接问题"><a href="#长连接问题" class="headerlink" title="长连接问题"></a>长连接问题</h4><p>MySQL 的连接也跟 HTTP 一样，有短连接和长连接的概念，它们的区别为短连接在执行完一个请求后便会断开连接，下次执行又要再进行一次三次握手和四次挥手，而长连接则可以复用一个TCP连接，使用长连接的好处就是可以减少建立连接和断开连接的过程，所以一般是推荐使用长连接。</p>
+<p>但是长连接也有以下两个问题需要注意：</p>
+<ol>
+<li>连接不会一直存在，如果没有后续操作，连接就会处于空闲状态，客户端如果长时间没有动静，连接器就会自动断开，这个时间由参数wait_timeout控制，默认值是8小时</li>
+<li>如果全部使用长连接后，有些时候 MySQL 占用内存涨得特别快，这是因为 MySQL 在执行过程中临时使用的内存是管理在连接对象里面的。这些资源会在连接断开的时候才释放。所以如果长连接累积下来，可能导致内存占用太大，被系统强行杀掉（OOM），从现象看就是 MySQL 异常重启了。</li>
+</ol>
+<p>有两种解决方式。</p>
+<p>第一种，<strong>定期断开长连接</strong>。既然断开连接后就会释放连接占用的内存资源，那么我们可以定期断开长连接。</p>
+<p>第二种，<strong>客户端主动重置连接</strong>。MySQL 5.7 版本实现了 <code>mysql_reset_connection()</code> 函数的接口，注意这是接口函数不是命令，那么当客户端执行了一个很大的操作后，在代码里调用 mysql_reset_connection 函数来重置连接，达到释放内存的效果。这个过程不需要重连和重新做权限验证，但是会将连接恢复到刚刚创建完时的状态。</p>
+<h4 id="线程复用"><a href="#线程复用" class="headerlink" title="线程复用"></a>线程复用</h4><p>每当有一个客户端进程连接到服务器进程时，服务器进程都会创建一个线程来专门处理与这个 客户端的交互，当该客户端退出时会与服务器断开连接，服务器并不会立即把与该客户端交互的线程销毁掉，而 是把它缓存起来，在另一个新的客户端再进行连接时，把这个缓存的线程分配给该新客户端。这样就起到了不频 繁创建和销毁线程的效果，从而节省开销。</p>
+<h3 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h3><p>连接器得工作完成后，客户端就可以向 MySQL 服务发送 SQL 语句了，MySQL 服务收到 SQL 语句后，就会解析出 SQL 语句的第一个字段，看看是什么类型的语句。</p>
+<p>如果 SQL 是查询语句（select 语句），MySQL 就会先去查询缓存（ Query Cache ）里查找缓存数据，看看之前有没有执行过这一条命令，这个查询缓存是以 key-value 形式保存在内存中的，key 为 SQL 查询语句，value 为 SQL 语句查询的结果。</p>
+<p>如果查询的语句命中查询缓存，那么就会直接返回 value 给客户端。如果查询的语句没有命中查询缓存中，那么就要往下继续执行，等执行完后，查询的结果就会被存入查询缓存中。</p>
+<p>这么看，查询缓存还挺有用，但是其实<strong>查询缓存挺鸡肋</strong>的。原因如下：</p>
+<ol>
+<li><p>如果两个查询请求在<strong>任何字符上的不同</strong>(例如:空格、注释、大小写)，都会导致缓存不会命中。另外，如果查询请求中包含某些系统函数、用户自定义变量和函数、一些系统表，如 mysql 、information_schema、 performance_schema 数据库中的表，那这个请求就不会被缓存</p>
+</li>
+<li><p>MySQL的缓存系统会监测涉及到的每张表，只要该表的结构或者数 据被修改，如对该表使用了 INSERT 、 UPDATE 、 DELETE 、 TRUNCATE TABLE 、 ALTER TABLE 、 DROP TABLE 或</p>
+<p>DROP DATABASE 语句，那使用该表的<strong>所有高速缓存查询</strong>都将变为无效并从高速缓存中删除!</p>
+</li>
+</ol>
+<h3 id="解析器"><a href="#解析器" class="headerlink" title="解析器"></a>解析器</h3><p>解析器会做如下两件事情。</p>
+<p>第一件事情，<strong>词法分析</strong>。MySQL 会根据你输入的字符串识别出关键字出来，构建出 SQL 语法树，这样方便后面模块获取 SQL 类型、表名、字段名、 where 条件等等。</p>
+<p>第二件事情，<strong>语法分析</strong>。根据词法分析的结果，语法解析器会根据语法规则，判断你输入的这个 SQL 语句是否满足 MySQL 语法。</p>
+<h3 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h3><p>优化的结果就是生成 一个执行计划，这个执行计划表明了应该使用哪些索引进行查询，表之间的连接顺序是啥样的。我们可以使用<code>EXPLAIN</code>语句来查看某个语句的执行计划</p>
+<h3 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h3><p>各种不同的存储引擎向上边的 MySQL server 层提供统一的调用接口(也就是存储引擎API)，包含了几十个底层函数，像”读取索引第一条内容”、”读 取索引下一条内容”、”插入记录”等等。</p>
+<p>所以在 MySQL server 进过优化器之后，执行器只需按照生成的执行计划调用底层存储引擎提供的API，获取到数据后 返回给客户端就好了。</p>
+<p>开始执行的时候，要先判断一下你对这个表 T 有没有执行查询的权限，如果没有，就会返回没有权限的错误，如下所示 (在工程实现上，如果命中查询缓存，会在查询缓存返回结果的时候，做权限验证。查询也会在优化器之前调用 precheck 验证权限)。</p>
+<p>然后就是进入一个while循环，</p>
+<p>1.调用 InnoDB 引擎接口取这个表的第一行，判断是否符合条件，如果不是则跳过，如果是则将这行存在结果集中；2. 调用引擎接口取“下一行”，重复相同的判断逻辑，直到取到这个表的最后一行。3. 执行器将上述遍历过程中所有满足条件的行组成的记录集作为结果集返回给客户端。</p>
+<p>如果是有用到索引的话，那上边则得变一下，也就是读取这个索引的第一行、读取这个索引的下一行</p>
+<h2 id="存储引擎"><a href="#存储引擎" class="headerlink" title="存储引擎"></a>存储引擎</h2><p>来到存储引擎层，相应的第一个问题那必然就是各个存储引擎间的区别了</p>
+<h3 id="InnoDB与MyISAM的的区别"><a href="#InnoDB与MyISAM的的区别" class="headerlink" title="InnoDB与MyISAM的的区别"></a>InnoDB与MyISAM的的区别</h3><p>虽然MyISAM的性能比较好，各种特性也还不错，但是它不支持事务和行级锁，而且不支持崩溃恢复，这些是后面MySQL将默认存储引擎改为InnoDB的主要原因</p>
+<h4 id="数据的存储结构不同"><a href="#数据的存储结构不同" class="headerlink" title="数据的存储结构不同"></a>数据的存储结构不同</h4><p>每个MyISAM在磁盘上存储成三个文件，它们以表的名字开头来命名。.frm文件存储表定义。.MYD(MYD)存储数据文件。.MYI(MYIndex)存储索引文件</p>
+<p> 而 InnoDB在磁盘上保存为两个文件。.frm文件同样存储为表结构文件，.ibd文件存储的是数据和索引文件。</p>
+<p>由于MyISAM的索引和数据是分开存储的，因此索引查找的时候，MyISAM的叶子节点存储的是数据所在的地址，而不是数据。而InnoDB叶子节点存储的是整个数据行所有的数据。</p>
+<h4 id="存储空间的消耗不同"><a href="#存储空间的消耗不同" class="headerlink" title="存储空间的消耗不同"></a>存储空间的消耗不同</h4><p>MyISAM可被压缩，所以存储空间会比InnoDB小很多，并且InnoDB还会在主内存中建立其专用的缓冲池用于高速缓冲数据和索引。</p>
+<h4 id="对事务的支持不同"><a href="#对事务的支持不同" class="headerlink" title="对事务的支持不同"></a>对事务的支持不同</h4><p>MyISAM强调的是性能，每次查询具有原子性，其执行速度比Innodb会更快，但是不提供事务支持。而InnoDB则是提供了事务支持、外部键等高级数据库功能</p>
+<h4 id="对锁的支持不同"><a href="#对锁的支持不同" class="headerlink" title="对锁的支持不同"></a>对锁的支持不同</h4><p>如果只是执行大量的查询, MyISAM是更好的选择。MyISAM在增删的时候需要锁定整个表格，效率会低一些。</p>
+<p>而在innoDB中，在可以利用到索引的情况下是可以支持到行级锁，删除插入的时候只需要锁定操作行就行。所以如果有大量的插入、修改删除操作，使用InnoDB性能能会更高。</p>
+<h4 id="读取行数方式的不同"><a href="#读取行数方式的不同" class="headerlink" title="读取行数方式的不同"></a>读取行数方式的不同</h4><p>InnoDB 不保存表的具体行数，执行<code> select count(*) from table</code> 时需要全表扫描。而 MyISAM 用一个变量保存了整个表的行数，执行上述语句时只需要读出该变量即可，速度很快；</p>
+<h3 id="三大范式"><a href="#三大范式" class="headerlink" title="三大范式"></a>三大范式</h3><p>说完了宏观层面的存储引擎，接下来则是其内部的表了，还查表，那就得先建表嘛，建表那就涉及到一个小知识点：<strong>三大范式</strong></p>
+<p><strong>1．第一范式(确保每列保持原子性)</strong></p>
+<p>第一范式是最基本的范式。<strong>如果数据库表中的所有字段值都是不可再分解的原子值</strong>，就说明该数据库表满足了第一范式。</p>
+<p>第一范式的合理遵循需要根据系统的实际需求来定。比如某些数据库系统中需要用到“地址”这个属性，本来直接将“地址”属性设计成一个数据库表的字段就行。但是如果系统经常会访问“地址”属性中的“城市”部分，那么就非要将“地址”这个属性重新拆分为省份、城市、详细地址等多个部分进行存储，这样在对地址中某一部分操作的时候将非常方便。这样设计才算满足了数据库的第一范式，如下表所示。</p>
+<p><img src="https://img.tucang.cc/api/image/show/8997c000a92b75739d612e3fb3c5702c" srcset="/img/loading.gif" lazyload></p>
+<p><strong>2．第二范式(确保表中的每列都和全部主键相关而不是部份主键相关)</strong></p>
+<p>第二范式在第一范式的基础之上更进一层。第二范式需要确保数据库表中的每一列都和全部主键相关，而不能只与主键的某一部分相关（主要针对联合主键而言）</p>
+<p>比如要设计一个订单信息表，因为订单中可能会有多种商品，所以要将<strong>订单编号和商品编号作为数据库表的联合主键</strong>，如下表所示。</p>
+<p><strong>订单信息表</strong></p>
+<p><img src="https://img.tucang.cc/api/image/show/c05a71786d44ef7b7f722413b9d9a54c" srcset="/img/loading.gif" lazyload></p>
+<p>这样就产生一个问题：这个表中是以订单编号和商品编号作为联合主键。这样在该表中商品名称、单位、商品价格等信息不与该表中的订单编号主键相关，而仅仅是与商品编号相关。所以在这里违反了第二范式的设计原则。</p>
+<p>而如果把这个订单信息表进行拆分，把商品信息分离到另一个表中，把订单项目表也分离到另一个表中，就非常完美了。如下所示。</p>
+<p><img src="https://img.tucang.cc/api/image/show/5e6a0a586ec3f6ec172e904b64c4a024" srcset="/img/loading.gif" lazyload></p>
+<p><strong>3．第三范式(确保每列都和主键列直接相关,而不是间接相关)</strong></p>
+<p>第三范式需要确保数据表中的<strong>每一列数据都和主键直接相关，而不能间接相关。</strong></p>
+<p>比如在设计一个订单数据表的时候，可以将客户编号作为一个外键和订单表建立相应的关系。而不可以在订单表中添加关于客户其它信息（比如姓名、所属公司等）的字段。如下面这两个表所示的设计就是一个满足第三范式的数据库表。</p>
+<p><img src="https://img.tucang.cc/api/image/show/03b020c9a1bc722b91bf860fb7cc47c7" srcset="/img/loading.gif" lazyload></p>
+<p>建好了表，接下来就是再看看数据在表中是怎么存放的，数据是以记录的形式存在表中的</p>
+<h3 id="行格式"><a href="#行格式" class="headerlink" title="行格式"></a>行格式</h3><p>在InnoDB中，一行记录被分为两部份：记录的额外信息和记录的真实数据</p>
+<p><img src="https://img.tucang.cc/api/image/show/6f63b6d8a7051c8bfbef45812b7379f3" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h4 id="记录的额外信息"><a href="#记录的额外信息" class="headerlink" title="记录的额外信息"></a>记录的额外信息</h4><p>记录的额外信息包括变长字段长度列表、NULL值列表、记录头信息。</p>
+<p>变长字段长度列表是用在比如varchar(M)、varbinary(M)、TEXT等这些字段类型上面的，因为这些字段长度没有固定，而字段又是挨在一起的，如果没有长度列表那将无法分清谁是谁的。往深点还有以下知识点，1.用1字节还是2字节来表示长度，2.变长字符集的char(M)也会有变长字段</p>
+<p>NULL值列表用在那些没有声明非NULL的字段，需要这个东西的原因是因为NULL值并没有什么意义，如果还在真实数据内存入一个个的NULL，可想是很占用存储的，所以就把这些值为 NULL 的列统一管理起来，存储到NULL值列表中，具体的过程可以总结为：先统计、再用二进制位逆序表示、限制用整数个字节表示。用1表示为NULL，0表示非NULL</p>
+<p>记录头信息则是记录了比如「该记录是否删除」、「是不是非叶子节点的最小记录」、「在页中的位置」、「记录的类型」等等这些信息，后面会细讲到它</p>
+<h4 id="记录的真实数据"><a href="#记录的真实数据" class="headerlink" title="记录的真实数据"></a>记录的真实数据</h4><p>记录的真实数据除了我们自己定义的那几列数据之外，MySQL 会为每个记录默认的添加一些列(也称为 隐藏列 )，具体为：row_id(6byte)行id、transaction_id(6字节)事务id、roll_pointer(6字节)回滚指针，事务id和回滚指针一直是会有的、而row_id则要看情况了，因为 InnoDB 表对主键的生成策略:优先使用用户自定义主键作为主键，如果用户没有定义主键，则 选取一个 Unique 键作为主键，如果表中连 Unique 键都没有定义的话，则 InnoDB 会为表默认添加一个名为row_id 的隐藏列作为主键</p>
+<h4 id="行溢出数据"><a href="#行溢出数据" class="headerlink" title="行溢出数据"></a>行溢出数据</h4><p>MySQL 中磁盘和内存交互的基本单位是 页 ，也就是说 MySQL 是以 页为基本单位来管理存储空间的，我们 的记录都会被分配到某个页中存储。而一个页的大小一般是 16KB ，也就是 16384 字节，而一个 VARCHAR(M) 类 型的列就最多可以存储 65532 个字节，这样就可能造成一个页存放不了一条记录的尴尬情况。</p>
+<p>在 Compact 和 Reduntant 行格式中，对于占用存储空间非常大的列，在 记录的真实数据处只会存储该列的一部分数据（768个字节），把剩余的数据分散存储在几个其他的页中，然后记录的真实数据处用20个字节存储指向这些页的地址 (当然这20个字节中还包括这些分散在其他页面中的数据的占用的字节数)，这些页也被称为溢出页，从而可以找到剩余数据所在的页。</p>
+<p>在Dynamic中则是直接把所有的字节都存储到其他页面中，只在记录的真实数据处存储其他页面的地址。</p>
+<p>更加详细的内容：<a href="https://opengxj.github.io/2022/10/16/Mysql--%E8%AE%B0%E5%BD%95%E7%9A%84%E8%A1%8C%E6%A0%BC%E5%BC%8F/">MySQL-记录的行格式</a></p>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/linjiqin/archive/2012/04/01/2428695.html">三大范式</a></p>
+<h3 id="数据页结构"><a href="#数据页结构" class="headerlink" title="数据页结构"></a>数据页结构</h3><blockquote>
+<p>官方不叫数据页而叫索引页，因为还没走到索引的内容，所以为了好记好说，就先叫数据页</p>
+<p>我们一直说记录放在页中，页是内存和磁盘交换数据的基本单位，那这个页到底长啥样呢？它主要由七部分组成，File Header、Page Header 、Infimum+supermum、User Records、Free Space、Page Directory和File Trailer，我们一起一趟究竟！</p>
+</blockquote>
+<p>数据页代表的这块 16KB 大小的存储空间可以被划分为多个部分，不同部分有不同的功能，各个部分如图所示:</p>
+<p><img src="https://img.tucang.cc/api/image/show/8a98c31425f03ab225976c83839c27e9" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h4 id="记录在页中的存储"><a href="#记录在页中的存储" class="headerlink" title="记录在页中的存储"></a>记录在页中的存储</h4><p>我们自己存储的记录会按照我们指定的 行格式 存储到 User Records 部分。但是在一开 始生成页的时候，其实并没有 User Records 这个部分，每当我们插入一条记录，都会从 Free Space 部分，也就 是尚未使用的存储空间中申请一个记录大小的空间划分到 User Records 部分，当 Free Space 部分的空间全部被 User Records 部分替代掉之后，也就意味着这个页使用完了</p>
+<p>为了更好的管理在 User Records 中的这些记录， InnoDB 可费了一番力气呢，在哪费力气了呢?不就是把记录按照指定的行格式一条一条摆在 User Records 部分么?其实这话还得从记录行格式的 记录头信息中说起。（前面说行格式留下的坑将在这里填上～～）</p>
+<h4 id="记录头信息"><a href="#记录头信息" class="headerlink" title="记录头信息"></a>记录头信息</h4><p><img src="https://img.tucang.cc/api/image/show/4fdf8d58107695f2c481058a03c8768b" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><strong>delete_mask</strong></p>
+<p>别看上面几条记录中间还有空隙，真实数据在页中是紧碍着摆放的，删来删去的，其他的记录调整空间是挺麻烦的，所以就用<strong>这个属性标记着当前记录是否被删除</strong>，占用1个二进制位，值为 0 的时候代表记录并没有被删除，为 1 的时候代表记录被删除掉了。所有被删除掉的记 录都会组成一个所谓的<strong>垃圾链表</strong>，在这个链表中的记录占用的空间称之为所谓的<strong>可重用空间</strong>，之后如果有 新记录插入到表中的话，可能把这些被删除的记录占用的存储空间覆盖掉。</p>
+<p><strong>min_rec_mask</strong></p>
+<p><strong>标记是否为B+树一层中非叶子节点的最小记录</strong>，1则是,0则不是，后面讲索引的时候就能明白了。</p>
+<p><strong>n_owned</strong></p>
+<p>这个待会讲Page directory时说，先放一放</p>
+<p><strong>heap_no</strong></p>
+<p><strong>这个属性表示当前记录在本页中的位置</strong>，我们自己存入的记录只会从2开始编号，因为固定的最小记录和最大记录占据了两个位置，最小记录（0）和最大记录（1）（<strong>比较记录的大小就是比较 主键 的大小</strong>）。</p>
+<p><strong>record_type</strong></p>
+<p>这个属性表示当前记录的类型，一共有4种类型的记录， 0 表示普通记录， 1表示B+树非叶节点记录，2表示最小记录，3表示最大记录。</p>
+<p><strong>next_record</strong></p>
+<p>这玩意儿非常重要，它表示从当前记录的真实数据到下一条记录的真实数据的地址偏移量。假如第一条录的next_record 值为 32 ，意味着从第一条记录的真实数据的地址处向后找 32 个字节便是下一条记录的真实数据所在的位置（这里的下一条记录可不是按插入顺序的下一条记录，而是根据主键排序后的下一条记录）。还记得上面的最小最大记录吗，Innodb规定不管你怎么插入数据，这两个人的含义是雷打不动的，也就是规定最小记录加上next_record必须是第一条记录，最后一条记录加上next_record必须是最大记录，<strong>这就让这些记录像一个链表一样，按照主键值的大小从最小记录串到最大记录</strong>。就像这样</p>
+<p><img src="https://img.tucang.cc/api/image/show/8958a8c03f0e17d9807b0b03ed8b8728" srcset="/img/loading.gif" lazyload></p>
+<p>填一个坑～～</p>
+<blockquote>
+<p>你会不会觉得next_record这个指针有点儿怪，为啥要指向记录头信息和真实数据之间的位置 呢?为啥不干脆指向整条记录的开头位置，也就是记录的额外信息开头的位置呢? 因为这个位置刚刚好，<strong>向左读取就是记录头信息，向右读取就是真实数据</strong>。我们前边还说过变 长字段长度列表、NULL值列表中的信息都是逆序存放，这样可以使记录中位置靠前的字段和它 们对应的字段长度信息在内存中的距离更近，可能会提高高速缓存的命中率。</p>
+</blockquote>
+<h4 id="Page-Directoy"><a href="#Page-Directoy" class="headerlink" title="Page Directoy"></a>Page Directoy</h4><p>现在我们了解了记录在页中按照主键值由小到大顺序串联成一个单链表，那如果我们想根据主键值查找页中的某条记录该咋办呢? 最笨的办法:从 Infimum 记录(最小记录)开始，沿着链表一直往后找，总有一天会找到(或者找不到🤷‍♂️)</p>
+<p>遍历的方法，肯定是不行的，所以InnoDB搞了一个目录，也就是Page Directory，具体做法：</p>
+<ol>
+<li>将所有正常的记录(包括最大和最小记录，不包括标记为已删除的记录)<strong>划分为几个组</strong>。</li>
+<li>每个组的最后一条记录(也就是组内最大的那条记录)的头信息中的 <strong>n_owned 属性表示该记录拥有多少条记录，也就是该组内共有几条记录</strong>。</li>
+<li><strong>将每个组的最后一条记录的地址偏移量单独提取出来按顺序存储到靠近 页 的尾部的地方</strong>，这个地方就是所谓的 Page Directory 。页面目录中的这些地址 偏移量被称为 槽 (英文名: Slot )，所以这个页面目录就是由槽组成的。</li>
+</ol>
+<p>比方说现在的 page_demo 表中正常的记录共有6条， InnoDB 会把它们分成两组，第一组中只有一个最小记录， 第二组中是剩余的5条记录，看下边的示意图:</p>
+<p><img src="https://img.tucang.cc/api/image/show/5586f6b988f3ce394222aebe3ed9a914" srcset="/img/loading.gif" lazyload></p>
+<p>为什么最小记录的 n_owned 值为1，而最大记录的 n_owned 值为 5 呢，这里头有什么猫腻么?</p>
+<p>是的，设计 InnoDB的大叔们对每个分组中的记录条数是有规定的:对于最小记录所在的分组只能有<strong>1</strong> 条记录，最大记录所在的分组拥有的记录条数只能在 <strong>1~8</strong> 条之间，剩下的分组中记录的条数范围只能在是 <strong>4~8</strong> 条之间。<strong>所以分组是按照下边的步骤进行的:</strong></p>
+<ul>
+<li>初始情况下一个数据页里只有最小记录和最大记录两条记录，它们分属于两个分组。 </li>
+<li>之后每插入一条记录，都会从 页目录 中找到主键值比本记录的主键值大并且差值最小的槽，然后把该槽对 应的记录的 n_owned 值加1，表示本组内又添加了一条记录，直到该组中的记录数等于8个。</li>
+<li>在一个组中的记录数等于8个后再插入一条记录时，会将组中的记录拆分成两个组，一个组中4条记录，另一 个5条记录。这个过程会在页目录中新增一个槽来记录这个新增分组中最大的那条记录的偏移量。</li>
+</ul>
+<h4 id="如何加快查询过程："><a href="#如何加快查询过程：" class="headerlink" title="如何加快查询过程："></a>如何加快查询过程：</h4><p>现在我们知道next_record将数据按主键值大小从小到大窜成一个链表，又分成了多个组，在Page Directory中多个槽，所以这些槽也相应的是有序性的，所以现在的查找方法大概如下，比如我们现在有4个槽，0，1，2，3，因为每个槽保存有那一组的主键最大值的行的位置，所以我们(0+3)&#x2F;2&#x3D;1，比较序号为1的那一组的主键最大值，根据比较结果继续二分，知道定位到一个槽，再次遍历那一组，因为一组的数量并不多所以可以接受</p>
+<h4 id="Page-Header"><a href="#Page-Header" class="headerlink" title="Page Header"></a>Page Header</h4><p>InnoDB为了能得到一个数据页中存储的记录的状态信息，比如本页中已经<strong>存储了多少条记录，第一条记录的地址是什么，页目录中存储了多少个槽</strong>等等，特意在页中定义了一个叫 Page Header 的部分，它是页结构的第二部分，这个部分占用固定的 56 个字节，专门存储各种状态信息，具体各个字节都是干嘛的看下面这张表</p>
+<p><img src="https://img.tucang.cc/api/image/show/d4bae983115ff7267a67e51a6b60710a" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h4 id="File-Header"><a href="#File-Header" class="headerlink" title="File Header"></a>File Header</h4><p>上边唠叨的 Page Header 是专门针对 数据页 记录的各种状态信息，比方说页里头有多少个记录了呀，有多少个 槽了呀。我们现在描述的 File Header 针对各种类型的页都通用，也就是说不同类型的页都会以 File Header 作 为第一个组成部分，它描述了一些针对各种页都通用的一些信息，比方说这个页的编号是多少，它的上一个页、下一个页是谁，这个部分占用固定的 38 个字节，是由下边这些内容组成的:</p>
+<p><img src="https://img.tucang.cc/api/image/show/575efe0abd0cd69e63a34019eb61dfa0" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><strong>FIL_PAGE_PREV 和 FIL_PAGE_NEXT</strong></p>
+<p>我们前边强调过， InnoDB 都是以页为单位存放数据的，有时候我们存放某种类型的数据占用的空间非常大 (比方说一张表中可以<strong>有成千上万条记录</strong>)， InnoDB 可能不可以一次性为这么多数据分配一个非常大的存储空间，如果分散到多个不连续的页中存储的话需要把这些页关联起来， FIL_PAGE_PREV 和 FIL_PAGE_NEXT 就分别代表本页的上一个和下一个页的页号。这样通过建立一个双向链表把许许多多的页就都串联起来了，而无需这些页在物理上真正连着。需要注意的是，并不是所有类型的页都有上一个和下一个页的属性，不过 我们本集中唠叨的 数据页 (也就是类型为 FIL_PAGE_INDEX 的页)是有这两个属性的，所以所有的数据页其 实是一个双链表，就像这样:</p>
+<p><img src="https://img.tucang.cc/api/image/show/23cb8e2ba0e908e9a8ad5c45057dd114" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h4 id="File-Trailer"><a href="#File-Trailer" class="headerlink" title="File Trailer"></a>File Trailer</h4><p>我们知道 InnoDB 存储引擎会把数据存储到磁盘上，但是磁盘速度太慢，需要以 页 为单位把数据加载到内存中处 理，如果该页中的数据在内存中被修改了，那么在修改后的某个时间需要把数据同步到磁盘中。但是在同步了一 半的时候中断电了咋办，这不是莫名尴尬么?为了检测一个页是否完整(也就是在同步的时候有没有发生只同步 一半的尴尬情况)，InnoDB 在每个页的尾部都加了一个 File Trailer 部分，这个部分由 8 个字节组成，可以分成2个小部分:</p>
+<ul>
+<li>前4个字节代表页的校验和</li>
+</ul>
+<p>这个部分是和 File Header 中的校验和相对应的。每当一个页面在内存中修改了，在同步之前就要把它的校验和算出来，因为File Header 在页面的前边，所以校验和会被首先同步到磁盘，当完全写完时，校验和也会被写到页的尾部，如果完全同步成功，则页的首部和尾部的校验和应该是一致的。如果写了一半儿断电 了，那么在 File Header 中的校验和就代表着已经修改过的页，而在 File Trialer 中的校验和代表着原先的页，二者不同则意味着同步中间出了错。</p>
+<ul>
+<li>后4个字节代表页面被最后修改时对应的日志序列位置(LSN)，它是用于校验页的完整性的</li>
+</ul>
+<h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><p>居然都讲到了加快查找，那就不得提一提索引了</p>
+<p>从上面讲到的加快查询过程继续说起，现在我们已经靠Page Directoy，在一个页中已经有了快速查找一行记录的能力，但是现实情况是一张表一般会有很多的记录，需要很多页来存取，而这些页在物理空间中并不是连续的，它们仅仅是通过File Header中的前后指针组成了一个双向链表，我们想要<strong>根据主键值来快速定位这些页</strong>，所以我们得给这些页整一个目录，每一个页就是一个目录项，目录项存储的是该页中索引列的最小值+该页的页号，并且我们还加入了一个新的规定下一个数据页中用户记录的主键值必须大于上一个页中用户记录的主键值，这样我们的索引雏形就产生。</p>
+<p><img src="https://img.tucang.cc/api/image/show/af39fa0c382e6c9a945653c6b7a1a908" srcset="/img/loading.gif" lazyload></p>
+<p>后面我们再查找记录时就可以先查在存页目录项中的表使用Page Directoy二分找到相应的页目录项，再去相应的页中再二分找到想要的记录。</p>
+<p>回到InnoDB的实现，因为发现这些目录项其实长得跟我们的用户记录差不多，只不过 目录项 中的两个列是 主键 和 页号 而已，所以他们复用了之前存储 用户记录的数据页来存储目录项，为了和用户记录做一下区分，我们把这些用来表示目录项的记录称为目录项记录</p>
+<p><img src="https://img.tucang.cc/api/image/show/1cc2538e3fecaf065edca9493c34011e" srcset="/img/loading.gif" lazyload></p>
+<p>随着我们的记录越来越多，页目录项也会越来越多，那就会出现有多个页的页目录项，这时又是之前的根据主键定位页号的问题了，所以我们的思路还是一样，再往上加一层，最终就形成了我们耳熟的B+树。</p>
+<p><img src="https://img.tucang.cc/api/image/show/a0b991aed19821185c50dcf04a35b910" srcset="/img/loading.gif" lazyload></p>
+<p>因为InnoDB是聚簇索引，所以叶子节点存取的是完整的记录。不过如果是二级索引，那么二级节点将存放的是相应的索引列+主键ID。</p>
+<p><strong>不过还有一点要注意</strong></p>
+<p>虽然上面我们建立索引的方式是从下往上的，但是现实情况下并不是这样，而是我们当为一个列建立索引时，一开始只有一个根结点，开始存放记录时会将记录存入到根结点中，等到根结点存不下的时候，就会把该结点的所有记录复制到一张新的页中，然后它自己变为页目录项页，依次往下，如果新一层又不够存了，那就再往下开辟一层。</p>
+<p>MyISAM与InnoDB有所不同，MyISAM的索引和数据是分开的，数据以插入顺序依次存入到一个文件(.MYD)中，就往里塞就对了，索引也是使用的B+树，不过这里它的叶子结点则是主键值+行号。也就是先通过索引找到对应的行号，再通过行号去找对应的记录! 如果有需要的话，我们也可以对其它的列分别建立索引或者建立联合索引，原理和 InnoDB 中的索引差不多，不过在叶子节点处存储的是 相应的列 + 行号 。</p>
+<h3 id="为什么使用B-树而不是B树"><a href="#为什么使用B-树而不是B树" class="headerlink" title="为什么使用B+树而不是B树"></a>为什么使用B+树而不是B树</h3><blockquote>
+<p>谈到了B+树，就不得不会涉及这个问题：InnoDB为什么使用的是B+树而不是B树</p>
+<p>这个问题可以再延伸一点，那为什么不用红黑树呢？B树、B+树和红黑树有什么区别？</p>
+</blockquote>
+<p>首先我们得介绍下搜索搜索二叉树，也就是那个会把父节点永远大于左孩子结点，同时父节点又永远小于右孩子结点的那颗树，如图：</p>
+<p><img src="https://img.tucang.cc/api/image/show/592cdfed206a8c80842c62d3b445f444" srcset="/img/loading.gif" lazyload></p>
+<p>很显然它存在一个问题：可能会退化为链表。</p>
+<p><strong>平衡二叉树</strong></p>
+<p>为了防止这种情况，于是有了平衡二叉树（AVL树），AVL树也是二叉树, 不过它是一棵完全保持平衡的树, 即左右子树间的高度差不大于1, 严格遵守这个约束. 但是为了保证这个平衡, AVL树在动态插入删除时会花费更多的额外时间来进行左旋右旋来让树保持完全平衡. 这样在真正实际中是不科学的, 因为使用二叉搜索树就是为了加快查询, 但是要花费这么多额外的时间来保持平衡, 可能得不偿失。</p>
+<p><strong>红黑树</strong></p>
+<p>介于上面平衡二叉树性能损耗的问题，于是就有了红黑树，红黑树是一棵平衡树, 但它不是完全平衡的, 不过会通过引入红黑两种意义上的节点来尽量保证左右子树高度差不大于1, 但有保证有良好的性能. 所以红黑树被应用在很多的开源软件中, 因为其快速的查找效率和稳定的时间复杂度O(logN). 比如linux的虚拟内存管理, c++STL的map, java的Hashmap, 经常作为hash结构的冲突元素存放结构等。</p>
+<h4 id="二叉树的问题："><a href="#二叉树的问题：" class="headerlink" title="二叉树的问题："></a>二叉树的问题：</h4><p>以上几个都是二叉树, 二叉树虽然是搜索查询性能好, 但一般是指在内存中. 如果是应用在磁盘这类的搜索, 那么会有以下几个问题:</p>
+<ol>
+<li>数据非常大时, 树高度会很高, 造成磁盘io扫描次数很高</li>
+<li>一个节点只是存放一个数据, 数据与数据之间在物理内存相隔甚远, 磁盘扫描需要频繁转动</li>
+<li>需要频繁的从磁盘读数据到内存中, 即使操作系统有预读, 但是带出来的大多是暂时用不上的无用数据, 造成浪费</li>
+</ol>
+<p>鉴于以上几个问题, 有以下几点需要优化的:</p>
+<ul>
+<li>减少磁盘io扫描次数</li>
+<li>减少磁盘io转动频率</li>
+<li>利用好操作系统的预读, 局部性原理</li>
+</ul>
+<h4 id="更合适的数据结构"><a href="#更合适的数据结构" class="headerlink" title="更合适的数据结构"></a>更合适的数据结构</h4><p>b树的出现就是为了解决以上问题(但并不是全部问题)，b树是N叉树, 层高大大降低, 因此可以减少磁盘io的扫描次数, 并且b树每个节点不是以一个数据为单位, 而是以页, 每个节点就是操作系统的一个页的大小, 因此可以存放更多的数据. 较好的利用操作系统预读, 局部性原理的特点, 每次从磁盘读出一个页, 然后再来查询.</p>
+<p>由于b树所有的节点都可能包含目标数据，总是要从根节点向下遍历子树查找满足条件的数据行，这个特点带来了大量的随机 I&#x2F;O，也是b树最大的性能问题。并且在范围查询上面，表现也十分堪忧。</p>
+<p>但是, 在mysql的innodb中为什么不选用b树呢? 并不是b树不好, 而是有比他更合适的. b+树</p>
+<p>b+树拥有b树的所有优点, 并且b+树的非叶子节点不存放数据, 而是单单存放索引, 只有在叶子节点存放索引+数据, 并且叶子节点通过前后指针构成双向链表的结构, 因此通过树结构定位到索引后, 可以通叶子节点的链表指针很快的直接遍历得到范围查询的结果 这样更好的利用了顺序io比随机io性能更高的优化. 这个特点是b树不具备的。</p>
+<p>除了更好的支持范围查询外，B+ 树的非叶子节点不存放实际的记录数据，仅存放索引，因此数据量相同的情况下，相比存储即存索引又存记录的 B 树，B+树的非叶子节点可以存放更多的索引，因此 B+ 树可以比 B 树更「矮胖」，查询底层节点的磁盘 I&#x2F;O次数会更少。</p>
+<h3 id="索引使用注意事项"><a href="#索引使用注意事项" class="headerlink" title="索引使用注意事项"></a>索引使用注意事项</h3><blockquote>
+<p>在真实场景下，几乎不可能不用到索引，所以接下来就是索引的注意事项</p>
+</blockquote>
+<p><strong>索引的代价</strong></p>
+<p>索引的代价主要两方面：</p>
+<p>空间上的代价：</p>
+<p>这个是显而易见的，每建立一个索引都要为它建立一棵 B+ 树，每一棵 B+ 树的每一个节点都是一个数据页， 一个页默认会占用 16KB 的存储空间，一棵很大的 B+ 树由许多数据页组成，那可是很大的一片存储空间呢。</p>
+<p>时间上的代价：</p>
+<p>涉及到增、删、改时都需要花费时间去维护索引</p>
+<h4 id="适用的条件"><a href="#适用的条件" class="headerlink" title="适用的条件"></a>适用的条件</h4><p>下面的有些例子有涉及到这张表</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> person_info(<br>        id <span class="hljs-type">INT</span> <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span> auto_increment,<br>        name <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">100</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,<br>        birthday <span class="hljs-type">DATE</span> <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,<br>        phone_number <span class="hljs-type">CHAR</span>(<span class="hljs-number">11</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,<br>        country <span class="hljs-type">varchar</span>(<span class="hljs-number">100</span>) <span class="hljs-keyword">NOT</span> <span class="hljs-keyword">NULL</span>,<br>        <span class="hljs-keyword">PRIMARY</span> KEY (id),<br>        KEY idx_name_birthday_phone_number (name, birthday, phone_number)<br>);<br></code></pre></td></tr></table></figure>
+
+<ol>
+<li><p>全值匹配：也就是where条件包含了索引里面所有的列</p>
+</li>
+<li><p>匹配左边的列：其实在我们的搜索语句中也可以不用包含全部联合索引中的列，只包含左边的就行，或者包含多个左边的列也行，但是一定必须的是联合索引中 从最左边连续的列</p>
+<p>eg: where A&#x3D;x    where A&#x3D;x,B&#x3D;xx 都行，就是不可以 where B&#x3D;xx</p>
+</li>
+<li><p>匹配列前缀：索引B+树的形成是根据列的值比较后排序构建，所以比如我们的索引列是一个字符串，假设是一个name的字段，名字都有什么Aax，Abx，Acx，那我们就可以使用WHERE name LIKE ‘Ab%’来使用索引来查找以 ‘Ab’ 开头的记录</p>
+</li>
+<li><p>匹配范围值：在索引中所有记录都是按照索引列的值从小到大的顺序排好序的，所以这极大的方便我们查找索引列的值在某个范围内的记录，<strong>但是</strong>如果对多个列同时进行范围查找的话，只有对索引最左边的那个列进行范围查找的时候才能用到 B+ 树索引</p>
+<p>eg: SELECT * FROM person_info WHERE name &gt;’Asa’ AND name &lt; ‘Barlow’ AND birthday &gt; ‘1980-01-01’;</p>
+<p>这样子对于联合索引来说，只能用到 name 列的部分，而用不到 birthday 列 的部分，因为只有 name 值相同的情况下才能用 birthday 列的值进行排序，而这个查询中通过 name 进行范围查 找的记录中可能并不是按照 birthday 列进行排序的，所以在搜索条件中继续以 birthday 列进行查找时是用不到 这个 B+ 树索引的。</p>
+</li>
+<li><p>精确匹配某一列并范围匹配另外一列:对于同一个联合索引来说，虽然对多个列都进行范围查找时只能用到最左边那个索引列，但是如果左边的列是精确查找，则右边的列可以进行范围查找,比方说这样:</p>
+<p>SELECT * FROM person_info WHERE name &#x3D; ‘Ashburn’ AND birthday &gt; ‘1980-01-01’ AND birthday &lt; ‘2000-12-31’ AND phone_number &gt; ‘15100000000’;</p>
+<p>那么name、birthday都可以用到索引，而phone_number则不行</p>
+</li>
+<li><p>用于排序：我们使用order by时，一般情况下， 我们只能把记录都加载到内存中，再用一些排序算法，比如快速排序、归并排序、吧啦吧啦排序等等在内存中对 这些记录进行排序，有的时候可能查询的结果集太大以至于不能在内存中进行排序的话，还可能暂时借助磁盘的 空间来存放中间结果，排序操作完成后再把排好序的结果集返回到客户端。在 MySQL 中，把这种在内存中或者磁 盘上进行排序的方式统称为文件排序(英文名: filesort )，跟 文件 这个词儿一沾边儿，就显得这些排序操作 非常慢了(磁盘和内存的速度比起来，就像是飞机和蜗牛的对比)。但是如果 ORDER BY 子句里使用到了我们的 索引列，就有可能省去在内存或文件中排序的步骤</p>
+</li>
+<li><p>即使排序列是使用了索引列，也会出现使用不到索引的情况，比如以下几种情况</p>
+</li>
+<li><p>where语句出现非排序使用到的索引列</p>
+<p>eg：SELECT * FROM person_info WHERE country &#x3D; ‘China’ ORDER BY name LIMIT 10;</p>
+<p>这个查询只能先把符合搜索条件 country &#x3D; ‘China’ 的记录提取出来后再进行排序，是使用不到索引的。注意和下边这个查询作区别:</p>
+<p>SELECT * FROM person_info WHERE name &#x3D; ‘A’ ORDER BY birthday, phone_number LIMIT 10;</p>
+<p>虽然这个查询也有搜索条件，但是 name &#x3D; ‘A’ 可以使用到索引 idx_name_birthday_phone_number ，而且过滤剩</p>
+<p>下的记录还是按照 birthday 、 phone_number 列排序的，所以还是可以使用索引进行排序的。</p>
+</li>
+<li><p>排序列使用了复杂的表达式</p>
+<p>eg: SELECT * FROM person_info ORDER BY UPPER(name) LIMIT 10;</p>
+</li>
+<li><p>用于分组：分组也可以利用到索引，不过得注意，分组列的顺序也需要和索引列的顺序一致，也可以只使用索引列中左边的列进行分组</p>
+</li>
+</ol>
+<h4 id="回表的代价"><a href="#回表的代价" class="headerlink" title="回表的代价"></a>回表的代价</h4><p>回表的记录越多，使用二级索引的性能就越低，如果优化器判断回表的次数太多，那么将采用全表扫描的方式而不是二级索引+回表</p>
+<p>所以我们一般都追求查询列表里只包含索引列，也就是使用<strong>覆盖索引</strong>，省去回表的操作</p>
+<h4 id="如何挑选索引"><a href="#如何挑选索引" class="headerlink" title="如何挑选索引"></a>如何挑选索引</h4><ol>
+<li><p>只为用于搜索、排序或分组的列创建索引</p>
+</li>
+<li><p>考虑列的基数（列的基数 指的是某一列中不重复数据的个数）</p>
+</li>
+<li><p>索引列的类型尽量小</p>
+<p>数据类型越小，在查询时进行的比较操作越快(这是CPU层次的东东) </p>
+<p>数据类型越小，索引占用的存储空间就越少，在一个数据页内就可以放下更多的记录，从而减少磁盘 I&#x2F;O 带 来的性能损耗，也就意味着可以把更多的数据页缓存在内存中，从而加快读写效率。</p>
+</li>
+<li><p>索引字符串值的前缀：字符串值可能会有很长的情况，如果将它们建立索引，那索引占用的空间将很大，所以我们可以退而求其次，只保留字符串的前几个字符，这样在查找记录时虽然不能精确的定位 到记录的位置，但是能定位到相应前缀所在的位置，然后根据前缀相同的记录的主键值回表查询完整的字符串值，再对比就好了。可以类似这样加索引：KEY idx_name_birthday_phone_number (name(10), birthday, phone_number)</p>
+<p>不过有一个问题需要注意，因为这样保存的不是完整的字符串信息，所以这样建的索引将不能用来排序</p>
+</li>
+</ol>
+<h3 id="Buffer-Pool"><a href="#Buffer-Pool" class="headerlink" title="Buffer Pool"></a>Buffer Pool</h3><blockquote>
+<p>创建好了表和索引后，接下来就是插入数据了。</p>
+</blockquote>
+<p>我们都知道MySQL的数据，不管是用于存储用户数据的索引(包括聚 簇索引和二级索引)，还是各种系统数据，都是以 页 的形式存放在 表空间 中的，而所谓的 表空间 只不过是</p>
+<p>InnoDB 对文件系统上一个或几个实际文件的抽象，也就是说我们的数据说到底还是存储在磁盘上的。</p>
+<p>磁盘的速度是远远比不上CPU的，所以每次需要访问某个页时，都需要将完整的页数据加载到内存中。这样都导致了一个问题：<strong>即使我们只需要访问一个页的一条记录，那也需要先把整个页的数据加载到内存中</strong>，所以InnoDB的方案也就是将页先读取到缓存，再去缓存操作相应的页。也就是Buffer Pool了</p>
+<h4 id="控制信息"><a href="#控制信息" class="headerlink" title="控制信息"></a>控制信息</h4><p>Buffer Pool 中默认的缓存页大小和在磁盘上默认的页大小是一样的，都是 16KB 。为了更好的管理这些在Buffer Pool 中的缓存页，设计 InnoDB 的大叔为每一个缓存页都创建了一些所谓的 控制信息 ，这些控制信息 包括该页所属的表空间编号、页号、缓存页在 Buffer Pool 中的地址、链表节点信息、一些锁信息以及 LSN 信息等等</p>
+<p>每个缓存页对应的控制信息占用的内存大小是相同的，我们就把每个页对应的控制信息占用的一块内存称为一个 控制块 吧，控制块和缓存页是一一对应的，它们都被存放到 Buffer Pool 中，其中控制块被存放到 Buffer Pool</p>
+<p>的前边，缓存页被存放到 Buffer Pool 后边，所以整个 Buffer Pool 对应的内存空间看起来就是这样的:</p>
+<p><img src="https://img.tucang.cc/api/image/show/1582c036fb6bb993fee411fa93e0ed3b" srcset="/img/loading.gif" lazyload></p>
+<h4 id="几个链表"><a href="#几个链表" class="headerlink" title="几个链表"></a>几个链表</h4><p><strong>free链表</strong></p>
+<p>随着程序的运行，会不断的有磁盘上的页被缓存到 Buffer Pool 中，那么问 题来了，从磁盘上读取一个页到 Buffer Pool 中的时候该放到哪个缓存页的位置呢?或者说怎么区分 Buffer Pool 中哪些缓存页是空闲的，哪些已经被使用了呢?我们最好在某个地方记录一下Buffer Pool中哪些缓存页是可 用的，这个时候缓存页对应的 控制块 就派上大用场了，我们可以把所有空闲的缓存页对应的控制块作为一个节 点放到一个链表中，这个链表也可以被称作 free链表 。刚刚完成初始化的 Buffer Pool 中 所有的缓存页都是空闲的，所以每一个缓存页对应的控制块都会被加入到 free链表 中，假设该 Buffer Pool 中 可容纳的缓存页数量为 n ，那增加了 free链表 的效果图就是这样的:</p>
+<p><img src="https://img.tucang.cc/api/image/show/21d2e3f72dfcf242242fca8935f89241" srcset="/img/loading.gif" lazyload></p>
+<p><strong>flush 链表</strong></p>
+<p>当我们修改了缓存页中的数据，那它就与磁盘上的页不一致了，这样的缓存页也被称为脏页，最简单的解决	方法就是每发生一次修改就立即同步到磁盘上对应的页上，但是这样频繁的往磁盘中写数据会很严重的影响程序的性能，所以每次修改缓存页后，我们并不着急立即把修改同步到磁盘上，而是在未来的某个时间点进行同步，什么时候同步我们下面再说</p>
+<p>现在就有一个问题了，就像上边开始一样，我们怎么知道哪些是脏页呢，我们不得不再创建一个存储脏页的链表，凡是修改过的缓存页对应的控制块都会作为一个节点加入到一个链表中，因为这个链表节点对应的缓存页都是需要被刷新到磁盘上的， 所以也叫 flush链表 </p>
+<p><strong>LRU 链表</strong></p>
+<p>Buffer Pool 对应的内存大小毕竟是有限的，如果需要缓存的页占用的内存大小超过了 Buffer Pool 大小，也就是 free链表中已经没有多余的空闲缓存页了，现在就需要我们把某些旧的 缓存页从 Buffer Pool 中移除，然后再把新的页放进来喽~ 那么问题来了，移除哪些缓存页呢?</p>
+<p>我们设立 Buffer Pool 的初衷，我们就是想减少和磁盘的 IO 交互，最好每次在访问某个页的时候它都已经被缓存到 Buffer Pool 中了。也就是我们希望<strong>缓存的命中率</strong>较高</p>
+<p>首先我们看一个简单点的LRU（最近最少使用）链表，</p>
+<p><strong>当我们需要访问某个页时</strong>， 可以这样处理 LRU链表 :</p>
+<ul>
+<li><p>如果该页不在 Buffer Pool 中，在把该页从磁盘加载到 Buffer Pool 中的缓存页时，就把该缓存页对应的 控制块作为节点塞到链表的头部。</p>
+</li>
+<li><p>如果该页已经缓存在 Buffer Pool 中，则直接把该页对应的 控制块 移动到 LRU链表 的头部。</p>
+</li>
+</ul>
+<p>也就是说:只要我们使用到某个缓存页，就把该缓存页调整到 LRU链表 的头部，这样 LRU链表 尾部就是最近最少 使用的缓存页喽~ 所以当 Buffer Pool 中的空闲缓存页使用完时，到 LRU链表 的尾部找些缓存页淘汰就OK了。</p>
+<p>但是现实情况没那么简单，我们的考虑以下两个问题</p>
+<p>情况一：InnoDB提供了一个预读的服务，也就是InnoDB认为执行当前的请求可能之后会读取某些页面，就预先把它们加载到 Buffer Pool 中。根据触发 方式的不同， 预读 又可以细分为下边两种:</p>
+<ul>
+<li>线性预读：设计 InnoDB 的大叔提供了一个系统变量 innodb_read_ahead_threshold ，如果顺序访问了某个区<br> ( extent )的页面超过这个系统变量的值，就会触发一次异步读取下一个区中全部的页面到 Buffer Pool 的请求。这个 innodb_read_ahead_threshold 系统变量的值默认是 56</li>
+<li>随机预读：如果Buffer Pool 中已经缓存了某个区的13个连续的页面（这13个页面是处于热数据的前1&#x2F;4范围内的，什么是热数据，待会就知道了），不论这些页面是不是顺序读取的，都会触发 一次 异步 读取本区中所有其的页面到 Buffer Pool 的请求</li>
+</ul>
+<p>预读 本来是个好事儿，如果预读到 Buffer Pool 中的页成功的被使用到，那就可以极大的提高语句执 行的效率。可是如果用不到呢?这些预读的页都会放到 LRU 链表的头部，但是如果此时 Buffer Pool 的 容量不太大而且很多预读的页面都没有用到的话，这就会导致处在 LRU链表 尾部的一些缓存页会很快的 被淘汰掉，也就是所谓的 劣币驱逐良币 ，会大大降低缓存命中率。</p>
+<p>情况二：有时候会不经意间写一些需要扫描全表的查询语句（比如没有建立合适的索引或者压根儿没有 WHERE子句的查询）。扫描全表意味着什么?意味着将访问到该表所在的所有页!假设这个表中记录非常多的话，那该表会占用特 别多的 页 ，当需要访问这些页时，会把它们统统都加载到 Buffer Pool 中，这也就意味着一瞬间Buffer Pool 中的所有页都被换了一次血其他查询语句在执行时又得执行一次从磁盘加载到 Buffer Pool 的操作。而这种全表扫描的语句执行的频率也不高，每次执行都要把 Buffer Pool 中的缓存页换一次血，这 严重的影响到其他查询对 Buffer Pool 的使用，从而大大降低了缓存命中率。</p>
+<p>总结一下上边说的可能降低 Buffer Pool 的两种情况:</p>
+<ul>
+<li>加载到 Buffer Pool 中的页不一定被用到。</li>
+<li>如果非常多的使用频率偏低的页被同时加载到 Buffer Pool 时，可能会把那些使用频率非常高的页从Buffer Pool 中淘汰掉。</li>
+</ul>
+<p>因为有这两种情况的存在，所以InnoDB把这个 LRU链表按照一定比例分成两截，分别是:</p>
+<ul>
+<li>一部分存储使用频率非常高的缓存页，所以这一部分链表也叫做 热数据 ，或者称 young区域 。</li>
+<li>另一部分存储使用频率不是很高的缓存页，所以这一部分链表也叫做 冷数据 ，或者称 old区域 。</li>
+</ul>
+<p><img src="https://img.tucang.cc/api/image/show/ef59e621009f3ae60ce976c127c9676b" srcset="/img/loading.gif" lazyload></p>
+<p>默认情况下， old 区域在 LRU链表 中所占的比例是 37% ，也就是说 old 区域大约占 LRU链 表 的 3&#x2F;8 。这个比例我们是可以设置的，我们可以在启动时修改 innodb_old_blocks_pct 参数来控制 old 区域 在 LRU链表 中所占的比例</p>
+<p>划分后的链表逻辑：</p>
+<ol>
+<li>当磁盘上的某个页面在初次加载到Buffer Pool中的某个缓存页时，该缓存页对应的控制块会被放到old区域的头部。</li>
+<li>之后对old 区域的缓存页进行第一次访问时就在它对应的控制块中 记录下来这个访问时间，如果后续的访问时间与第一次访问的时间在某个时间间隔内，那么该页面就不会被 从old区域移动到young区域的头部，否则将它移动到young区域的头部。这个间隔时间是由系统变量innodb_old_blocks_time 控制的</li>
+</ol>
+<p><strong>更进一步优化LRU链表</strong></p>
+<p> 对于 young 区域的缓存页来说，我们每次访问一个缓存页就要把它移 动到 LRU链表 的头部，这样开销是不是太大啦，毕竟在 young 区域的缓存页都是热点数据，也就是可能被经常访 问的，这样频繁的对 LRU链表 进行节点移动操作是不是不太好啊?是的，为了解决这个问题其实我们还可以提出</p>
+<p>一些优化策略，比如只有被访问的缓存页位于 young 区域的 1&#x2F;4 的后边，才会被移动到 LRU链表 头部，这样就 可以降低调整 LRU链表 的频率，从而提升性能(也就是说如果某个缓存页对应的节点在 young 区域的 1&#x2F;4 中， 再次访问该缓存页时也不会将其移动到 LRU 链表头部)。</p>
+<h4 id="缓存页的哈希处理"><a href="#缓存页的哈希处理" class="headerlink" title="缓存页的哈希处理"></a>缓存页的哈希处理</h4><p>我们前边说过，当我们需要访问某个页中的数据时，就会把该页从磁盘加载到 Buffer Pool 中，如果该页已经 在 Buffer Pool 中的话直接使用就可以了。那么问题也就来了，我们怎么知道该页在不在 Buffer Pool 中呢?难 不成需要依次遍历 Buffer Pool 中各个缓存页么?一个 Buffer Pool 中的缓存页这么多都遍历完岂不是要累死?</p>
+<p>所以我们可以用 表空间号 + 页号 作为 key ， 缓存页 作为 value 创建一个哈希表，在需要访问某个页的数据 时，先从哈希表中根据 表空间号 + 页号 看看有没有对应的缓存页，如果有，直接使用该缓存页就好，如果没 有，那就从 free链表 中选一个空闲的缓存页，然后把磁盘中对应的页加载到该缓存页的位置。</p>
+<h4 id="刷新脏页到磁盘"><a href="#刷新脏页到磁盘" class="headerlink" title="刷新脏页到磁盘"></a>刷新脏页到磁盘</h4><p><strong>后台有专门的线程每隔一段时间负责把脏页刷新到磁盘</strong>，这样可以不影响用户线程处理正常的请求。主要有两种</p>
+<p>刷新路径:</p>
+<ul>
+<li><p>从 LRU链表 的冷数据中刷新一部分页面到磁盘。</p>
+<p>后台线程会定时从 LRU链表 尾部开始扫描一些页面，扫描的页面数量可以通过系统变innodb_lru_scan_depth来指定，如果从里边儿发现脏页，会把它们刷新到磁盘。这种刷新页面的方式被称之为 BUF_FLUSH_LRU </p>
+</li>
+<li><p>从 flush链表 中刷新一部分页面到磁盘。</p>
+<p>后台线程也会定时从 flush链表 中刷新一部分页面到磁盘，刷新的速率取决于当时系统是不是很繁忙。这种 刷新页面的方式被称之为 BUF_FLUSH_LIST </p>
+</li>
+<li><p>有时候后台线程刷新脏页的进度比较慢，导致用户线程在准备加载一个磁盘页到 Buffer Pool 时没有可用的缓存 页，这时就会尝试看看 LRU链表 尾部有没有可以直接释放掉的未修改页面，如果没有的话会不得不将 LRU链表 尾 部的一个脏页同步刷新到磁盘(和磁盘交互是很慢的，这会降低处理用户请求的速度)。这种刷新单个页面到磁 盘中的刷新方式被称之为 BUF_FLUSH_SINGLE_PAGE 。</p>
+</li>
+</ul>
+<h3 id="Redo-Log"><a href="#Redo-Log" class="headerlink" title="Redo Log"></a>Redo Log</h3><blockquote>
+<p>如果修改的页还没刷新到磁盘，服务器宕机了，那修改的数据不就丢了。上面也说过了不可能每次一修改就马上同步到磁盘，所以我们需要一个东西来帮我们记录一下修改</p>
+<p>这个问题还有另外一种说法，也就是InnoDB是如何提供事务的持久性的</p>
+</blockquote>
+<p>那么如何保证这个 持久性 呢?一个很简单的做法就是在事务提交完成之前把该 事务所修改的所有页面都刷新到磁盘，但是这个简单粗暴的做法有些问题:</p>
+<ul>
+<li>刷新一个完整的数据页太浪费了</li>
+</ul>
+<p>  有时候我们仅仅修改了某个页面中的一个字节，但是我们知道在 InnoDB 中是以页为单位来进行磁盘IO的， 也就是说我们在该事务提交时不得不将一个完整的页面从内存中刷新到磁盘，我们又知道一个页面默认是 16KB大小，只修改一个字节就要刷新16KB的数据到磁盘上显然是太浪费了。</p>
+<ul>
+<li><p>随机IO刷起来比较慢</p>
+<p>一个事务可能包含很多语句，即使是一条语句也可能修改许多页面，倒霉催的是该事务修改的这些页面可能 并不相邻，这就意味着在将某个事务修改的 Buffer Pool 中的页面刷新到磁盘时，需要进行很多的随机IO， 随机IO比顺序IO要慢，尤其对于传统的机械硬盘来说。</p>
+</li>
+</ul>
+<p>咋办呢?再次回到我们的初心:我们只是想让已经提交了的事务对数据库中数据所做的修改永久生效，即使后来 系统崩溃，在重启后也能把这种修改恢复出来。所以我们其实没有必要在每次事务提交时就把该事务在内存中修 改过的全部页面刷新到磁盘，只需要把修改了哪些东西记录一下就好，比方说某个事务将系统表空间中的第100 号页面中偏移量为1000处的那个字节的值 1 改成 2 我们只需要记录一下:</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">将第0号表空间的100号页面的偏移量为1000处的值更新为<span class="hljs-number"> 2 </span>。<br></code></pre></td></tr></table></figure>
+
+<p>这个做的记录也就是redo log了，重做日志。</p>
+<p>对于redo log我们主要学习3个内容，1.redo log长啥样、怎么写入磁盘的 2.check point 3. 如何做到崩溃恢复</p>
+<h4 id="redo-log长啥样、怎么写入磁盘的"><a href="#redo-log长啥样、怎么写入磁盘的" class="headerlink" title="redo log长啥样、怎么写入磁盘的"></a><strong>redo log长啥样、怎么写入磁盘的</strong></h4><p><strong>第一个问题redo log长啥样：</strong></p>
+<p><img src="https://img.tucang.cc/api/image/show/b8056649b5dcb8d9a63788bf93a4938b" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li>Type:日志的类型</li>
+<li>Space ID:表空间ID</li>
+<li>page number:页号</li>
+<li>Data:具体的修改信息</li>
+</ul>
+<p>首先我们知道修改的类型是有好几种，接着就是一条修改语句的执行可不仅仅会涉及到我们修改的那条记录，可能还能涉及到改一些系统表的信息，索引结构等，所以InnoDB定义了很多类型的redo log,最简单的有比如将max_row_id写入磁盘的redo log，它的data部份就是在什么偏移量处，写入了什么数据，而对于比如插入数据，删除数据这些会牵扯到很多其他修改的数据则不是这么简单，一般把他们的redo log读出来后还要到专门的函数里去执行。做为学习redo log的作用，我们大概记得上面redo log的通用结构就行了，细学各种redo log的话任务量还是蛮大的。</p>
+<p><strong>第二个问题：怎么写入磁盘的？</strong></p>
+<p>首先我们要看在内存中的时候redo log是放在哪里的？</p>
+<p>不过在讲redo log在内存中放在哪里还得再讲一个东西:<strong>Mini-Transaction</strong></p>
+<p>上面我们有提到，一条修改语句的执行可能会牵扯到许多的修改，举个例子，比如我们插入一条记录，很不巧我们在这个过程中产生了页分裂，这时我们创建了一个新的页，移动好了数据，把我们的新数据也插入进去了，到此为止我们所有的redo log都顺利记录了下来，可是我们创建一个新的页，那目录项就得多一个目录项记录，可是关于这个目录项记录的redo log却没给记录下来，那我们后面服务器崩溃重启后，恢复后将是一个错误的状态，所以我们必须保证这一个整个修改要么全部恢复成功，要么全部不恢复，也就是要保证它是<strong>原子性</strong>的。</p>
+<p>所以redo log被划分成了若干个不可分割的组，怎么分辨那部份是同一个组：在每一个组的后面加一个奇特类型的redo log，这个log只有type部份，每读到这个就知道一个组结束了。</p>
+<p>总结以下，对底层页面中的一次原子访问的过程称之为一个 Mini-Transaction ，简称 mtr，一个事务可以包含若干条语句，每一条语句其实是由若干个 mtr 组成，每一个 mtr 又可以包含若干条 redo 日 志</p>
+<p><strong>接下来正式讲redo log在内存放在哪里</strong></p>
+<p>InnoDB为了更好的进行系统奔溃恢复，他们把通过 mtr 生成的 redo 日志都放在了大小为 512字节 的 页 中。为了和表空间中的页做区别，我们这里把用来存储 redo 日志的页称为 block ，一个 redo log block 的示意图如下:</p>
+<p><img src="https://img.tucang.cc/api/image/show/aa9c5830ec11b08327b29210f25f5cad" srcset="/img/loading.gif" lazyload></p>
+<p><strong>真正的 redo 日志都是存储到占用 496 字节大小的 log block body 中</strong>，图中的 log block header 和 log block trailer 存储的是一些管理信息:</p>
+<p>其中 log block header 的几个属性的意思分别如下:</p>
+<ul>
+<li><p>LOG_BLOCK_HDR_NO :每一个block都有一个大于0的唯一标号，本属性就表示该标号值。</p>
+</li>
+<li><p>LOG_BLOCK_HDR_DATA_LEN :表示block中已经使用了多少字节，初始值为 12 (因为 log block body 从第 12个字节处开始)。随着往block中写入的redo日志越来也多，本属性值也跟着增长。如果 log block body 已经被全部写满，那么本属性的值被设置为 512 。</p>
+</li>
+<li><p>LOG_BLOCK_FIRST_REC_GROUP :一条 redo 日志也可以称之为一条 redo 日志记录( redo log record )， 一个 mtr 会生产多条 redo 日志记录，这些 redo 日志记录被称之为一个 redo 日志记录组( redo log record group )。 LOG_BLOCK_FIRST_REC_GROUP 就代表该block中第一个 mtr 生成的 redo 日志记录组的偏 移量(其实也就是这个block里第一个 mtr 生成的第一条 redo 日志的偏移量)。</p>
+</li>
+<li><p>LOG_BLOCK_CHECKPOINT_NO :表示所谓的 checkpoint 的序号， checkpoint 是我们后续内容的重点，现在先不用清楚它的意思，稍安勿躁。</p>
+</li>
+</ul>
+<p><strong>重点来了：redo log缓存区</strong></p>
+<p>我们前边说过，设计 InnoDB 的大叔为了解决磁盘速度过慢的问题而引入了 Buffer Pool 。同理，写入 redo 日 志时也不能直接直接写到磁盘上，实际上在服务器启动时就向操作系统申请了一大片称之为 redo log buffer 的 连续内存空间，这片内存空间被划分成若干个连续的 redo log block，如图：</p>
+<p><img src="https://img.tucang.cc/api/image/show/52c10a7d4dfdec6c36edc02ae9d50b2a" srcset="/img/loading.gif" lazyload></p>
+<p>我们可以通过启动参数 innodb_log_buffer_size 来指定 log buffer 的大小，在 MySQL 5.7.21 这个版本中，该 启动参数的默认值为 16MB 。</p>
+<p>现在又有了一个新的问题：向 log buffer 中写入 redo 日志的过程是顺序的，也就是先往前边的block中写，当该block的空闲空间用完之后 再往下一个block中写。当我们想往 log buffer 中写入 redo 日志时，第一个遇到的问题就是<strong>应该写在哪个block 的哪个偏移量处</strong>，所以InnoDB提供了一个称之为 buf_free 的全局变量，该变量指明后续写入的 redo 日志应该写入到 log buffer 中的哪个位置。</p>
+<p>并且每个mtr都是在将本mtr内的所有语句都执行完毕后才会统一的一次放到log buffer中的，而不是一句一句往里加的。如下图：</p>
+<p><img src="https://img.tucang.cc/api/image/show/3073efc7543d6ce8ab4e5dcb48c959a1" srcset="/img/loading.gif" lazyload></p>
+<p>知道了redo log在内存中放在哪里后，就来到了怎么把这些数据放入磁盘。</p>
+<p>首先就是<strong>刷盘时机</strong></p>
+<ol>
+<li><p><strong>log buffer 空间不足时</strong></p>
+<p>log buffer 的大小是有限的(通过系统变量 innodb_log_buffer_size 指定)，如果不停的往这个有限大小 的 log buffer 里塞入日志，很快它就会被填满。设计 InnoDB 的大叔认为如果当前写入 log buffer 的redo 日志量已经占满了 log buffer 总容量的大约一半左右，就需要把这些日志刷新到磁盘上。 事务提交时</p>
+</li>
+<li><p><strong>事务提交时</strong></p>
+<p>我们前边说过之所以使用 redo 日志主要是因为它占用的空间少，还是顺序写，在事务提交时可以不把修改过的 Buffer Pool 页面刷新到磁盘，但是为了保证持久性，<strong>必须要把修改这些页面对应的 redo日志刷新到磁盘。</strong></p>
+</li>
+<li><p><strong>后台线程不停的刷刷刷</strong></p>
+<p>后台有一个线程，大约每秒都会刷新一次 log buffer 中的 redo 日志到磁盘。</p>
+</li>
+<li><p><strong>正常关闭服务器时</strong></p>
+</li>
+<li><p>做所谓的 checkpoint 时</p>
+</li>
+<li><p>其他的一些情况…</p>
+</li>
+</ol>
+<p>主要需要知道前4个时机。</p>
+<p><strong>接着是redo log在系统中的形式：文件组</strong>。</p>
+<p>MySQL 的数据目录(使用 SHOW VARIABLES LIKE ‘datadir’ 查看)下默认有两个名为 ib_logfile0 和 ib_logfile1 的文件，log buffer 中的日志默认情况下就是刷新到这两个磁盘文件中。如果我们对默认的 redo 日志文件不满意，可以通过下边几个启动参数来调节:</p>
+<ul>
+<li><p>innodb_log_group_home_dir</p>
+<p>该参数指定了 redo 日志文件所在的目录，默认值就是当前的数据目录。</p>
+</li>
+<li><p>innodb_log_file_size</p>
+<p>该参数指定了每个 redo 日志文件的大小，在 MySQL 5.7.21 这个版本中的默认值为 48MB</p>
+</li>
+<li><p>innodb_log_files_in_group</p>
+<p>该参数指定 redo 日志文件的个数，默认值为2，最大值为100</p>
+</li>
+</ul>
+<p>从上边的描述中可以看到，磁盘上的 redo 日志文件不只一个，而是以一个 日志文件组 的形式出现的。这些文件 以 ib_logfile[数字] ( 数字 可以是 0 、 1 、 2 …)的形式进行命名。在将 redo 日志写入日志文件组时，是从 ib_logfile0 开始写，如果 ib_logfile0 写满了，就接着 ib_logfile1 写，同理， ib_logfile1 写满了就去 写 ib_logfile2 ，依此类推。如果写到最后一个文件该咋办?那就重新转到 ib_logfile0继续写</p>
+<p><img src="https://img.tucang.cc/api/image/show/7d558f6c4b131488a2ab786dcf22c103" srcset="/img/loading.gif" lazyload></p>
+<p>顺便还得再提一下redo日志文件格式</p>
+<p>log buffer 本质上是一片连续的内存空间，被划分成了若干个 512 字节大小的 block 。将log buffer中的redo日志刷新到磁盘的本质就是把block的镜像写入日志文件中，所以 redo 日志文件其实也是由若干 个 512 字节大小的block组成。</p>
+<p>redo 日志文件组中的每个文件大小都一样，格式也一样，都是由两部分组成: </p>
+<ul>
+<li><p>前2048个字节，也就是前4个block是用来存储一些管理信息的。</p>
+<p><img src="https://img.tucang.cc/api/image/show/fc1dea9dc608015a634e86a8acfb5fc7" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>从第2048字节往后是用来存储 log buffer 中的block镜像的。</p>
+</li>
+</ul>
+<p>所以我们前边所说的 循环 使用redo日志文件，其实是从每个日志文件的第2048个字节开始算，示意图如下:</p>
+<p><img src="https://img.tucang.cc/api/image/show/fcdf803ca34639085e8bb1a0d5868d9e" srcset="/img/loading.gif" lazyload></p>
+<h4 id="check-point"><a href="#check-point" class="headerlink" title="check point"></a>check point</h4><p>在讲check point前我们得先学习一个前置知识：LSN。</p>
+<p><strong>Log Sequeue Number</strong></p>
+<p>InnoDB为<strong>记录已经写入的 redo日志量</strong>，设计了一个称之为 Log Sequeue Number 的全局变量，翻译过来就是: 日志序列号 ，简称 lsn 。不过不像 人一出生的年龄是 0 岁，设计 InnoDB 的大叔规定初始的 lsn 值为 8704 (也就是一条 redo 日志也没写入时，lsn 的值为 8704 )。</p>
+<p>每一组由mtr生成的redo日志都有一个唯一的LSN值与其对应，LSN值越小，说明 redo日志产生的越早。</p>
+<p><strong>flushed_to_disk_lsn</strong></p>
+<p>redo 日志是首先写到 log buffer 中，之后才会被刷新到磁盘上的 redo 日志文件。所以设计 InnoDB 的大叔提 出了一个称之为 buf_next_to_write 的全局变量，标记当前 log buffer 中已经有哪些日志被刷新到磁盘中了。 图示:</p>
+<p><img src="https://img.tucang.cc/api/image/show/4fc79cef31bd5db3697f862f5a3f40a0" srcset="/img/loading.gif" lazyload></p>
+<p>当有新的 redo 日志写入到 log buffer 时，首先 lsn 的值会增长，但 flushed_to_disk_lsn 不变， 随后随着不断有 log buffer 中的日志被刷新到磁盘上， flushed_to_disk_lsn 的值也跟着增长。如果两者的值 相同时，说明log buffer中的所有redo日志都已经刷新到磁盘中了。</p>
+<p><strong>flush链表中的LSN</strong></p>
+<p>我们知道一个 mtr 代表一次对底层页面的原子访问，在访问过程中可能会产生一组不可分割的 redo 日志，在 mtr 结束时，会把这一组 redo 日志写入到 log buffer 中。除此之外，在 mtr 结束时还有一件非常重要的事情要做，就是<strong>把在mtr执行过程中可能修改过的页面加入到Buffer Pool的flush链表</strong>。</p>
+<p>当第一次修改某个缓存在 Buffer Pool 中的页面时，就会把这个页面对应的控制块插入到 flush链表 的头部，之 后再修改该页面时由于它已经在 flush 链表中了，就不再次插入了。<strong>也就是说flush链表中的脏页是按照页面的第一次修改时间从大到小进行排序的</strong>。在这个过程中会在缓存页对应的控制块中记录两个关于页面何时修改的属性:</p>
+<ul>
+<li>oldest_modification :如果某个页面被加载到 Buffer Pool 后进行<strong>第一次修改</strong>，那么就将修改该页面的mtr<strong>开始时</strong>对应的 lsn 值写入这个属性。后然如果再更新了这个页，那这个值并不会改变，只会修改newest_modification，我猜这样做是可以让链表中这些点的顺序和redo log文件中的顺序是一样的，后面在淘汰不需要的页面就是都从LSN值小的开始淘汰的（了解完后面的check point再来看这句话应该好理解些）</li>
+<li>newest_modification :每修改一次页面，都会将修改该页面的 mtr 结束时对应的 lsn 值写入这个属性。也就是说该属性表示页面最近一次<strong>修改后</strong>对应的系统 lsn 值。</li>
+</ul>
+<p>图示：</p>
+<p><img src="https://img.tucang.cc/api/image/show/f2c4cedcb12b182affd830cda92226cc" srcset="/img/loading.gif" lazyload></p>
+<p>说明：首先可以看到这里面的控制块是根据oldest_modification来排序的，然后这里的页b也就是后面有再被修改过，所以它的newest_modification变了，但是oldest_modification没变，位置也没变</p>
+<p><strong>好了，可以开始check point了</strong></p>
+<p>我们都知道一个很不幸的事实就是我们的 redo 日志文件组容量是有限的，我们不得不选择循环使用 redo 日志文件组中的 文件，但是这会造成最后写的 redo日志与最开始写的 redo日志追尾 。这时应该想到:<strong>redo日志只是为了系统 奔溃后恢复脏页用的，如果对应的脏页已经刷新到了磁盘，也就是说即使现在系统奔溃，那么在重启后也用不着 使用redo日志恢复该页面了，所以该redo日志也就没有存在的必要了，那么它占用的磁盘空间就可以被后续的 redo日志所重用</strong>。也就是说:<strong>判断某些redo日志占用的磁盘空间是否可以覆盖的依据就是它对应的脏页是否已经 刷新到磁盘里。</strong></p>
+<p>我们以一个例子来看比较好理解些：</p>
+<p><img src="https://img.tucang.cc/api/image/show/587dd81a9fc9de7d35949324f17ffe4a" srcset="/img/loading.gif" lazyload></p>
+<p>如图，虽然 mtr_1 和 mtr_2 生成的 redo 日志都已经被写到了磁盘上，但是它们修改的脏页仍然留在 Buffer Pool 中，所以它们生成的 redo 日志在磁盘上的空间是不可以被覆盖的。之后随着系统的运行，如果 页a 被刷新 到了磁盘，那么它对应的控制块就会从 flush链表 中移除，就像这样子:</p>
+<p><img src="https://img.tucang.cc/api/image/show/563f20d26e8c6d268ef262c93089dc0d" srcset="/img/loading.gif" lazyload></p>
+<p>这样 mtr_1 生成的 redo 日志就没有用了，它们占用的磁盘空间就可以被覆盖掉了。设计 InnoDB 的大叔提出了 一个全局变量 <strong>checkpoint_lsn</strong> 来代表当前系统中<strong>可以被覆盖的 redo 日志总量是多少</strong>，这个变量初始值也是8704 。</p>
+<p>比方说现在 页a 被刷新到了磁盘， mtr_1 生成的 redo 日志就可以被覆盖了，所以我们可以进行一个增加checkpoint_lsn 的操作，我们把这个过程称之为做一次 checkpoint 。做一次 checkpoint 其实可以分为两个步骤:</p>
+<ul>
+<li><p>步骤一:计算一下当前系统中可以被覆盖的 redo 日志对应的 lsn 值最大是多少。</p>
+<p>具体是：我们从flush链表中查找到当前最小的oldest_modification，那么凡是lsn值小于该oldest_modification值时产生的redo日志就都是可以被覆盖掉的。我们就把该脏页的 oldest_modification赋值给 checkpoint_lsn。</p>
+<p>比方上面的例子，当前系统中 页a 已经被刷新到磁盘，那么 flush链表 的尾节点就是 页c ，该节点就是当前系统中最 早修改的脏页了，它的 oldest_modification 值为8916，我们就把8916赋值给 checkpoint_lsn (也就是说 在redo日志对应的lsn值小于8916时就可以被覆盖掉)。</p>
+</li>
+<li><p>步骤二:将 checkpoint_lsn 和对应的 redo 日志文件组偏移量checkpoint_offset以及此次 checkpint 的编号checkpoint_no 写到日志文件的 管理信息(就是 checkpoint1 或者 checkpoint2 )中。当 checkpoint_no 的值是偶数时，就写到 checkpoint1 中，是奇数时，就写到checkpoint2 中(在日志文件组的前4个block中)。</p>
+<p>并且这些信息只会被写到日志文件组的第一个日志文件的管理信息中</p>
+</li>
+</ul>
+<p><strong>innodb_flush_log_at_trx_commit的用法</strong></p>
+<p>我们前边说为了保证事务的 持久性 ，用户线程在事务提交时需要将该事务执行过程中产生的所有 redo 日志都刷 新到磁盘上。这一条要求太狠了，会很明显的降低数据库性能。如果有的同学对事务的 持久性 要求不是那么强 烈的话，可以选择修改一个称为 innodb_flush_log_at_trx_commit 的系统变量的值，该变量有3个可选的值:</p>
+<ul>
+<li><p>0 :当该系统变量值为0时，表示在事务提交时不立即向磁盘中同步 redo 日志，这个任务是交给后台线程 做的。</p>
+<p>这样很明显会加快请求处理速度，但是如果事务提交后服务器挂了，后台线程没有及时将 redo 日志刷新到 磁盘，那么该事务对页面的修改会丢失。</p>
+</li>
+<li><p>1 :当该系统变量值为1时，表示在事务提交时需要将 redo 日志同步到磁盘，可以保证事务的 持久性 。 1 也是 innodb_flush_log_at_trx_commit 的默认值。</p>
+</li>
+<li><p>2: 当该系统变量值为2时，表示在事务提交时需要将 redo 日志写到操作系统的缓冲区中，但并不需要保 证将日志真正的刷新到磁盘。</p>
+<p>这种情况下如果数据库挂了，操作系统没挂的话，事务的 持久性 还是可以保证的，但是操作系统也挂了的 话，那就不能保证 持久性 了。</p>
+</li>
+</ul>
+<h4 id="崩溃恢复"><a href="#崩溃恢复" class="headerlink" title="崩溃恢复"></a>崩溃恢复</h4><p>崩溃恢复涉及以下几个重要步骤：确定恢复的起点、确定恢复的终点、怎么恢复</p>
+<p><strong>确定恢复的起点</strong></p>
+<p>我们前边说过， checkpoint_lsn 之前的 redo 日志都可以被覆盖，也就是说这些 redo 日志对应的脏页都已经被 刷新到磁盘中了，既然它们已经被刷盘，我们就没必要恢复它们了。对于 checkpoint_lsn 之后的 redo 日志，它们对应的脏页可能没被刷盘，也可能被刷盘了，我们不能确定，所以需要从 checkpoint_lsn 开始读取 redo 日志 来恢复页面。</p>
+<p>当然， redo 日志文件组的第一个文件的管理信息中有两个block都存储了 checkpoint_lsn 的信息，我们当然是 要选取最近发生的那次checkpoint的信息。衡量 checkpoint 发生时间早晚的信息就是所谓的 checkpoint_no ， 我们只要把 checkpoint1 和 checkpoint2 这两个block中的 checkpoint_no 值读出来比一下大小，哪个checkpoint_no 值更大，说明哪个block存储的就是最近的一次 checkpoint 信息。<strong>这样我们就能拿到最近发生 的 checkpoint 对应的 checkpoint_lsn 值以及它在 redo 日志文件组中的偏移量 checkpoint_offset 。</strong></p>
+<p><strong>确定恢复的终点</strong></p>
+<p>这个还得从block的结构说起。我们说在写 redo 日志的时候都是顺序写的，写满了一个block之后会再往下一个block中写:普通block的 log block header 部分有一个称之为 LOG_BLOCK_HDR_DATA_LEN 的属性，该属性值记录了当前block 里使用了多少字节的空间。对于被填满的block来说，该值永远为 512 。如果该属性的值不为 512 ，那么就是它 了，它就是此次奔溃恢复中需要扫描的最后一个block。</p>
+<p><strong>怎么恢复</strong></p>
+<p>主要涉及两部份内容</p>
+<p>1.使用哈希表</p>
+<p>根据 redo 日志的 space ID 和 page number 属性计算出散列值，把 space ID 和 page number 相同的 redo 日志放到哈希表的同一个槽里，如果有多个 space ID 和 page number 都相同的 redo 日志，那么它们之间 使用链表连接起来，按照生成的先后顺序链接起来的。之后就可以遍历哈希表，因为对同一个页面进行修改的 redo 日志都放在了一个槽里，<strong>所以可以一次性将一个页面修复好</strong>(避免了很多读取页面的随机IO)，这样可以加快恢复速度。</p>
+<p>2.跳过已经刷新到磁盘的页面</p>
+<p>我们前边说过， checkpoint_lsn 之前的 redo 日志对应的脏页确定都已经刷到磁盘了，但是 checkpoint_lsn 之后的 redo 日志我们不能确定是否已经刷到磁盘，主要是因为在最近做的一次 checkpoint 后，可能后台线程又不断的从 LRU链表 和 flush链表 中将一些脏页刷出 Buffer Pool 。这些在 checkpoint_lsn 之后的 redo 日志，如果它们对应的脏页在奔溃发生时已经刷新到磁盘，那在恢复时也就 没有必要根据 redo 日志的内容修改该页面了。</p>
+<p>那在恢复时怎么知道某个 redo 日志对应的脏页是否在奔溃发生时已经刷新到磁盘了呢?</p>
+<p>这还得从页面的结 构说起，我们前边说过每个页面都有一个称之为 File Header 的部分，在 File Header 里有一个称之为FIL_PAGE_LSN 的属性，该属性记载了最近一次修改页面时对应的 lsn 值(其实就是页面控制块中的 newest_modification 值)。如果在做了某次 checkpoint 之后有脏页被刷新到磁盘中，那么该页对应的 FIL_PAGE_LSN 代表的 lsn 值肯定大于 checkpoint_lsn 的值，凡是符合这种情况的页面就不需要重复执行lsn值小于 FIL_PAGE_LSN 的redo日志了，所以更进一步提升了奔溃恢复的速度。</p>
+<h3 id="Undo-Log"><a href="#Undo-Log" class="headerlink" title="Undo Log"></a>Undo Log</h3><blockquote>
+<p>持久性保证了，那原子性是怎么保证的呢？</p>
+</blockquote>
+<p>我们说过 事务 需要保证 原子性 ，也就是事务中的操作要么全部完成，要么什么也不做。但是偏偏有时候事务执行到一半会出现一些情况，比如:</p>
+<ul>
+<li>情况一:事务执行过程中可能遇到各种错误，比如服务器本身的错误，操作系统错误，甚至是突然断电导致的错误。</li>
+<li>情况二:程序员可以在事务执行过程中手动输入 ROLLBACK 语句结束当前的事务的执行。</li>
+</ul>
+<p>这两种情况都会导致事务执行到一半就结束，但是事务执行过程中可能已经修改了很多东西，为了保证事务的原 子性，我们需要把东西改回原先的样子，这个过程就称之为回滚 (英文名: rollback )，这样就可以造成一个假象:这个事务看起来什么都没做，所以符合原子性要求。</p>
+<h4 id="undo-log格式"><a href="#undo-log格式" class="headerlink" title="undo log格式"></a>undo log格式</h4><p>Undo log的格式主要有三种：INSERT、DELETE、UPDATE，下面我们分别简短的说一下</p>
+<p><strong>INSERT</strong></p>
+<p>当我们插入一条语句后，如果希望回滚这个插入操作，那么也就是把这条记录删除就好了，也就是说在写对应的 undo 日志时，主要是把这条记录的主键信息记上。所以InnoDB设计了一个类型为TRX_UNDO_INSERT_REC 的 undo日志。</p>
+<p><img src="https://img.tucang.cc/api/image/show/ec7b97863d107d18c060f72d037727ce" srcset="/img/loading.gif" lazyload></p>
+<p>不用纠结太多，我们记住它的关键信息是第五个部份，主键各列信息就可以了，这个部分中记录了主键各列占用的空间和真实的值。</p>
+<p><strong>DELETE</strong></p>
+<p>关于DELETE，我们得先说一下MySQL删除一条记录的过程，分为两个步骤，在事务提交前，MySQL只会将行记录的记录头信息中的delete_mask标为1，等到事务提交后才会有后台的线程来把这些记录移到垃圾链表中。</p>
+<p>而我们的undo log本质就是用在事务提交前回滚的（事务提交后就没undo log什么事了），所以我们的DELETE undo log是建立在第一个步骤上的。</p>
+<p>DELETE undo log （TRX_UNDO_DEL_MARK_REC）也不复杂，和INSERT undo log差不多，只是多了一个old trx_id和old roll_pointer，一个索引各列信息部分。</p>
+<p><img src="https://img.tucang.cc/api/image/show/5115528358315e4a798947485afbce02" srcset="/img/loading.gif" lazyload></p>
+<p>old trx_id和old roll_pointer是为了<strong>版本链</strong>而准备的，索引各列信息则是涉及到的索引列都会给记录进去</p>
+<p><strong>UPDATE</strong></p>
+<p>关于UPDATE，InnoDB的更新操作又做了分类，首先是根据是否改变主键ID来分，如果主键ID不改，又可再细分为所有改变的列占据的空间是否变化，不变化则可以进行就地更新（这里的不变化指的是一样大，不管是大了还是小了），变化了则需要对旧记录进行一次同步删除（可不是上面说的标记delete mark，是真正的直接删除），然后再创建新记录插入。不过如果新创建的记录占用的存储空间大小不超过旧记录占用的空间，那么可以直接重用被加入到 垃圾链 表 中的旧记录所占用的存储空间，否则的话需要在页面中新申请一段空间以供新记录使用，如果本页面内已 经没有可用的空间的话，那就需要进行页面分裂操作，然后再插入新记录。</p>
+<p>针对 UPDATE 不更新主键的情况(包括上边所说的就地更新和先删除旧记录再插入新记录)，InnoDB设计了一种类型为 TRX_UNDO_UPD_EXIST_REC 的 undo日志 ，它的完整结构如下:</p>
+<p><img src="https://img.tucang.cc/api/image/show/a718885c3995f1c2649296037701348a" srcset="/img/loading.gif" lazyload></p>
+<p>相比于上面的DELETE undo log，它有多了一个部分:n_updated和被更新的列更新前信息（在记录中的位置、占用空间大小、旧值）</p>
+<p>如果是更新了主键的话，则是对旧记录进行delete mark了，然后再是插入一条新记录了。针对 UPDATE 语句更新记录主键值的这种情况，在对该记录进行 delete mark 操作前，会记录一条类型为TRX_UNDO_DEL_MARK_REC 的 undo日志。之后插入新记录时，会记录一条类型为 TRX_UNDO_INSERT_REC 的 undo日志 ，也就是说每对一条记录的主键值做改动时，会记录2条 undo日志 。</p>
+<h4 id="roll-pointer"><a href="#roll-pointer" class="headerlink" title="roll_pointer"></a>roll_pointer</h4><p>事务回滚最关键的两个东西，上面的undo log（记录旧记录信息）还有roll_pointer（回滚指针）。</p>
+<p>Roll_pointer本质上就是一个指向记录对应的undo日志的一个指针。比方说我们向表里插入了2条记录，每条记录都有与其对应的 一条 undo日志 。记录被存储到了类型为 FIL_PAGE_INDEX 的页面中(就是我们前边一直所说的 数据页 )，undo日志被存放到了类型为 FIL_PAGE_UNDO_LOG 的页面中。效果如图所示:</p>
+<p><img src="https://img.tucang.cc/api/image/show/b0b55732728e64ecca406daa0c472c3a" srcset="/img/loading.gif" lazyload></p>
+<h4 id="怎么存储的undo-log"><a href="#怎么存储的undo-log" class="headerlink" title="怎么存储的undo log"></a>怎么存储的undo log</h4><p>这个部分如果要细讲，那么篇幅将会很大很大，而且要涉及到很多表空间的知识，所以这里就简单的说一下就好了。</p>
+<p>首先InnoDB定义了一个类型为<strong>FIL_PAGE_UNDO_LOG</strong>的页面，它有个Undo Page Header结构，由4部分组成</p>
+<ul>
+<li><p>TRX_UNDO_PAGE_TYPE：Undo log页面的类型，这里我们得提一个点，就是InnoDB将几种undo log划分为了两类，TRX_UNDO_INSERT和TRX_UNDO_UPDATE，除了插入的undo log是TRX_UNDO_INSERT外其他的都是TRX_UNDO_UPDATE，比如DELETE、UPDATE</p>
+</li>
+<li><p>TRX_UNDO_PAGE_START :表示在当前页面中是从什么位置开始存储 undo日志 的，或者说表示第一条 undo日志 在本页面中的起始偏移量。</p>
+</li>
+<li><p>TRX_UNDO_PAGE_FREE :与上边的 TRX_UNDO_PAGE_START 对应，表示当前页面中存储的最后一条 undo 日志结束时的偏移量，或者说从这个位置开始，可以继续写入新的 undo日志 。这里我们也得提一个点也就是undo log只是单纯地往undo log页面里面顺序写入的，说白了就是塞就完事了，所以我们需要这个偏移量。</p>
+<p>假如我们插入三条undo log：</p>
+<p><img src="https://img.tucang.cc/api/image/show/a7e4960db050219b9b3535088c6f86aa" srcset="/img/loading.gif" lazyload></p>
+</li>
+<li><p>TRX_UNDO_PAGE_NODE :代表一个 List Node 结构。它存在的意义我们下面马上说。</p>
+</li>
+</ul>
+<p><strong>Undo页面链表</strong></p>
+<p>因为一个事务可能包含多个语句，而且一个语句可能对若干条记录进行改动，而对每条记录进行改动前，都需要 记录1条或2条的 undo日志 ，所以在一个事务执行过程中可能产生很多 undo日志 ，这些日志可能一个页面放不 下，需要放到多个页面中，这些页面就通过我们上边介绍的 TRX_UNDO_PAGE_NODE 属性连成了链表:</p>
+<p>而我们前面也说到了，undo log在存放到undo log页面的时候是会被分成两类的，所以现在一个事务就需要两条undo页面链表。事情还未结束，InnoDB根据临时表和普通表还做了一个分类，也就是临时表也有自己单独的两条链表。</p>
+<p>为啥要把针对普通表和临时表来划分不同种类的 回滚段 呢?</p>
+<p>这个还得从 Undo页面 本身 说起，我们说 Undo页面 其实是类型为 FIL_PAGE_UNDO_LOG 的页面的简称，说到底它也是一个普通的页面。我们前边说过，在修改页面之前一定要先把对应的 redo日志 写上，这样在系统奔溃重启时才能恢复到奔溃前的状 态。我们向 Undo页面 写入 undo日志 本身也是一个写页面的过程，设计 InnoDB 的大叔为此还设计了许多种redo日志 的类型，比方说 MLOG_UNDO_HDR_CREATE 、 MLOG_UNDO_INSERT 、 MLOG_UNDO_INIT 等等等等，也就是说我们对 Undo页面做的任何改动都会记录相应类型的 redo日志 。但是对于临时表来说，因为修改临时表而产生 的 undo日志 只需要在系统运行过程中有效，如果系统奔溃了，那么在重启时也不需要恢复这些 undo 日志所在的 页面，<strong>所以在写针对临时表的 Undo页面 时，并不需要记录相应的 redo日志</strong> 。<strong>总结一下针对普通表和临时表划分 不同种类的 回滚段 的原因:在修改针对普通表的回滚段中的Undo页面时，需要记录对应的redo日志，而修改针 对临时表的回滚段中的Undo页面时，不需要记录对应的redo日志。</strong></p>
+<p><strong>frist undo page</strong></p>
+<p>first undo page是页面链表的第一个页面，它不仅保存了一些undo log，同时也保存了该页面链表的一些管理信息。</p>
+<p><strong>Undo Log Segment Header</strong></p>
+<p>上面我们说的一个页面链表就对应了一个段，一个Undo Log Segment Header，也就是意味着这个链表中的页面都得从这个段里面申请（段就是表空间的一个概念了）</p>
+<p><strong>回滚段（Rollback Segment Header）</strong></p>
+<p><strong>页面链表那么多怎么管理？</strong>，为了更好的管理这些链表，InnoDB又设计了一个称之为 Rollback Segment Header 的页面，在这个页面中存放了各个 Undo页面链表的 frist undo page 的 页号 ，他们把这些页号 称之为 undo slot 。我们可以这样理解，每个 Undo页 面 链表都相当于是一个班，这个链表的 first undo page 就相当于这个班的班长，找到了这个班的班长，就可 以找到班里的其他同学(其他同学相当于 normal undo page )。有时候学校需要向这些班级传达一下精神，就 需要把班长都召集在会议室，这个 Rollback Segment Header 就相当于是一个会议室。</p>
+<p>回滚段的主要功能就是开了一个保存undo slot 的池子，当我们要为一个事务分配一个undo log页面链表时就会先来这里申请一个位置，创建first undo page成功后就把它的页号赋值到这里</p>
+<p>好了，undo log到这里也就差不多了。</p>
+<h3 id="Binlog"><a href="#Binlog" class="headerlink" title="Binlog"></a>Binlog</h3><blockquote>
+<p>讲了上面两个log后，做为另外一个MySQL的重要日志:Binlog，当然也是要讲一下咯</p>
+</blockquote>
+<p>二进制日志（binary log ），记录了对 MySQL数据库执行的所有<strong>更改操作</strong>，包括 <strong>表结构的变更</strong> 和 <strong>表数据的修改</strong> 等，像 select 这种查询是不会记录 binlog 日志的。</p>
+<p>binlog 日志采用 <strong>追加写</strong> 的方式写文件，一个文件写满后新写一个文件。</p>
+<p>生成的 binlog 日志文件主要可以用于 <strong>备份恢复</strong>、<strong>主从复制</strong> 以及 <strong>数据审计</strong> 等用途。</p>
+<p><strong>binlog 参数配置</strong></p>
+<p>binlog 日志默认是没有启动的，可以通过配置参数 <strong>log-bin &#x3D;on</strong> 或 <strong>log_bin &#x3D;on</strong> 来开启，开启 binlog 日志后，还有许多相关的参数可以做配置，这里捡几个重要的看下：</p>
+<ul>
+<li>max_binlog_size</li>
+<li>binlog_cache_size</li>
+<li>sync_binlog</li>
+<li>binlog_format</li>
+</ul>
+<p><strong>max_binlog_size</strong>: 指定单个日志文件的最大值，达到阈值后，会生成一个新的日志文件，后缀名 +1，并记录到 <strong>.index</strong> 文件，形如 mysql-bin.000001、mysql-bin.000002 ….</p>
+<p><strong>binlog_cache_size:</strong> 日志缓存区大小。在事务未提交前，所有的 binlog 日志都会记录到内存缓存，等到事务提交的时候再写入日志文件，该参数即是设置该缓存区的大小。此外，日志缓存是基于会话的，也就是说 每个线程都有一块 binlog_cache_size 大小的内存缓存，因此，该值不宜设置太大；另一方面，如果某事务占用缓存超过设置值，就需要将日志写入临时文件，因此，该值也不能设置太小。那多大比较合适？可以通过 SHOW GLOBAL STATUS 查看 binlog_cache_disk_use （使用临时文件写日志次数）来判定，如果该值很大，说明缓存区过小，需要经常写临时文件，此时需要适当调大该参数。</p>
+<p><strong>sync_binlog:</strong> 同步磁盘策略。我们平时写文件调用的 write() 函数其实并没有真正的将内容写到磁盘，而是写到文件系统的 page cache 里，真正将内容同步到磁盘的是 fsync() 函数。sync_binlog 就是用来设置 fsync() 函数的执行时机的：</p>
+<p>sync_binlog &#x3D; 0 : 不调用 fsync() 函数，由操作系统决定何时调用；<br>sync_binlog &#x3D; 1 : 每个事务调用 write() 后立马执行 fsync() 函数；<br>sync_binlog &#x3D; N (N&gt;1) : 累计 N 个事务调用 write() 后，执行 fsync() 函数；</p>
+<p><strong>binlog_format:</strong> 日志格式，有三种格式选择：</p>
+<p>STATEMENT: 基于 SQL 语句记录（可以理解为<strong>记录的就是更新数据的 sql 语句</strong>）。这种格式的日志存在一个问题，动态函数在重放时可能产生不一致的结果，比如记录日志时调用一个动态函数生成 uuid，那使用该 binlog 日志重放时可能会得到一个不同的 uuid 值。<br>ROW: <strong>记录数据行更改后的值</strong>，这样就避免了日志重放时因为动态函数带来的不一致的问题，但是这种格式的日志文件 相较 STATEMENT 要大很多，因为它记录的是每一行数据的变化值，比如执行一个 update 语句更新了 1w 条数据，采用 STATEMENT 格式就是记录这个 update 语句即可，而 ROW 则要记录这 1w 条数据更新后的值。<br>MIXED: 包含以上两个格式，默认采用 STATEMENT 记录，而对于使用 STATEMENT 记录可能产生问题的 SQL 语句则使用 ROW 记录。<br>无论采用哪种格式，它记录的都是 关于一个事务的具体操作内容，因此 binlog 日志也被称为 <strong>逻辑日志</strong>。</p>
+<h4 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h4><p>主从复制是 mysql 提供的一种 <strong>高可用高性能</strong> 的解决方案。具体来说，在主从复制架构下，如果主库发生意外，可以切换到从库继续提供服务（高可用）；此外，主从库可以实现读写分离，主库可接收读写请求，从库只提供读请求能力，可以大大提高数据库整体的查询能力（高性能）。</p>
+<p><strong>主从复制原理</strong>很简单，包含以下三个步骤：</p>
+<p>1、主库记录二进制日志文件；</p>
+<p>2、从库将主库的日志文件复制到自身的中继日志(relay log)；</p>
+<p>3、从库对中继日志进行重放。</p>
+<p>复制具体过程涉及三个线程操作：</p>
+<p>1、主库的 log <strong>dump</strong> 线程 负责将二进制文件发送到从库；</p>
+<p>2、从库的 <strong>I&#x2F;O</strong> 线程 负责读取二进制文件并保存到从库的 relay log 中；</p>
+<p>3、从库的 <strong>SQL</strong> 线程 负责读取 relay log 在本地进行重放。</p>
+<h4 id="两阶段提交"><a href="#两阶段提交" class="headerlink" title="两阶段提交"></a>两阶段提交</h4><p>在主从复制模式下，会开启 binlog 日志。此时，主库提交事务时，既要写二进制日志，还要写重做日志，mysql 需要保证两个操作的原子性。假如它们不满足原子性，比如先写完二进制日志后，如果 mysql 实例发生宕机，重启后，由于 redo log 日志没有记录的原因，在做数据恢复后主库将丢失这个数据更新，而从库却根据 binlog 日志进行了重放，最终导致主从不一致。</p>
+<p>mysql 结合 内部 XA 事务 和 两阶段提交方案 来实现这两个操作的原子性，看看具体流程：</p>
+<p>1、prepare 阶段：事务提交时，先写 redo log，同时记录 XA 事务的 ID (XID)，标记为 prepare 状态；</p>
+<p>2、写入 binlog 日志，同时记录 XID；</p>
+<p>3、commit 阶段：再次写 redo log，标记为 commit 状态。</p>
+<p>我们看看它是如果通过以上步骤实现原子性的：</p>
+<p>在 mysql 使用 redo log 做数据恢复时，如果发现 redo log 处于 commit 状态，则表示 binlog 一定落盘了，可以直接恢复；</p>
+<p>如果发现 redo log 处于 prepare 状态，就要根据 XID 和 binlog 日志来判断：</p>
+<p>如果在 binlog 找不到这个 XID，说明还没有同步 binlog，回滚事务；<br>反之说明两个日志都已同步成功，提交事务。</p>
+<h3 id="隔离性"><a href="#隔离性" class="headerlink" title="隔离性"></a>隔离性</h3><h4 id="事务并发可能带来的问题"><a href="#事务并发可能带来的问题" class="headerlink" title="事务并发可能带来的问题"></a>事务并发可能带来的问题</h4><p>对于一个服务器来说可能同时处理多个事务，所以我们要保证其它事务的状态转换不会影响到本事务的状态转换，也就是隔离性了，一个事务的执行不会被其他事务所干扰。</p>
+<p>理论上在某个事务对某个数据进行访问时，其他 事务应该进行排队，当该事务提交之后，其他事务才可以继续访问这个数据。但是这样子的话对性能影响太大， 我们既想保持事务的 隔离性 ，又想让服务器在处理访问同一数据的多个事务时性能尽量高些，鱼和熊掌不可得兼，舍一部分隔离性而取性能者也。</p>
+<p>我们先说下常见的在不保证串行执行的情况下可能会出现哪些问题？</p>
+<p><strong>脏写</strong>：如果一个事务修改了另一个未提交事务修改过的数据，那就意味着发生了 脏写 ，示意图如下:</p>
+<p><img src="https://img.tucang.cc/api/image/show/f06e7ee74876302cb35b0b0ee40e1edc" srcset="/img/loading.gif" lazyload></p>
+<p><strong>脏读</strong>:如果一个事务读到了另一个未提交事务修改过的数据，那就意味着发生了 脏读 ，示意图如下:</p>
+<p><img src="https://img.tucang.cc/api/image/show/7942e4f96b350ff00937748779dc86f2" srcset="/img/loading.gif" lazyload></p>
+<p><strong>不可重复读</strong>：如果一个事务只能读到另一个已经提交的事务修改过的数据，并且其他事务每对该数据进行一次修改并提交 后，该事务都能查询得到最新值，那就意味着发生了 不可重复读 ，示意图如下:</p>
+<p><img src="https://img.tucang.cc/api/image/show/ac494f39e7752857ae6cf6fb2a73f92d" srcset="/img/loading.gif" lazyload></p>
+<p><strong>幻读</strong>：如果一个事务先根据某些条件查询出一些记录，之后另一个事务又向表中插入了符合这些条件的记录，原先 的事务再次按照该条件查询时，能把另一个事务插入的记录也读出来，那就意味着发生了 幻读 ，示意图如下:</p>
+<p><img src="https://img.tucang.cc/api/image/show/05a59c6bf7c4e85c074a373b6f597bac" srcset="/img/loading.gif" lazyload></p>
+<h4 id="SQL中的四种隔离级别"><a href="#SQL中的四种隔离级别" class="headerlink" title="SQL中的四种隔离级别"></a>SQL中的四种隔离级别</h4><p>在SQL标准中有以下4个隔离级别 :</p>
+<ul>
+<li><p>READ UNCOMMITTED :未提交读。</p>
+</li>
+<li><p>READ COMMITTED :已提交读。</p>
+</li>
+<li><p>REPEATABLE READ :可重复读。 </p>
+</li>
+<li><p>SERIALIZABLE :可串行化。</p>
+</li>
+</ul>
+<p>针对不同的隔离级别，并发事务可以发生不同严重程度的问题，具体情况如下:</p>
+<ul>
+<li>READ UNCOMMITTED 隔离级别下，可能发生 脏读 、 不可重复读 和 幻读 问题。</li>
+<li>READ COMMITTED 隔离级别下，可能发生 不可重复读 和 幻读 问题，但是不可以发生 脏读 问题。</li>
+<li>REPEATABLE READ 隔离级别下，可能发生 幻读 问题，但是不可以发生 脏读 和 不可重复读 的问题。</li>
+<li>SERIALIZABLE 隔离级别下，各种问题都不可以发生。</li>
+</ul>
+<h4 id="MySQL中支持的四种隔离级别"><a href="#MySQL中支持的四种隔离级别" class="headerlink" title="MySQL中支持的四种隔离级别"></a>MySQL中支持的四种隔离级别</h4><p>MySQL支持了以上的4种隔离级别，不同的是<strong>MySQL在REPEATABLE READ隔离级别下，是可以禁止幻读问题的发生的</strong></p>
+<h3 id="MVCC原理"><a href="#MVCC原理" class="headerlink" title="MVCC原理"></a>MVCC原理</h3><blockquote>
+<p>面试的时候也可以按照下面的顺序来讲，先讲版本链，再讲视图、再讲读提交和可重复读下的区别。</p>
+</blockquote>
+<h4 id="版本链"><a href="#版本链" class="headerlink" title="版本链"></a>版本链</h4><p>我们前边说过聚簇索引记录中都包含两个必要的隐藏列：trx_id和roll_pointer</p>
+<p>trx_id :每次一个事务对某条聚簇索引记录进行改动时，都会把该事务的 事务id 赋值给 trx_id 隐藏列。</p>
+<p>roll_pointer :每次对某条聚簇索引记录进行改动时，都会把旧的版本写入到 undo日志 中，然后这个隐藏列就相当于一个指针，可以通过它来找到该记录修改前的信息。</p>
+<p>假设之后两个 事务id 分别为 100 、 200 的事务对这条记录进行 UPDATE 操作，操作流程如下:</p>
+<p><img src="https://img.tucang.cc/api/image/show/f69d2eba72440ecc505be0b217e22562" srcset="/img/loading.gif" lazyload></p>
+<p>插播一个问题，能不能在两个事务中交叉更新同一条记录呢?当然不行，这不就是一个事务修改了另一个未提交事务修改过 的数据，沦为了脏写了么?InnoDB使用锁来保证不会有脏写情况的发生，也就是在第一个事务更新了某 条记录后，就会给这条记录加锁，另一个事务再次更新时就需要等待第一个事务提交了，把锁释放之后 才可以继续更新。</p>
+<p>每次对记录进行改动，都会记录一条 undo日志 ，每条 undo日志 也都有一个 old roll_pointer 属性( INSERT 操作 对应的 undo日志 没有该属性，因为该记录并没有更早的版本，前边我们有讲过undo log的格式)，可以将这些 undo日志 都连起来，串成一个链表，所以现在的情况就像下图一样:</p>
+<p><img src="https://img.tucang.cc/api/image/show/f0cbea2d7446023e090332fb191cda04" srcset="/img/loading.gif" lazyload></p>
+<h4 id="ReadView"><a href="#ReadView" class="headerlink" title="ReadView"></a>ReadView</h4><p>对于使用 READ COMMITTED 和 REPEATABLE READ 隔离级别的事务来 说，都必须保证读到已经提交了的事务修改过的记录，也就是说假如另一个事务已经修改了记录但是尚未提交， 是不能直接读取最新版本的记录的，核心问题就是:<strong>需要判断一下版本链中的哪个版本是当前事务可见的</strong>。为 此，InnoDB提出了一个 ReadView 的概念，这个 ReadView 中主要包含4个比较重要的内容（提示：一定要先记牢这四个东西，后面才好分析）:</p>
+<ul>
+<li><p>m_ids :表示在生成 ReadView 时当前系统中活跃的读写事务的 事务id <strong>列表</strong>。</p>
+</li>
+<li><p>min_trx_id :表示在生成 ReadView 时当前系统中活跃的读写事务中最小的 事务id ，也就是 m_ids 中的最小值。</p>
+</li>
+<li><p>max_trx_id :表示生成 ReadView 时系统中应该分配给下一个事务的 id 值。</p>
+<p>注意max_trx_id并不是m_ids中的最大值，事务id是递增分配的。比方说现在有id为1，2，3这三 个事务，之后id为3的事务提交了。那么一个新的读事务在生成ReadView时，m_ids就包括1和2，mi n_trx_id的值就是1，max_trx_id的值就是4。</p>
+</li>
+<li><p>creator_trx_id :表示生成该 ReadView 的事务的 事务id 。</p>
+<p>只有在对表中的记录做改动时(执行INSERT、DELETE、UPDATE这些语句时)才会 为事务分配事务id，否则在一个只读事务中的事务id值都默认为0。</p>
+</li>
+</ul>
+<p>有了这个 ReadView ，这样在访问某条记录时，只需要按照下边的步骤判断记录的某个版本是否可见:</p>
+<ul>
+<li>如果被访问版本的 trx_id 属性值与 ReadView 中的 creator_trx_id 值相同，意味着当前事务在访问它自己 修改过的记录，所以该版本可以被当前事务访问。</li>
+<li>如果被访问版本的 trx_id 属性值小于 ReadView 中的 min_trx_id 值，表明生成该版本的事务在当前事务生成 ReadView 前已经提交，所以该版本可以被当前事务访问。</li>
+<li>如果被访问版本的 trx_id 属性值大于 ReadView 中的max_trx_id 值，表明生成该版本的事务在当前事务生成 ReadView 后才开启，所以该版本不可以被当前事务访问。</li>
+<li>如果被访问版本的 trx_id 属性值在 ReadView 的 min_trx_id 和 max_trx_id 之间，那就需要判断一下 trx_id 属性值是不是在 m_ids 列表中，如果在，说明创建 ReadView 时生成该版本的事务还是活跃的，该 版本不可以被访问;如果不在，说明创建 ReadView 时生成该版本的事务已经被提交，该版本可以被访问。</li>
+</ul>
+<p>如果某个版本的数据对当前事务不可见的话，那就顺着版本链找到下一个版本的数据，继续按照上边的步骤判断可见性，依此类推，直到版本链中的最后一个版本。如果最后一个版本也不可见的话，那么就意味着该条记录对该事务完全不可见，查询结果就不包含该记录。</p>
+<h4 id="读提交和可重复读的区别"><a href="#读提交和可重复读的区别" class="headerlink" title="读提交和可重复读的区别"></a>读提交和可重复读的区别</h4><p>读提交：<strong>每次读取数据前都会生成一个新的ReadView</strong></p>
+<p>可重复读：<strong>在第一次读取数据时生成一个ReadView</strong>，后面会一直服用这个ReadView</p>
+<h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><p>并发事务的 读-读 情况并不会引起什么问题，不过对于 写-写 、读-写 或 写-读 这些情况可能 会引起一些问题，需要使用 MVCC 或者 加锁 的方式来解决它们。在使用加锁的方式解决问题时，由于既要允许读-读 情况不受影响，又要使写-写 、 读-写 或 写-读 情况中的操作相互阻塞，所以MySQL给锁 分了个类:</p>
+<p>共享锁 ，英文名: Shared Locks ，简称 S锁 。在事务要读取一条记录时，需要先获取该记录的 S锁 。</p>
+<p>独占锁 ，也常称 排他锁 ，英文名: Exclusive Locks ，简称 X锁 。在事务要改动一条记录时，需要先获 取该记录的 X锁 。</p>
+<h4 id="锁定读的语句"><a href="#锁定读的语句" class="headerlink" title="锁定读的语句"></a>锁定读的语句</h4><ul>
+<li><p>对读取的记录加 S锁 : SELECT … LOCK IN SHARE MODE;</p>
+<p>也就是在普通的 SELECT 语句后边加 LOCK IN SHARE MODE ，如果当前事务执行了该语句，那么它会为读取到 的记录加 S锁 ，这样允许别的事务继续获取这些记录的 S锁 (比方说别的事务也使用 SELECT … LOCK IN SHARE MODE 语句来读取这些记录)，但是不能获取这些记录的 X锁 (比方说使用 SELECT … FOR UPDATE 语句来读取这些记录，或者直接修改这些记录)。如果别的事务想要获取这些记录的 X锁 ，那么它们会阻 塞，直到当前事务提交之后将这些记录上的 S锁 释放掉。</p>
+</li>
+<li><p>对读取的记录加 X锁 : SELECT … FOR UPDATE;</p>
+<p>也就是在普通的 SELECT 语句后边加 FOR UPDATE ，如果当前事务执行了该语句，那么它会为读取到的记录 加 X锁 ，这样既不允许别的事务获取这些记录的 S锁 (比方说别的事务使用 SELECT … LOCK IN SHARE MODE 语句来读取这些记录)，也不允许获取这些记录的 X锁 (比方也说使用 SELECT … FOR UPDATE 语句 来读取这些记录，或者直接修改这些记录)。如果别的事务想要获取这些记录的 S锁 或者 X锁 ，那么它们会 阻塞，直到当前事务提交之后将这些记录上的 X锁 释放掉。</p>
+</li>
+</ul>
+<h4 id="多粒度锁"><a href="#多粒度锁" class="headerlink" title="多粒度锁"></a>多粒度锁</h4><p>在MySQL中，锁不仅可以根据锁的行为来分类，还可以根据锁的粒度来分类，也就是表锁和行级锁，不过几乎所有的存储引擎都只能支持表锁，而不能支持到行级锁，比如对于 MyISAM 、 MEMORY 、 MERGE 这些存储引擎来说，它们只支持表级锁，而且这些引擎并不支持事务，所以使用这些存储引擎的锁一般都是针对当前会话来说的。比方说在 Session 1 中对一个表执行 SELECT 操作，就相当于为这个表加了一个表级别的 S锁 ，如果在 SELECT 操作未完成时， Session 2 中对这个表执行 UPDATE 操作， 相当于要获取表的 X锁 ，此操作会被阻塞，直到 Session 1 中的 SELECT 操作完成，释放掉表级别的 S锁 后，Session 2 中对这个表执行 UPDATE 操作才能继续获取 X锁 ，然后执行具体的更新语句。</p>
+<p>而InnoDB则既有表锁也有行级锁，之前我们说的锁都是行级锁，现在我们说下表锁加锁时的情况。</p>
+<p><strong>给表加 S锁 :</strong></p>
+<p>如果一个事务给表加了 S锁 ，那么: </p>
+<ul>
+<li>别的事务可以继续获得该表的 S锁</li>
+<li>别的事务可以继续获得该表中的某些记录的 S锁</li>
+<li>别的事务不可以继续获得该表的 X锁</li>
+<li>别的事务不可以继续获得该表中的某些记录的 X锁</li>
+</ul>
+<p><strong>给表加 X锁 :</strong></p>
+<p>如果一个事务给表加了 X锁 (意味着该事务要独占这个表)，那么: </p>
+<ul>
+<li>别的事务不可以继续获得该表的 S锁</li>
+<li>别的事务不可以继续获得该表中的某些记录的 S锁</li>
+<li>别的事务不可以继续获得该表的 X锁</li>
+<li>别的事务不可以继续获得该表中的某些记录的 X锁</li>
+</ul>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>如果你从头到尾看到了这里，那么恭喜你已经掌握了MySQL中几个非常常见且必须掌握的</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%89%93%E6%80%AA%E5%8D%87%E7%BA%A7/" class="category-chain-item">打怪升级</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E6%89%93%E6%80%AA%E5%8D%87%E7%BA%A7/MySQL/" class="category-chain-item">MySQL</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Mysql/">#Mysql</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>✍️MySQL--一条SQL语句贯穿MySQL常见知识点</div>
+      <div>https://opengxj.github.io/2023/08/07/一条SQL语句贯穿MySQL常见知识点/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>PEngxJ</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月7日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/02/06/GMP%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="🧐GMP学习笔记🏎️">
+                        <span class="hidden-mobile">🧐GMP学习笔记🏎️</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Mamba</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>KOBE</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
